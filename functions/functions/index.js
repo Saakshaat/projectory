@@ -7,30 +7,35 @@ app.use(cors());
 const {
     emailLogin,
     emailSignup,
-    googleSignin
+    googleSignin,
+    signout,
+    passwordReset,
 } = require('./handlers/users')
 
 const {
     getAllOpenProjects,
     createProject,
     getOneOpenProject
-}
+} = require('./handlers/projects')
+
+const { isAuthenticated } = require('./util/authenticate');
 
 //users routes
 app.post("/signup", emailSignup);
 app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
+app.post("/signout", signout);
+app.post("/password_reset", passwordReset)
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
- * - Password Reset
  * - Get all interested projects
  * - Get all closed projects
  */
 
 
 //projects routes
-app.post("/projects", createProject);
+app.post("/project", isAuthenticated ,createProject);
 app.get("/projects", getAllOpenProjects);
 app.get("/project/:projectId", getOneOpenProject);
 /**
