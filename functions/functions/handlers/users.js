@@ -20,9 +20,24 @@ auth.onAuthStateChanged((user) => {
 
 //Email Login
 exports.emailLogin = (req, res) => {
+  const credentials = {
+    email: req.body.email,
+    password: req.body.password,
+  };
   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-    auth.signInWithEmailAndPassword(req.body.email, req.body.password);
-    return res.status(200).json({ general: `Logged in` });
+    auth()
+      .signInWithEmailAndPassword(credentials.email, credentials.password)
+      .then((data) => {
+        return data.user.getIdToken();
+      })
+      .then((token) => {
+        return res.json({ token });
+      })
+      .catch((err) => {
+        return res
+          .status(403)
+          .json({ general: `Wrong credentials, please try again` });
+      });
   });
 };
 
@@ -63,58 +78,58 @@ exports.emailSignup = (req, res) => {
         return res.status(400).json({ errorl: `Account already exists` });
       }
     });
-  // auth
-  //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  //   .then(() => {
-      return auth
-        .createUserWithEmailAndPassword(
-          credentials.email,
-          req.body.credentials.password
-        )
-        .then(data => {
-          userId = data.user.uid;
-          return data.user.getIdToken();
-        })
-        .then(idToken => {
-          const token = idToken;
-          const batch = db.batch();
-          let userId = db.collection("users").doc();
 
-          //Creating new user object
-          batch.set(userId, user);
+  //TODO: Validating signup credentials
 
-          userId = userId.path.split("/").pop();
-          //Linking user's ID to credentials and experience
+  //Signing up the user
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+    return auth
+      .createUserWithEmailAndPassword(
+        credentials.email,
+        req.body.credentials.password
+      )
+      .then((data) => {
+        userId = data.user.uid;
+        return data.user.getIdToken();
+      })
+      .then((idToken) => {
+        const token = idToken;
+        const batch = db.batch();
+        let userId = db.collection("users").doc();
 
-          credentials.user = userId;
-          experience.user = userId;
+        //Creating new user object
+        batch.set(userId, user);
 
-          //Creating new credentials
-          batch.set(db.collection("credentials").doc(), credentials);
+        userId = userId.path.split("/").pop();
+        //Linking user's ID to credentials and experience
 
-          //Creating new experience
-          batch.set(db.collection("experience").doc(), experience);
+        credentials.user = userId;
+        experience.user = userId;
 
-          return batch
-            .commit()
-            .then(function () {
-              return res.status(200).json({ token });
-            })
-            .catch((err) => {
-              res
-                .status(500)
-                .json({ error: `Error in committing batch. ${err}` });
-            });
-        })
-        .catch((err) => {
-          res
-            .status(500)
-            .json({ error: `Error with creating account. ${err}` });
-        });
-    // })
-    // .catch((err) => {
-    //   res.status(400).json({ error: `Error persisting session` });
-    // });
+        //Creating new credentials
+        batch.set(db.collection("credentials").doc(), credentials);
+
+        //Creating new experience
+        batch.set(db.collection("experience").doc(), experience);
+
+        return batch
+          .commit()
+          .then(function () {
+            return res.status(200).json({ token });
+          })
+          .catch((err) => {
+            res
+              .status(500)
+              .json({ error: `Error in committing batch. ${err}` });
+          });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: `Error with creating account. ${err}` });
+      });
+  });
+  // .catch((err) => {
+  //   res.status(400).json({ error: `Error persisting session` });
+  // });
 };
 
 //Google Signin
@@ -127,8 +142,6 @@ exports.signout = (req, res) => {
   } else auth.signOut();
 };
 
-exports.passwordReset = (req, res) => {
-  
-}
+exports.passwordReset = (req, res) => {};
 
 exports.authenticated = currentUser;
