@@ -3,9 +3,8 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { Link, Redirect } from "react-router-dom";
-import firebase from "firebase";
 import { Typography } from "@material-ui/core";
-
+import axios from "axios";
 
 export default class SignIn extends Component {
   constructor() {
@@ -14,47 +13,38 @@ export default class SignIn extends Component {
       email: "",
       password: "",
       isLoggedIn: false,
-      // variable to check if data is fetch from the server or not
-      externalData: null,
     };
-
-    // check if there already a logged user
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user)
-        this.setState({
-          isLoggedIn: true,
-        });
-      this.setState({
-        externalData: true,
-      });
-    });
+    if (localStorage.FBIdToken) this.state.isLoggedIn = true;
   }
 
   // Handlle submit button
   handleLoginButtonClick = (e) => {
     e.preventDefault();
-
-    console.log("Siginng In ...");
-
-    // Login
-    const promise = firebase
-      .auth()
-      .signInWithEmailAndPassword(this.state.email, this.state.password);
-
-    promise
-      .then(
-        // Check if users loggin successfully and move the user page.
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user)
-            this.setState({
-              isLoggedIn: true,
-            });
-        })
-      )
-      // if there are something wrong with the email/password
-      .catch((e) => alert("Password is not correct!"));
+    console.log("Signing in...");
+    axios
+      .post("/login", {
+        email: this.state.email,
+        password: this.state.password,
+      })
+      .then((res) => {
+        localStorage.setItem("FBIdToken", res.data.token);
+        this.setState({ isLoggedIn: true });
+      })
+      .catch((e) => console.log(e));
   };
 
+  handleGoogleSignInClick = (e) => {
+    e.preventDefault();
+    console.log("Signing in with Google...");
+    axios
+      .post("/google/signin")
+      .then((res) => {
+        localStorage.setItem("FBIdToken", res.data.token);
+        this.setState({ isLoggedIn: true });
+      })
+      .catch((e) => console.log(e));
+  };
+  
   handleTextEmailChange = (e) => {
     this.setState({
       email: e.target.value,
@@ -68,19 +58,16 @@ export default class SignIn extends Component {
   };
 
   render() {
-    // Wait for the API to fetch data
-    if (!this.state.externalData) {
-      return <div>Loading...</div>;
-    }
-
-    // Already logged user get to the user page
-    if (this.state.isLoggedIn === true) return <Redirect to="/user" />;
-    else
+    // Already isLoggedIn user get to the user page
+    if (this.state.isLoggedIn) {
+      return <Redirect to="/user" />;
+    } else
       return (
         <div>
           <Typography variant="h5" gutterBottom>
             Sign In
           </Typography>
+
           <TextField
             label="Email Address"
             onChange={this.handleTextEmailChange}
@@ -112,13 +99,21 @@ export default class SignIn extends Component {
             Sign In
           </Button>
 
+          <Button
+            fullWidth
+            type="submit"
+            color="primary"
+            onClick={this.handleGoogleSignInClick}
+          >
+            Sign In With Google
+          </Button>
           <Grid container>
             <Grid item xs>
               <Link
                 style={{ color: "primary", textDecoration: "none" }}
                 href="#"
               >
-                Forgot password?
+                <Typography gutterBottom>Forgot password?</Typography>
               </Link>
             </Grid>
             <Grid item>
@@ -126,7 +121,9 @@ export default class SignIn extends Component {
                 to="/signup"
                 style={{ color: "primary", textDecoration: "none" }}
               >
-                {"Don't have an account? Sign Up"}
+                <Typography gutterBottom>
+                  Don't have an account? Sign Up
+                </Typography>
               </Link>
             </Grid>
           </Grid>

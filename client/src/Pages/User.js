@@ -1,50 +1,48 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import firebase from "firebase";
 import { Redirect } from "react-router-dom";
+import axios from "axios";
 
 export default class User extends Component {
   constructor() {
     super();
     this.state = {
-      isLoggedIn: true,
-      externalData: null
+      isLoggedIn: false,
     };
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user)
-        this.setState({
-          isLoggedIn: false,
-        });
-      this.setState({
-        externalData: true,
-      });
-    });
+    if (localStorage.FBIdToken) this.state.isLoggedIn = true;
   }
 
   handleClick = (e) => {
     e.preventDefault();
     console.log("Logging out...");
-    const promise = firebase.auth().signOut();
-    promise.then(
-      firebase.auth().onAuthStateChanged(() => {
-        this.setState({
-          isLoggedIn: false,
-        });
-      })
-    );
+    localStorage.removeItem("FBIdToken");
+    this.setState({ isLoggedIn: false });
+    console.log(this.state);
   };
 
+  // handleShowProject = (e) => {
+  //   e.preventDefault();
+  //   console.log("Showing Projects ...");
+  //   axios
+  //     .post("/project")
+  //     .then((res) => {
+  //       console.log(res);
+  //       this.state = {
+  //         isLoggedIn: false,
+  //       };
+  //     })
+  //     .catch((e) => console.log(e));
+  // };
+
   render() {
-    if (!this.state.externalData) {
-      return <div>Loading...</div>;
-    }
-    if (this.state.isLoggedIn === false) return <Redirect to="/" />;
+    if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else
-      return (
-        <div>
-          <div>User Logged In!</div>
-          <Button onClick={this.handleClick}>Logout</Button>
-        </div>
-      );
+    return (
+      <div>
+        <div>User Logged In!</div>
+        <Button onClick={this.handleClick}>Logout</Button>
+        {/* <Button onClick={this.handleShowProject}>Show project</Button> */}
+      </div>
+    );
   }
 }
