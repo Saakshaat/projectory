@@ -6,13 +6,12 @@ const firebase = require("firebase");
 firebase.initializeApp(config);
 
 const auth = firebase.auth();
-var currentUser = auth.currentUser;
+let currentUser = auth.currentUser;
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 auth.onAuthStateChanged((user) => {
-  if (user && user.uid !== currentUser) {
-    currentUser = user.uid;
-    console.log(currentUser.email);
+  if (user) {
+    currentUser = user;
   } else {
     console.log("User does not exist");
   }
@@ -24,6 +23,8 @@ exports.emailLogin = (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
+
+  //TODO: Validate Login Credentials
   auth
     .signInWithEmailAndPassword(credentials.email, credentials.password)
     .then((data) => {
@@ -42,11 +43,12 @@ exports.emailLogin = (req, res) => {
 //Email Signup
 exports.emailSignup = (req, res) => {
   //TODO: Validating signup credentials
-
+  var uid = "";
   //Signing up the user
   return auth
     .createUserWithEmailAndPassword(req.body.email, req.body.password)
     .then((data) => {
+      uid = data.user.uid;
       return data.user.getIdToken();
     })
     .then((idToken) => {
@@ -56,6 +58,7 @@ exports.emailSignup = (req, res) => {
          */
       const responseBody = {
         token: idToken,
+        uid,
         credentials: {
           email: req.body.email,
           provider: "email",
@@ -65,6 +68,12 @@ exports.emailSignup = (req, res) => {
       return res.status(200).json(responseBody);
     })
     .catch((err) => {
+      /**
+       * TODO: What if user exists in authentication but not in firestore?
+       * If err message is 'user already exists', then
+       * Scan credentials database for user's email and if it is not found, return credentials (with provider)
+       * and take them to '/create' route on the client
+       */
       res.status(500).json({ error: `Error with creating account. ${err}` });
     });
 };
@@ -72,7 +81,8 @@ exports.emailSignup = (req, res) => {
 /**
  * Used for creating a user object when they sign up/in for the first time
  * The user is redirected to this route right after signup or sign in.
- * Client gets the complete credentials object from the first response
+ * Client gets the complete credentials object from the first response.
+ * This route distributes the request object across different collections for sharding.
  */
 exports.createUser = (req, res) => {
   //creating objects for distributing across collections
@@ -84,6 +94,7 @@ exports.createUser = (req, res) => {
       linkedin: req.body.information.socials.linkedin,
     },
     bio: req.body.information.bio,
+    uid: req.body.uid
   };
 
   const skills = [];
@@ -98,7 +109,7 @@ exports.createUser = (req, res) => {
   const credentials = req.body.credentials;
 
   const batch = db.batch();
-  let userId = db.collection("users").doc();
+  let userId = db.collection('users').doc();
 
   //Creating new user object
   batch.set(userId, user);
@@ -126,27 +137,31 @@ exports.createUser = (req, res) => {
 };
 
 //Google Signin
-exports.googleSignin = (req, res) => {};
+exports.googleSignin = (req, res) => {
+  
+};
 
 //Signout method
 exports.signout = (req, res) => {
-  if (!currentUser) {
-    return res.status(400).json({ general: "You're not signed in" });
-  } else auth.signOut();
+  return auth.signOut().then(() => {
+    return res.status(200).json({ general: `Successfully Signed Out` })
+  })
+  .catch(err => {
+    return res.status(500).json({ error: `Error during signing out: ${err}` });
+  });
 };
 
 exports.passwordReset = (req, res) => {
-  auth.sendPasswordResetEmail(req.body.email)
-    .then(data => {
-      console.log("Password reset link sent");
+  auth
+    .sendPasswordResetEmail(req.body.email)
+    .then((data) => {
+      return res.status(200).json({ general: `Reset link sent to email` });
     })
-    .catch(err => {
-      return res
-        .status(400)
-        .json({
-          general: `Couldn't send reset link. Try to remember password`
-        });
+    .catch((err) => {
+      return res.status(400).json({
+        general: `Couldn't send reset link. Try to remember password`,
+      });
     });
-};
+  }
 
-exports.authenticated = currentUser;
+exports.currentUser = currentUser;

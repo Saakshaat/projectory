@@ -19,7 +19,7 @@ const {
     getOneOpenProject
 } = require('./handlers/projects')
 
-const { isAuthenticated } = require('./util/authenticate');
+const authenticate = require('./util/authenticate');
 
 //users routes
 app.post("/signup", emailSignup);
@@ -38,7 +38,7 @@ app.post("/password_reset", passwordReset)
 
 
 //projects routes
-app.post("/project", isAuthenticated ,createProject);
+app.post("/project", authenticate, createProject);
 app.get("/projects", getAllOpenProjects);
 app.get("/project/:projectId", getOneOpenProject);
 /**
