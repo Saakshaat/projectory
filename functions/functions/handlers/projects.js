@@ -13,8 +13,5 @@ exports.getOneOpenProject = (req, res) => {
 
 //create a single project
 exports.createProject = (req, res) => {
-    return db.collection('open').add({
-        name: "test",
-        description: "I really don't care lol"
-    })
+    return res.status(200).json( req.user.name );
 }
