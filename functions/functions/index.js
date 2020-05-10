@@ -9,7 +9,8 @@ const {
     emailSignup,
     googleSignin,
     signout,
-    passwordReset,
+    createUser,
+    passwordReset
 } = require('./handlers/users')
 
 const {
@@ -25,12 +26,14 @@ app.post("/signup", emailSignup);
 app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
 app.post("/signout", signout);
+app.post("/create", createUser);
 app.post("/password_reset", passwordReset)
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
  * - Get all interested projects
  * - Get all closed projects
+ *
  */
 
 
