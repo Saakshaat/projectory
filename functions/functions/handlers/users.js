@@ -24,25 +24,57 @@ exports.emailLogin = (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-    auth()
-      .signInWithEmailAndPassword(credentials.email, credentials.password)
-      .then((data) => {
-        return data.user.getIdToken();
-      })
-      .then((token) => {
-        return res.json({ token });
-      })
-      .catch((err) => {
-        return res
-          .status(403)
-          .json({ general: `Wrong credentials, please try again` });
-      });
-  });
+  auth
+    .signInWithEmailAndPassword(credentials.email, credentials.password)
+    .then((data) => {
+      return data.user.getIdToken();
+    })
+    .then((token) => {
+      return res.json({ token });
+    })
+    .catch((err) => {
+      return res
+        .status(403)
+        .json({ general: `Wrong credentials, please try again` });
+    });
 };
 
 //Email Signup
 exports.emailSignup = (req, res) => {
+  //TODO: Validating signup credentials
+
+  //Signing up the user
+  return auth
+    .createUserWithEmailAndPassword(req.body.email, req.body.password)
+    .then((data) => {
+      return data.user.getIdToken();
+    })
+    .then((idToken) => {
+      /**This response is processed as the first_response in the client
+         *The 'credentials' subfield is used for the collections subfield in the credentials collection 
+         The client 
+         */
+      const responseBody = {
+        token: idToken,
+        credentials: {
+          email: req.body.email,
+          provider: "email",
+          createdAt: new Date().toUTCString(),
+        },
+      };
+      return res.status(200).json(responseBody);
+    })
+    .catch((err) => {
+      res.status(500).json({ error: `Error with creating account. ${err}` });
+    });
+};
+
+/**
+ * Used for creating a user object when they sign up/in for the first time
+ * The user is redirected to this route right after signup or sign in.
+ * Client gets the complete credentials object from the first response
+ */
+exports.createUser = (req, res) => {
   //creating objects for distributing across collections
   const user = {
     name: req.body.information.name,
@@ -51,12 +83,7 @@ exports.emailSignup = (req, res) => {
       github: req.body.information.socials.github,
       linkedin: req.body.information.socials.linkedin,
     },
-  };
-
-  const credentials = {
-    email: req.body.credentials.email,
-    auth: "email",
-    createdAt: new Date().toUTCString(),
+    bio: req.body.information.bio,
   };
 
   const skills = [];
@@ -68,68 +95,34 @@ exports.emailSignup = (req, res) => {
     skills,
   };
 
-  //checking if the same credentials exist in credentials collection
-  db.collection("credentials")
-    .where("provider", "==", "email")
-    .where("email", "==", req.body.credentials.email)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        return res.status(400).json({ errorl: `Account already exists` });
-      }
+  const credentials = req.body.credentials;
+
+  const batch = db.batch();
+  let userId = db.collection("users").doc();
+
+  //Creating new user object
+  batch.set(userId, user);
+
+  userId = userId.path.split("/").pop();
+  //Linking user's ID to credentials and experience
+
+  credentials.user = userId;
+  experience.user = userId;
+
+  //Creating new credentials
+  batch.set(db.collection("credentials").doc(), credentials);
+
+  //Creating new experience
+  batch.set(db.collection("experience").doc(), experience);
+
+  return batch
+    .commit()
+    .then(function () {
+      return res.status(200).json({ user, experience, credentials });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: `Error in committing batch. ${err}` });
     });
-
-  //TODO: Validating signup credentials
-
-  //Signing up the user
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-    return auth
-      .createUserWithEmailAndPassword(
-        credentials.email,
-        req.body.credentials.password
-      )
-      .then((data) => {
-        userId = data.user.uid;
-        return data.user.getIdToken();
-      })
-      .then((idToken) => {
-        const token = idToken;
-        const batch = db.batch();
-        let userId = db.collection("users").doc();
-
-        //Creating new user object
-        batch.set(userId, user);
-
-        userId = userId.path.split("/").pop();
-        //Linking user's ID to credentials and experience
-
-        credentials.user = userId;
-        experience.user = userId;
-
-        //Creating new credentials
-        batch.set(db.collection("credentials").doc(), credentials);
-
-        //Creating new experience
-        batch.set(db.collection("experience").doc(), experience);
-
-        return batch
-          .commit()
-          .then(function () {
-            return res.status(200).json({ token });
-          })
-          .catch((err) => {
-            res
-              .status(500)
-              .json({ error: `Error in committing batch. ${err}` });
-          });
-      })
-      .catch((err) => {
-        res.status(500).json({ error: `Error with creating account. ${err}` });
-      });
-  });
-  // .catch((err) => {
-  //   res.status(400).json({ error: `Error persisting session` });
-  // });
 };
 
 //Google Signin
@@ -142,6 +135,18 @@ exports.signout = (req, res) => {
   } else auth.signOut();
 };
 
-exports.passwordReset = (req, res) => {};
+exports.passwordReset = (req, res) => {
+  auth.sendPasswordResetEmail(req.body.email)
+    .then(data => {
+      console.log("Password reset link sent");
+    })
+    .catch(err => {
+      return res
+        .status(400)
+        .json({
+          general: `Couldn't send reset link. Try to remember password`
+        });
+    });
+};
 
 exports.authenticated = currentUser;
