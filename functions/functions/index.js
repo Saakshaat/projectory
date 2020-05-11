@@ -10,13 +10,15 @@ const {
     googleSignin,
     signout,
     createUser,
-    passwordReset
+    passwordReset,
+    getOwnEntireProfile
 } = require('./handlers/users')
 
 const {
     getAllOpenProjects,
     createProject,
-    getOneOpenProject
+    getOneOpenProject,
+    test
 } = require('./handlers/projects')
 
 const authenticate = require('./util/authenticate');
@@ -28,7 +30,9 @@ app.post("/google/signin", googleSignin);
 app.post("/signout", signout);
 app.post("/create", createUser);
 app.post("/password_reset", passwordReset)
-app.post("/user/profile", authenticate, getProfile);
+app.get("/my/profile", authenticate, getOwnEntireProfile);
+
+app.get("/test", authenticate, test);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
