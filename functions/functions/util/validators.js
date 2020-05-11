@@ -44,3 +44,6 @@ exports.validateLogin = (data) => {
     }
 }
 
+exports.validateExists = (data) => {
+    
+}

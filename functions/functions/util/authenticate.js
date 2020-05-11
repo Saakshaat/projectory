@@ -19,14 +19,12 @@ module.exports = (req, res, next) => {
                 .get();
         })
         .then(data => {
-            req.user.docId = data.docs[0].data().id;
+            req.user.docId = data.docs[0].ref.path.split("/").pop();
             req.user.name = data.docs[0].data().name;
-            console.log("Doc Id:", req.user.docId);
-            console.log("Name: ", req.user.name);
             return next();
         })
         .catch(err => {
             console.error('Error while verifying token', err);
-            return res.status(403).json({ error: err.code });
+            return res.status(403).json({ error: `Unauthorized user. ${err.code}`});
         })
 }
