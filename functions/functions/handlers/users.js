@@ -1,6 +1,6 @@
 const { admin, db } = require("../util/admin");
 const config = require("../util/config");
-const { validateEmail, validatePassword } = require("../util/validators");
+const { validateSignup, validateLogin } = require("../util/validators");
 
 const firebase = require("firebase");
 firebase.initializeApp(config);
@@ -24,7 +24,8 @@ exports.emailLogin = (req, res) => {
     password: req.body.password,
   };
 
-  //TODO: Validate Login Credentials
+  const { valid, errors } = validateLogin(credentials);
+  if(!valid) return res.status(400).json(errors);
   auth
     .signInWithEmailAndPassword(credentials.email, credentials.password)
     .then((data) => {
@@ -42,7 +43,14 @@ exports.emailLogin = (req, res) => {
 
 //Email Signup
 exports.emailSignup = (req, res) => {
-  //TODO: Validating signup credentials
+  const newUser = {
+    email: req.body.email,
+    password: req.body.password,
+    confirmPassword: req.body.confirmPassword
+  }
+  const { valid, errors } = validateSignup(newUser);
+  if(!valid) return res.status(400).json(errors);
+
   var uid = "";
   //Signing up the user
   return auth
