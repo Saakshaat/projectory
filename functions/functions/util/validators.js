@@ -9,7 +9,7 @@ const isEmail = (email) => {
 }
 
 const isStrongPassword = (password) => {
-    const passwordRegex = '/(?=.*[0-9])/';
+    const passwordRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})")
     if(password.length < 8 || !password.match(passwordRegex)) return false;
     return true;
 }
@@ -21,9 +21,8 @@ exports.validateSignup = (data) => {
     else if(!isEmail(data.email)) errors.email = 'Must be valid';
 
     if(isEmpty(data.password)) errors.password = 'Must not be empty';
-    if(!isStrongPassword(data.password)) errors.password = 'Password must be 8 characters long and must contain atleast one number'
+    if(!isStrongPassword(data.password)) errors.password = 'Password must be 8 characters long and must contain atleast one number and special character'
     if(data.password !== data.confirmPassword) errors.confirmPassword = 'Passwords must match';
-    if(isEmpty(data.name)) errors.handle = 'Must not be empty';
 
     return {
         errors,
@@ -31,7 +30,17 @@ exports.validateSignup = (data) => {
     }
 }
 
-exports.validateLogin = (req, res) => {
-    
+exports.validateLogin = (data) => {
+    let errors = {};
+
+    if(isEmpty(data.email)) errors.email = 'Must not be empty';
+    else if(!isEmail(data.email)) errors.email = 'Must be valid';
+
+    if(isEmpty(data.password)) errors.password = 'Must not be empty';
+
+    return {
+        errors,
+        valid: Object.keys(errors).length === 0 ? true : false
+    }
 }
 

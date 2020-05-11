@@ -28,6 +28,7 @@ app.post("/google/signin", googleSignin);
 app.post("/signout", signout);
 app.post("/create", createUser);
 app.post("/password_reset", passwordReset)
+app.post("/user/profile", authenticate, getProfile);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
