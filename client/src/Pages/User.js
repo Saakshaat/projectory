@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
-import axios from "axios";
 
 export default class User extends Component {
   constructor() {
@@ -41,6 +40,7 @@ export default class User extends Component {
       <div>
         <div>User Logged In!</div>
         <Button onClick={this.handleClick}>Logout</Button>
+        {/* TODO implement this latter */}
         {/* <Button onClick={this.handleShowProject}>Show project</Button> */}
       </div>
     );

@@ -27,12 +27,14 @@ export default class SignIn extends Component {
         password: this.state.password,
       })
       .then((res) => {
+        // TODO handle multiple request
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });
       })
       .catch((e) => console.log(e));
   };
 
+  // TODO fully implement this later
   handleGoogleSignInClick = (e) => {
     e.preventDefault();
     console.log("Signing in with Google...");

@@ -3,25 +3,17 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import User from "./Pages/User";
-import Create from "./Pages/Create"
+import Create from "./Pages/Create";
 
 export default function WireFrame() {
   return (
     <Router>
       <div>
         <Switch>
-        <Route path="/create">
-            <Create />
-          </Route>
-          <Route path="/signup">
-            <SignUp />
-          </Route>
-          <Route path="/user">
-            <User />
-          </Route>
-          <Route path="/">
-            <SignIn />
-          </Route>
+          <Route exact path="/create" component={Create} />
+          <Route exact path="/signup" component={SignUp} />
+          <Route exact path="/user" component={User} />
+          <Route exact path="/"  component={SignIn} />
         </Switch>
       </div>
     </Router>

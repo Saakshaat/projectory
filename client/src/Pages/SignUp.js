@@ -7,8 +7,8 @@ import axios from "axios";
 
 import { Link, Redirect } from "react-router-dom";
 
-
 let credentials = "";
+let uid = "";
 
 export default class SignUp extends Component {
   constructor() {
@@ -18,9 +18,7 @@ export default class SignUp extends Component {
       password: "",
       confirmPassword: "",
       isLoggedIn: false,
-
-      // variable to check if data is fetch from the server or not
-      hasCredential: null,
+      hasCredential: null, // variable to check if data is fetch from the server or not
     };
   }
 
@@ -29,17 +27,17 @@ export default class SignUp extends Component {
 
     axios
       .post("/signup", {
-        email: "cunbidun@gmail.com",
-        password: "abc123",
-        confirmPassword: "abc123",
-        // email: this.state.email,
-        // password: this.state.password,
-        // confirmPassword: this.state.confirmPassword,
+        email: this.state.email,
+        password: this.state.password,
+        confirmPassword: this.state.confirmPassword,
       })
       .then((res) => {
-        console.log(res);
+        // TODO handle different type of request
+
+        credentials = JSON.stringify(res.data.credentials);
+        uid = res.data.uid;
+
         localStorage.setItem("FBIdToken", res.data.token);
-        credentials = res.data.credentials;
         this.setState({
           hasCredential: true,
         });
@@ -79,8 +77,17 @@ export default class SignUp extends Component {
 
   render() {
     if (this.state.hasCredential) {
-      const cred = credentials;
-      return <Redirect to="/create" credentials={cred} />;
+      return (
+        <Redirect
+          to={{
+            pathname: "/create",
+            state: {
+              uid: { uid },
+              credentials: { credentials },
+            },
+          }}
+        />
+      );
     } else
       return (
         <div>
@@ -119,9 +126,9 @@ export default class SignUp extends Component {
                   onChange={this.handleTextConfirmPasswordChange}
                   required
                   fullWidth
-                  name="password"
+                  name="confirm-password"
                   type="password"
-                  id="password"
+                  id="confirm-password"
                   autoComplete="current-password"
                 />
               </Grid>

@@ -1,42 +1,71 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
+import Chip from "@material-ui/core/Chip";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { Redirect } from "react-router-dom";
+import axios from "axios";
 
-import { Link, Redirect } from "react-router-dom";
-
-const skills = [
-  { name: "C" },
-  { name: "C++" },
-  { name: "Java" },
-  { name: "Node.js" },
-  { name: "Python" },
-  { name: "React" },
-];
+const skills = require("../Utils/Skill");
 
 export default class Create extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       name: "",
+      institution: "",
       bio: "",
       github: "",
       linkedin: "",
       skill: [],
+      created: false,
     };
-    console.log(this.props);
   }
 
   handleSummitButton = (e) => {
     e.preventDefault();
-    // console.log(this.props.credentials);
+    let credentials = this.props.location.state.credentials;
+    let uid = this.props.location.state.uid;
+
+    const request = {
+      uid,
+      credentials,
+      information: {
+        name: this.state.name,
+        bio: this.state.bio,
+        institution: this.state.institution,
+        socials: {
+          github: this.state.github,
+          linkedin: this.state.linkedin,
+        },
+      },
+      experience: {
+        skills: this.state.skill,
+      },
+    };
+
+    axios
+      .post("/create", request)
+      .then((res) => {
+        // TODO handle different type of request
+        this.setState({ created: true });
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
   };
 
   handleNameChange = (e) => {
     this.setState({
       name: e.target.value,
+    });
+  };
+
+  handleInstitutionChange = (e) => {
+    this.setState({
+      institution: e.target.value,
     });
   };
 
@@ -48,7 +77,7 @@ export default class Create extends Component {
 
   handleGithubChange = (e) => {
     this.setState({
-      bio: e.target.value,
+      github: e.target.value,
     });
   };
 
@@ -59,136 +88,105 @@ export default class Create extends Component {
   };
 
   handleSkillChange = (e, data) => {
-    this.state.skill = data;
+    let tmpSkill = [];
+    for (let i = 0; i < data.length; i++) {
+      tmpSkill.push(data[i].name);
+    }
+    this.setState({
+      skill: tmpSkill,
+    });
   };
 
   render() {
-    return (
-      <div>
-        <Typography component="h1" variant="h5">
-          More about you
-        </Typography>
-        <form noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                label="Name"
-                required
-                fullWidth
-                onChange={this.handleNameChange}
-              />
+    if (this.state.created) {
+      return <Redirect to="/user" />;
+    } else {
+      return (
+        <div>
+          <Typography component="h1" variant="h5">
+            More about you
+          </Typography>
+          <form noValidate>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Name"
+                  required
+                  fullWidth
+                  onChange={this.handleNameChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Institution"
+                  required
+                  fullWidth
+                  onChange={this.handleInstitutionChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Bio"
+                  required
+                  fullWidth
+                  onChange={this.handleBioChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="GitHub"
+                  required
+                  fullWidth
+                  onChange={this.handleGithubChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="LinkedIn"
+                  required
+                  fullWidth
+                  onChange={this.handleLinkedinChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Autocomplete
+                  multiple
+                  options={skills}
+                  getOptionLabel={(option) => option.name}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip
+                        label={option.name}
+                        style={{ backgroundColor: option.color }}
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Skills *"
+                      placeholder="Add a skill"
+                    />
+                  )}
+                  onChange={this.handleSkillChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  color="primary"
+                  onClick={this.handleSummitButton}
+                >
+                  Submit
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Bio"
-                required
-                fullWidth
-                onChange={this.handleBioChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="GitHub"
-                required
-                fullWidth
-                onChange={this.handleGithubChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="LinkedIn"
-                required
-                fullWidth
-                onChange={this.handleLinkedinChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                multiple
-                options={skills}
-                getOptionLabel={(option) => option.name}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Skills *"
-                    placeholder="Add a skill"
-                  />
-                )}
-                onChange={this.handleSkillChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                fullWidth
-                color="primary"
-                onClick={this.handleSummitButton}
-              >
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-    );
+          </form>
+        </div>
+      );
+    }
   }
 }
-
-// import React from "react";
-// import MaterialTable from "material-table";
-
-// export default function MaterialTableDemo() {
-//   const [state, setState] = React.useState({
-//     columns: [
-//       { title: "Name", field: "name" },
-//       { title: "Link", field: "link" }
-//     ],
-//     data: []
-//   });
-
-//   return (
-//     <MaterialTable
-//       title="Editable Example"
-//       columns={state.columns}
-//       data={state.data}
-//       editable={{
-//         onRowAdd: newData =>
-//           new Promise(resolve => {
-//             setTimeout(() => {
-//               resolve();
-//               setState(prevState => {
-//                 const data = [...prevState.data];
-//                 data.push(newData);
-//                 return { ...prevState, data };
-//               });
-//             }, 600);
-//           }),
-//         onRowUpdate: (newData, oldData) =>
-//           new Promise(resolve => {
-//             setTimeout(() => {
-//               resolve();
-//               if (oldData) {
-//                 setState(prevState => {
-//                   const data = [...prevState.data];
-//                   data[data.indexOf(oldData)] = newData;
-//                   return { ...prevState, data };
-//                 });
-//               }
-//             }, 600);
-//           }),
-//         onRowDelete: oldData =>
-//           new Promise(resolve => {
-//             setTimeout(() => {
-//               resolve();
-//               setState(prevState => {
-//                 const data = [...prevState.data];
-//                 data.splice(data.indexOf(oldData), 1);
-//                 return { ...prevState, data };
-//               });
-//             }, 600);
-//           })
-//       }}
-//     />
-//   );
-// }
