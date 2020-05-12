@@ -18,3 +18,13 @@ exports.getOneC = (req, res) => {
       res.status(500).json({ error: err.code });
     });
 }
+
+exports.getMyClosed = (req, res) => {
+    
+}
+
+exports.reopenProject = (req, res) => {
+    /**
+     * - Move project from closed to open collection
+     */
+}
