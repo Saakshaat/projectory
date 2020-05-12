@@ -127,42 +127,41 @@ exports.createUser = (req, res) => {
   };
 
   const credentials = req.body.credentials;
-  var stop = false;
-  db.collection("users")
-    .where("uid", "==", `"${user.uid}"`)
+
+  return db
+    .collection("users")
+    .where("uid", "==", user.uid)
     .get()
     .then((doc) => {
-      if(doc) return res.status(409).json({ error: `Profile already exists` });
-      else {
-        const batch = db.batch();
-  let userId = db.collection("users").doc();
-  //Creating new user object
-  batch.set(userId, user);
+      if (doc) return res.status(409).json({ error: `Profile already exists` });
+      const batch = db.batch();
+      let userId = db.collection("users").doc();
+      //Creating new user object
+      batch.set(userId, user);
 
-  userId = userId.path.split("/").pop();
-  //Linking user's ID to credentials and experience
+      userId = userId.path.split("/").pop();
+      //Linking user's ID to credentials and experience
 
-  credentials.user = userId;
-  experience.user = userId;
+      credentials.user = userId;
+      experience.user = userId;
 
-  //Creating new credentials
-  batch.set(db.collection("credentials").doc(), credentials);
+      //Creating new credentials
+      batch.set(db.collection("credentials").doc(), credentials);
 
-  //Creating new experience
-  batch.set(db.collection("experience").doc(), experience);
+      //Creating new experience
+      batch.set(db.collection("experience").doc(), experience);
 
-  return batch
-    .commit()
-    .then(function () {
-      return res.status(200).json({ user, experience, credentials });
+      return batch
+        .commit()
+        .then(function () {
+          return res.status(200).json({ user, experience, credentials });
+        })
+        .catch((err) => {
+          res.status(500).json({ error: `Error in committing batch. ${err}` });
+        });
     })
     .catch((err) => {
-      res.status(500).json({ error: `Error in committing batch. ${err}` });
-    });
-      }
-    })
-    .catch(err => {
-      return res.status(500).json({ error: `Error: ${err}. Contact support.` })
+      return res.status(500).json({ error: `Error: ${err}. Contact support.` });
     });
 };
 
