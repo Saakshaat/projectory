@@ -14,14 +14,14 @@ const {
   createUser,
   passwordReset,
   getOwnEntireProfile,
-} = require("./handlers/users");
+} = require("./handlers/users/users");
 
 const {
   getAllOpenProjects,
   createProject,
   getOneOpenProject,
   test,
-} = require("./handlers/projects");
+} = require("./handlers/projects/projects");
 
 const authenticate = require("./util/authenticate");
 
@@ -33,8 +33,6 @@ app.post("/signout", signout);
 app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
-
-app.get("/test", test);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials

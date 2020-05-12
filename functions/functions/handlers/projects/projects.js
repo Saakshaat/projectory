@@ -1,4 +1,4 @@
-const { db, admin } = require("../util/admin");
+const { db, admin } = require("../../util/admin");
 
 //get all projects
 exports.getAllOpenProjects = (req, res) => {
@@ -89,19 +89,5 @@ exports.createProject = (req, res) => {
       return res
         .status(500)
         .json({ error: `Error in creating project: ${err}` });
-    });
-};
-
-exports.test = (req, res) => {
-  return db
-    .collection('users')
-    .where('uid', '==', "0yap0ic0RpMDXUIUi5QRsM1uxUq2")
-    .get()
-    .then((doc) => {
-      if (doc) return res.json({ general: true });
-      else return res.json({ general: false });
-    })
-    .catch((err) => {
-      return res.status(500).json({ error: `Error: ${err}` });
     });
 };
