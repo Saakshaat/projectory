@@ -1,7 +1,27 @@
 const { db, admin } = require("../util/admin");
 
 //get all projects
-exports.getAllOpenProjects = (req, res) => {};
+exports.getAllOpenProjects = (req, res) => {
+  db.collection('open').get().then(data => {
+    let projects = [];
+
+    data.forEach(doc => {
+      projects.push({
+        creator: doc.data().creator,
+        createdAt: doc.data().createdAt,
+        description: doc.data().description,
+        github: doc.data().github,
+        name: doc.data().name,
+        interested: doc.data().interested,
+        needed: doc.data().needed,
+        team: doc.data().team,
+        user: doc.data().user
+      })
+    })
+
+    return res.status(200).json(projects);
+  })
+};
 
 //get a single open project
 exports.getOneOpenProject = (req, res) => {};

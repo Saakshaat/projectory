@@ -47,8 +47,8 @@ app.get("/test", test);
 
 //projects routes
 app.post("/project", authenticate, createProject);
-app.get("/projects", getAllOpenProjects);
-app.get("/project/:projectId", getOneOpenProject);
+app.get("/projects/open", getAllOpenProjects);
+app.get("/project/open/:projectId", getOneOpenProject);
 /**
  * - Mark self as interested (apply). Can't apply if creator.
  * - Get profiles for all interested (only if creator)
