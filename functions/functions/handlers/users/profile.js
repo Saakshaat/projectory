@@ -1,5 +1,11 @@
 const { db } = require("../../util/admin");
 
+/**
+ * Used for creating a user object when they sign up/in for the first time
+ * The user is redirected to this route right after signup or sign in.
+ * Client gets the complete credentials object from the first response.
+ * This route distributes the request object across different collections for sharding.
+ */
 exports.createProfile = (req, res) => {
   /**TODO: Validate request fields for if the data exists.
    *  Iterate through each field in the JSON obejct and pass to validateExists
