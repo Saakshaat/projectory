@@ -65,25 +65,45 @@ exports.create = (req, res) => {
     });
 };
 
-
 exports.getAllOpen = (req, res) => {
-    db.collection('open').get().then(data => {
-        let projects = [];
-    
-        data.forEach(doc => {
-          projects.push({
-            creator: doc.data().creator,
-            createdAt: doc.data().createdAt,
-            description: doc.data().description,
-            github: doc.data().github,
-            name: doc.data().name,
-            interested: doc.data().interested,
-            needed: doc.data().needed,
-            team: doc.data().team,
-            user: doc.data().user
-          })
-        })
-    
-        return res.status(200).json(projects);
-      })
-}
+  db.collection("open")
+    .get()
+    .then((data) => {
+      let projects = [];
+
+      data.forEach((doc) => {
+        projects.push({
+          creator: doc.data().creator,
+          createdAt: doc.data().createdAt,
+          description: doc.data().description,
+          github: doc.data().github,
+          name: doc.data().name,
+          interested: doc.data().interested,
+          needed: doc.data().needed,
+          team: doc.data().team,
+          user: doc.data().user,
+        });
+      });
+
+      return res.status(200).json(projects);
+    });
+};
+
+exports.getOne = (req, res) => {
+  let projectData = {};
+  return db
+    .doc(`/open/${req.params.projectId}`)
+    .get()
+    .then((doc) => {
+      if (!doc.exists) {
+        return res.status(404).json({ error: `Project not found` });
+      }
+      projectData = doc.data();
+      projectData.projectId = doc.id;
+      return res.status(200).json(projectData);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    });
+};

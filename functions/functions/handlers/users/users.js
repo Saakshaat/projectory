@@ -1,7 +1,7 @@
 const { admin, db } = require("../../util/admin");
 const config = require("../../util/config");
 const { validateSignup, validateLogin } = require("../../util/validators");
-const { showProfile } = require("./profile");
+const { showProfile, createProfile } = require("./profile");
 
 const firebase = require("firebase");
 firebase.initializeApp(config);
@@ -100,76 +100,7 @@ exports.emailSignup = (req, res) => {
  * This route distributes the request object across different collections for sharding.
  */
 exports.createUser = (req, res) => {
-  /**TODO: Validate request fields for if the data exists.
-   *  Iterate through each field in the JSON obejct and pass to validateExists
-   */
-
-  //creating objects for distributing across collections
-  const user = {
-    name: req.body.information.name,
-    institution: req.body.information.institution,
-    socials: {
-      github: req.body.information.socials.github,
-      linkedin: req.body.information.socials.linkedin,
-    },
-    bio: req.body.information.bio,
-    uid: req.body.uid,
-    projects_created: 0,
-    projects_selected: 0,
-  };
-
-  const skills = [];
-  req.body.experience.skills.forEach((skill) => {
-    skills.push(skill);
-  });
-
-  const experience = {
-    skills,
-  };
-
-  const credentials = req.body.credentials;
-
-  let stop = false;
-
-  db.collection("users")
-    .where("uid", "==", user.uid)
-    .get()
-    .then((doc) => {
-      if (doc.exists) stop = true;
-    })
-    .catch((err) => {
-      return res.status(500).json({ error: `Error: ${err}. Contact support.` });
-    });
-
-  //TODO: Validate duplication. If so, stop.
-  if (stop === true)
-    return res.status(409).json({ error: `Profile already exists` });
-
-  const batch = db.batch();
-  let userId = db.collection("users").doc();
-  //Creating new user object
-  batch.set(userId, user);
-
-  userId = userId.path.split("/").pop();
-  //Linking user's ID to credentials and experience
-
-  credentials.user = userId;
-  experience.user = userId;
-
-  //Creating new credentials
-  batch.set(db.collection("credentials").doc(), credentials);
-
-  //Creating new experience
-  batch.set(db.collection("experience").doc(), experience);
-
-  return batch
-    .commit()
-    .then(() => {
-      return res.status(200).json({ user, experience, credentials });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: `Error in committing batch. ${err}` });
-    });
+  return createProfile(req, res);
 };
 
 //Google Signin

@@ -21,6 +21,7 @@ const {
   getAllOpenProjects,
   createProject,
   getOneOpenProject,
+  getOneClosedProject
 } = require("./handlers/projects/projects");
 
 const authenticate = require("./util/authenticate");
@@ -48,6 +49,7 @@ app.get("/user/:userId/profile", getUserProfile);
 app.post("/project", authenticate, createProject);
 app.get("/projects/open", getAllOpenProjects);
 app.get("/project/open/:projectId", getOneOpenProject);
+app.get("/project/closed/:projectId", getOneClosedProject);
 /**
  * - Mark self as interested (apply). Can't apply if creator.
  * - Get profiles for all interested (only if creator)
