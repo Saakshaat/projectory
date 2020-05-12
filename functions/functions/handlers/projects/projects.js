@@ -1,5 +1,6 @@
 const { db } = require('../../util/admin')
-const { create, getAllOpen } = require('./open');
+const { create, getAllOpen, getOne } = require('./open');
+const { getOneC } = require('./closed');
 
 //get all projects
 exports.getAllOpenProjects = (req, res) => {
@@ -7,7 +8,14 @@ exports.getAllOpenProjects = (req, res) => {
 };
 
 //get a single open project
-exports.getOneOpenProject = (req, res) => {};
+exports.getOneOpenProject = (req, res) => {
+  return getOne(req, res);
+};
+
+//get a single closed project
+exports.getOneClosedProject = (req, res) => {
+  return getOneC(req, res);
+}
 
 //create a single project and move it to the 'open' collection
 exports.createProject = (req, res) => {
