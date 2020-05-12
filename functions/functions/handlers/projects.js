@@ -4,9 +4,7 @@ const { db, admin } = require("../util/admin");
 exports.getAllOpenProjects = (req, res) => {};
 
 //get a single open project
-exports.getOneOpenProject = (req, res) => {
-
-};
+exports.getOneOpenProject = (req, res) => {};
 
 //create a single project and move it to the 'open' collection
 exports.createProject = (req, res) => {
@@ -24,12 +22,12 @@ exports.createProject = (req, res) => {
     links: req.body.links,
     needed,
     interested: [],
-    team: []
+    team: [],
   };
 
-  db.collection('open')
-    .where('name', '==', project.name)
-    .where('user', '==', project.user)
+  db.collection("open")
+    .where("name", "==", project.name)
+    .where("user", "==", project.user)
     .get()
     .then((doc) => {
       if (doc.exists) {
@@ -37,34 +35,53 @@ exports.createProject = (req, res) => {
           .status(409)
           .json({ error: `You already have a project with that name` });
       }
-    }).catch(err => {
-        return res.status(500).json({ error: `Internal Server Error` });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: `Internal Server Error` });
     });
 
-    let projects = 0;
+  let projects = 0;
 
-    db.doc(`/users/${req.user.docId}`).get().then(user => {
-        projects = user.data().projects_created;
-    }).catch(err => {
-        return res.status(500).json({ error: `Error in accessing user` });
+  db.doc(`/users/${req.user.docId}`)
+    .get()
+    .then((user) => {
+      projects = user.data().projects_created;
     })
-    projects += 1;
-    const batch = db.batch();
+    .catch((err) => {
+      return res.status(500).json({ error: `Error in accessing user` });
+    });
+  projects += 1;
+  const batch = db.batch();
 
-    const projectRef = db.collection('open').doc();
+  const projectRef = db.collection("open").doc();
 
-    batch.set(projectRef, project);
-    batch.update(db.collection('users').doc(`/${req.user.docId}`), { projects_created: projects });
+  batch.set(projectRef, project);
+  batch.update(db.collection("users").doc(`/${req.user.docId}`), {
+    projects_created: projects,
+  });
 
-    return batch.commit().then(() => {
-        return res.status(200).json({ general: `Project created` });
+  return batch
+    .commit()
+    .then(() => {
+      return res.status(200).json({ general: `Project created` });
     })
-    .catch(err => {
-        return res.status(500).json({ error: `Error in creating project: ${err}` });
-    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Error in creating project: ${err}` });
+    });
 };
 
-
 exports.test = (req, res) => {
-    return res.status(200).json(req.user.docId);
-}
+  return db
+    .collection('users')
+    .where('uid', '==', "0yap0ic0RpMDXUIUi5QRsM1uxUq2")
+    .get()
+    .then((doc) => {
+      if (doc) return res.json({ general: true });
+      else return res.json({ general: false });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: `Error: ${err}` });
+    });
+};

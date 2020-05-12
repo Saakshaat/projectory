@@ -99,6 +99,10 @@ exports.emailSignup = (req, res) => {
  * This route distributes the request object across different collections for sharding.
  */
 exports.createUser = (req, res) => {
+  /**TODO: Validate request fields for if the data exists.
+   *  Iterate through each field in the JSON obejct and pass to validateExists
+   */
+
   //creating objects for distributing across collections
   const user = {
     name: req.body.information.name,
@@ -124,9 +128,15 @@ exports.createUser = (req, res) => {
 
   const credentials = req.body.credentials;
 
+  db.collection("users")
+    .where("uid", "==", user.uid)
+    .get()
+    .then((doc) => {
+      if (doc) return res.status(409).json({ error: `Profile already exists` });
+    });
+
   const batch = db.batch();
   let userId = db.collection("users").doc();
-
   //Creating new user object
   batch.set(userId, user);
 
@@ -183,130 +193,121 @@ exports.passwordReset = (req, res) => {
 };
 
 exports.getOwnEntireProfile = (req, res) => {
-  let profile = {}
+  let profile = {
+    information: {},
+    projects: {
+      projects_created: 0,
+      projects_selected: 0,
+    },
+    credentials: [],
+    experience: {
+      skills: [],
+    },
+  };
 
-  //populating user's information
-  db.doc(`/users/$req.user.docId}`)
+  const userRef = req.user.docId;
+
+  db.doc(`/users/${userRef}`)
     .get()
     .then((user) => {
       if (!user.exists) {
-        return res.status(403).json({ error: `User not found` });
+        return res.status(403).json({ error: `User not signed in` });
       } else {
-        profile.information = {
-          name: user.data().name,
-          bio: user.data().bio,
-          socials: user.data().socials,
-          institution: user.data().institution,
-        };
+        var userObj = user.data();
+        return db
+          .collection("credentials")
+          .where("user", "==", userRef)
+          .get()
+          .then((credentials) => {
+            var credentialsObj = [];
+            credentials.forEach((credential) => {
+              credentialsObj.push({
+                email: credential.data().email,
+                provider: credential.data().provider,
+                user: credential.data().user,
+                createdAt: credential.data().createdAt,
+              });
+            });
 
-        profile.projects = {
-          projects_created: user.data().projects_created,
-          projects_selected: user.data().projects_selected,
-        };
+            return db
+              .collection("open")
+              .where("user", "==", userRef)
+              .where("team", "array-contains", userRef)
+              .get()
+              .then((openProjects) => {
+                var openObj = openProjects.size;
+
+                return db
+                  .collection("closed")
+                  .where("user", "==", userRef)
+                  .where("team", "array-contains", userRef)
+                  .get()
+                  .then((closedProjects) => {
+                    var closedObj = closedProjects.size;
+
+                    return db
+                      .collection("experience")
+                      .where("user", "==", `"${userRef}"`)
+                      .get()
+                      .then((experience) => {
+                        if (!experience)
+                          return res.status(404).json({
+                            error: `Experience does not exist. Contact support`,
+                          });
+
+                        let skills = [];
+
+                        experience.docs[0].data().skills.forEach((skill) => {
+                          skills.push(skill);
+                        });
+
+                        profile.information = {
+                          name: userObj.name,
+                          bio: userObj.bio,
+                          socials: userObj.socials,
+                          institution: userObj.institution,
+                        };
+
+                        profile.projects = {
+                          projects_created: userObj.projects_created,
+                          projects_selected: userObj.projects_selected,
+                          open: openObj,
+                          closed: closedObj,
+                        };
+
+                        profile.experience.skills = skills;
+                        profile.credentials = credentialsObj;
+
+                        return res.status(200).json(profile);
+                      })
+                      .catch((err) => {
+                        return res.status(500).json({
+                          error: `Error in accessing experience. Error: ${err}`,
+                        });
+                      });
+                  })
+                  .catch((err) => {
+                    return res
+                      .status(500)
+                      .json({ error: `Error in accessing closed projects` });
+                  });
+              })
+              .catch((err) => {
+                return res
+                  .status(500)
+                  .json({ error: `Error in accessing open projects` });
+              });
+          })
+          .catch((err) => {
+            return res
+              .status(500)
+              .json({ error: `Error in accessing credentials. ${err}` });
+          });
       }
     })
     .catch((err) => {
-      return res.status(500).json({ error: `Error in accessing user` });
+      return res.status(500).json({ error: `Error in accessing user. ${err}` });
     });
-
-  // populating the user's experience
-  db.collection("experience")
-    .where("user", "==", req.user.docId)
-    .limit(1)
-    .get()
-    .then((experience) => {
-      experience.skills.forEach((skill) => {
-        profile.experience.skills.push(skill);
-      });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in accessing user's experience` });
-    });
-
-  var open = 0,
-    closed = 0;
-
-  //populating the user's projects (open and closed)
-  db.collection("open")
-    .where("user", "==", req.user.docId)
-    .get()
-    .then((projects) => {
-      projects.forEach((project) => {
-        open += 1;
-      });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in accessing open projects` });
-    });
-
-  db.collection("open")
-    .where("team", "array-contains", req.user.docId)
-    .get()
-    .then((projects) => {
-      projects.forEach((project) => {
-        open += 1;
-      });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in accessing open projects` });
-    });
-
-  db.collection("closed")
-    .where("user", "==", req.user.docId)
-    .get()
-    .then((projects) => {
-      projects.forEach((projects) => {
-        closed += 1;
-      });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in accessing closed projects` });
-    });
-
-  db.collection("closed")
-    .where("team", "array-contains", req.user.docId)
-    .get()
-    .then((projects) => {
-      projects.forEach((project) => {
-        closed += 1;
-      });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in accessing closed projects` });
-    });
-
-  profile.projects = {
-    open: open,
-    closed: closed,
-  };
-
-  //populating the user's credentials
-  profile.credentials = [];
-  db.collection("credentials")
-    .where("user", "==", req.user.docId)
-    .get()
-    .then((credentials) => {
-      credentials.forEach((credential) => {
-        profile.credentials.push(credential);
-      });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in accessing user's credentials` });
-    });
-
-  return res.status(200).json(profile);
 };
 
 exports.currentUser = currentUser;
