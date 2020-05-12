@@ -45,5 +45,5 @@ exports.validateLogin = (data) => {
 }
 
 exports.validateExists = (data) => {
-    
+    return isEmpty(data) ? false : true;
 }

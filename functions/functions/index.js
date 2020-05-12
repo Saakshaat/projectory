@@ -32,13 +32,15 @@ app.post("/create", createUser);
 app.post("/password_reset", passwordReset)
 app.get("/my/profile", authenticate, getOwnEntireProfile);
 
-app.get("/test", authenticate, test);
+app.get("/test", test);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
- * - Get all interested projects
- * - Get all closed projects
- *
+ * - Get all interested projects (/my/interested)
+ * - Get all owned projects (my/created)
+ * - Get all closed projects (my/closed)
+ * - Get all open projects (my/open)
+ * 
  */
 
 
