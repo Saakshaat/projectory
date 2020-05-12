@@ -93,16 +93,6 @@ exports.emailSignup = (req, res) => {
     });
 };
 
-/**
- * Used for creating a user object when they sign up/in for the first time
- * The user is redirected to this route right after signup or sign in.
- * Client gets the complete credentials object from the first response.
- * This route distributes the request object across different collections for sharding.
- */
-exports.createUser = (req, res) => {
-  return createProfile(req, res);
-};
-
 //Google Signin
 exports.googleSignin = (req, res) => {};
 
@@ -131,6 +121,16 @@ exports.passwordReset = (req, res) => {
         general: `Couldn't send reset link. Try to remember password`,
       });
     });
+};
+
+/**
+ * Used for creating a user object when they sign up/in for the first time
+ * The user is redirected to this route right after signup or sign in.
+ * Client gets the complete credentials object from the first response.
+ * This route distributes the request object across different collections for sharding.
+ */
+exports.createUser = (req, res) => {
+  return createProfile(req, res);
 };
 
 exports.getOwnEntireProfile = (req, res) => {
