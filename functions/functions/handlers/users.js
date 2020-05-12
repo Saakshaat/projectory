@@ -127,13 +127,15 @@ exports.createUser = (req, res) => {
   };
 
   const credentials = req.body.credentials;
-
+  var stop = false;
   db.collection("users")
-    .where("uid", "==", user.uid)
+    .where("uid", "==", `"${user.uid}"`)
     .get()
     .then((doc) => {
-      if (doc) return res.status(409).json({ error: `Profile already exists` });
+      if (doc) stop = true;
     });
+
+  if(stop) return res.status(409).json({ error: `Profile already exists` });
 
   const batch = db.batch();
   let userId = db.collection("users").doc();
@@ -247,7 +249,7 @@ exports.getOwnEntireProfile = (req, res) => {
 
                     return db
                       .collection("experience")
-                      .where("user", "==", `"${userRef}"`)
+                      .where("user", "==", userRef)
                       .get()
                       .then((experience) => {
                         if (!experience)
