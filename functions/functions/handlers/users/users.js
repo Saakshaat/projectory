@@ -207,4 +207,9 @@ exports.getOwnEntireProfile = (req, res) => {
   return showProfile(req, res);
 };
 
+exports.getUserProfile = (req, res) => {
+  req.body.userRef = req.params.userId;
+  return showProfile(req, res);
+};
+
 exports.currentUser = currentUser;
