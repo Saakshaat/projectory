@@ -14,13 +14,13 @@ const {
   createUser,
   passwordReset,
   getOwnEntireProfile,
+  getUserProfile,
 } = require("./handlers/users/users");
 
 const {
   getAllOpenProjects,
   createProject,
   getOneOpenProject,
-  test,
 } = require("./handlers/projects/projects");
 
 const authenticate = require("./util/authenticate");
@@ -33,6 +33,7 @@ app.post("/signout", signout);
 app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
+app.get("/user/:userId/profile", getUserProfile);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
@@ -54,42 +55,42 @@ app.get("/project/open/:projectId", getOneOpenProject);
  */
 
 exports.baseapi = functions.https.onRequest(app);
-exports.deleteUser =  functions.firestore
-.document("/users/{userId}")
-.onDelete((snapshot, context) => {
-  const userId = context.params.userId;
-  const batch = db.batch();
-  return db
-    .collection("credentials")
-    .where("user", "==", userId)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        batch.delete(db.doc(`/credentials/${doc.id}`));
-      });
-      return db.collection("experience").where("user", "==", userId).get();
-    })
-    .then((data) => {
-      data.forEach((doc) => {
-        batch.delete(db.doc(`/experience/${doc.id}`));
-      });
-      return db.collection("open").where("user", "==", userId).get();
-    })
-    .then((data) => {
-      data.forEach((doc) => {
-        batch.delete(db.doc(`/open/${doc.id}`));
-      });
+exports.deleteUser = functions.firestore
+  .document("/users/{userId}")
+  .onDelete((snapshot, context) => {
+    const userId = context.params.userId;
+    const batch = db.batch();
+    return db
+      .collection("credentials")
+      .where("user", "==", userId)
+      .get()
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/credentials/${doc.id}`));
+        });
+        return db.collection("experience").where("user", "==", userId).get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/experience/${doc.id}`));
+        });
+        return db.collection("open").where("user", "==", userId).get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/open/${doc.id}`));
+        });
 
-      return db.collection("closed").where("user", "==", userId).get();
-    })
-    .then((data) => {
-      data.forEach((doc) => {
-        batch.delete(db.doc(`/closed/${doc.id}`));
-      });
-      return batch.commit();
-    })
-    .catch((err) => console.error(err));
-});
+        return db.collection("closed").where("user", "==", userId).get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/closed/${doc.id}`));
+        });
+        return batch.commit();
+      })
+      .catch((err) => console.error(err));
+  });
 /**
  * Other APIs:
  * Deletion API:
