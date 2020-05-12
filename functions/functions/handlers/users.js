@@ -132,12 +132,9 @@ exports.createUser = (req, res) => {
     .where("uid", "==", `"${user.uid}"`)
     .get()
     .then((doc) => {
-      if (doc) stop = true;
-    });
-
-  if(stop) return res.status(409).json({ error: `Profile already exists` });
-
-  const batch = db.batch();
+      if(doc) return res.status(409).json({ error: `Profile already exists` });
+      else {
+        const batch = db.batch();
   let userId = db.collection("users").doc();
   //Creating new user object
   batch.set(userId, user);
@@ -161,6 +158,11 @@ exports.createUser = (req, res) => {
     })
     .catch((err) => {
       res.status(500).json({ error: `Error in committing batch. ${err}` });
+    });
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({ error: `Error: ${err}. Contact support.` })
     });
 };
 

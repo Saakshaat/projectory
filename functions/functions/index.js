@@ -56,49 +56,46 @@ app.get("/project/:projectId", getOneOpenProject);
  */
 
 exports.baseapi = functions.https.onRequest(app);
+exports.deleteUser =  functions.firestore
+.document("/users/{userId}")
+.onDelete((snapshot, context) => {
+  const userId = context.params.userId;
+  const batch = db.batch();
+  return db
+    .collection("credentials")
+    .where("user", "==", userId)
+    .get()
+    .then((data) => {
+      data.forEach((doc) => {
+        batch.delete(db.doc(`/credentials/${doc.id}`));
+      });
+      return db.collection("experience").where("user", "==", userId).get();
+    })
+    .then((data) => {
+      data.forEach((doc) => {
+        batch.delete(db.doc(`/experience/${doc.id}`));
+      });
+      return db.collection("open").where("user", "==", userId).get();
+    })
+    .then((data) => {
+      data.forEach((doc) => {
+        batch.delete(db.doc(`/open/${doc.id}`));
+      });
 
-exports.delete = functions.firestore
-  .document("/users/{userId}")
-  .onDelete((snapshot, context) => {
-    const userId = context.params.userId;
-    const batch = db.batch();
-    return db
-      .collection("credentials")
-      .where("user", "==", userId)
-      .get()
-      .then((data) => {
-        data.forEach((doc) => {
-          batch.delete(db.doc(`/credentials/${doc.id}`));
-        });
-        return db.collection("experience").where("user", "==", userId).get();
-      })
-      .then((data) => {
-        data.forEach((doc) => {
-          batch.delete(db.doc(`/experience/${doc.id}`));
-        });
-        return db.collection("open").where("user", "==", userId).get();
-      })
-      .then((data) => {
-        data.forEach((doc) => {
-          batch.delete(db.doc(`/open/${doc.id}`));
-        });
-
-        return db.collection("closed").where("user", "==", userId).get();
-      })
-      .then((data) => {
-        data.forEach((doc) => {
-          batch.delete(db.doc(`/closed/${doc.id}`));
-        });
-        return batch.commit();
-      })
-      .catch((err) => console.error(err));
-  });
-
+      return db.collection("closed").where("user", "==", userId).get();
+    })
+    .then((data) => {
+      data.forEach((doc) => {
+        batch.delete(db.doc(`/closed/${doc.id}`));
+      });
+      return batch.commit();
+    })
+    .catch((err) => console.error(err));
+});
 /**
  * Other APIs:
  * Deletion API:
  * - If the user deletes a project, send an email to interested/selected users. Remove it ƒrom the collection.
- * - If the user deletes their profile, delete all associated credentials, experience and projects objects. Should trigger project deletion mentioned above
  * Notifications API:
  * - Creator gets a push notification when someone applies for project.
  * - Intersted person gets a notification (and an email), when they get selected.
