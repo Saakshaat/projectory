@@ -36,12 +36,13 @@ exports.createProfile = (req, res) => {
 
   const credentials = req.body.credentials;
 
-  db.collection('users')
-    .where('uid', '==', `"${user.uid}"`)
-    .limit(1)
+  return db
+    .collection("users")
+    .where("uid", "==", req.body.uid)
     .get()
     .then((doc) => {
-      if (doc.exists) return res.status(409).json(doc);
+      if (doc.size > 0)
+        return res.status(409).json({ error: `Profile already exists.` });
       else {
         const batch = db.batch();
         let userId = db.collection("users").doc();
