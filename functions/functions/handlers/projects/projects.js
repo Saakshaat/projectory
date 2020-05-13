@@ -1,14 +1,6 @@
 const { db } = require("../../util/admin");
-const { create, getAllOpen, getOne } = require("./open");
+const { create, getAllOpen, getOne, getSkill } = require("./open");
 const { getOneC, getMyClosed, reopenProject } = require("./closed");
-const {
-  apply,
-  select,
-  showIntersted,
-  showTeam,
-  removeMember,
-  finalizeTeam,
-} = require("./applications");
 
 //get all projects
 exports.getAllOpenProjects = (req, res) => {
@@ -28,4 +20,8 @@ exports.getOneClosedProject = (req, res) => {
 //create a single project and move it to the 'open' collection
 exports.createProject = (req, res) => {
   return create(req, res);
+};
+
+exports.getAllWithSkill = (req, res) => {
+  return getSkill(req, res);
 };
