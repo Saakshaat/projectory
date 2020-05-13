@@ -18,7 +18,10 @@ export default class Create extends Component {
       name: "",
       institution: "",
       bio: "",
-      github: "",
+      //TODO check for valid github
+      github: "", 
+      
+      //TODO check for valid linkedin
       linkedin: "",
       skill: [],
       created: false,
@@ -27,11 +30,35 @@ export default class Create extends Component {
 
   handleSummitButton = (e) => {
     e.preventDefault();
-    let credentials = this.props.location.state.credentials;
-    let uid = this.props.location.state.uid;
-
+    //TODO don't use alert
+    if (this.state.name.length === 0) {
+      alert("Name should not be empty!");
+      return;
+    }
+    if (this.state.institution.length === 0) {
+      alert("Institution should not be empty!");
+      return;
+    }
+    if (this.state.bio.length === 0) {
+      alert("Bio should not be empty!");
+      return;
+    }
+    if (this.state.github.length === 0) {
+      alert("GitHub should not be empty!");
+      return;
+    }
+    if (this.state.linkedin.length === 0) {
+      alert("LinkedIn should not be empty!");
+      return;
+    }
+    if (this.state.skill.length === 0) {
+      alert("Skills should not be empty!");
+      return;
+    }
+    let credentials = this.props.location.state.credentials.credentials;
+    let uid = this.props.location.state.uid.uid;
     const request = {
-      uid,
+      uid: uid,
       credentials,
       information: {
         name: this.state.name,
@@ -46,14 +73,14 @@ export default class Create extends Component {
         skills: this.state.skill,
       },
     };
-
     axios
-      .post("/create", request)
+      .post("https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/create", request)
       .then((res) => {
         // TODO handle different type of request
         this.setState({ created: true });
         console.log(res);
       })
+      // TODO handle different type of errors
       .catch((err) => console.log(err));
   };
 
@@ -156,6 +183,7 @@ export default class Create extends Component {
                   renderTags={(tagValue, getTagProps) =>
                     tagValue.map((option, index) => (
                       <Chip
+                        variant="outlined"
                         label={option.name}
                         style={{ backgroundColor: option.color }}
                         {...getTagProps({ index })}

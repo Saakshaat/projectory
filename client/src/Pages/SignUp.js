@@ -5,9 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 
+import ErrorText from "../Components/ErrorText";
 import { Link, Redirect } from "react-router-dom";
 
-let credentials = "";
+let credentials = null;
 let uid = "";
 
 export default class SignUp extends Component {
@@ -18,6 +19,12 @@ export default class SignUp extends Component {
       password: "",
       confirmPassword: "",
       isLoggedIn: false,
+      hasEmptyEmail: false,
+      hasEmptyPassword: false,
+      hasEmptyComfirmPassword: false,
+      passwordDontMatch: false,
+      hasError: false,
+      errorText: "",
       hasCredential: null, // variable to check if data is fetch from the server or not
     };
   }
@@ -25,54 +32,92 @@ export default class SignUp extends Component {
   handleLoginButtonClick = (e) => {
     e.preventDefault();
 
+    if (this.state.hasEmptyEmail) return;
+    if (this.state.hasEmptyPassword) return;
+    if (this.state.hasEmptyComfirmPassword) return;
+    if (this.state.passwordDontMatch) return;
+
     axios
-      .post("/signup", {
-        email: this.state.email,
-        password: this.state.password,
-        confirmPassword: this.state.confirmPassword,
-      })
+      .post(
+        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/signup",
+        {
+          email: this.state.email,
+          password: this.state.password,
+          confirmPassword: this.state.confirmPassword,
+        }
+      )
       .then((res) => {
         // TODO handle different type of request
-
-        credentials = JSON.stringify(res.data.credentials);
+        credentials = res.data.credentials;
         uid = res.data.uid;
 
         localStorage.setItem("FBIdToken", res.data.token);
-        this.setState({
-          hasCredential: true,
-        });
+        this.setState({ hasCredential: true });
       })
-      .catch((e) => console.log(e));
+      .catch((err) => {
+        if (err.response.status === 400) {
+          if (err.response.data.email === "Must be valid") {
+            this.setState({
+              errorText: "Invalid email address.",
+            });
+          }
+        }
+        if (err.response.status === 500) {
+          if (
+            err.response.data.error ===
+            "Error with creating account. Error: The email address is already in use by another account."
+          ) {
+            this.setState({
+              errorText:
+                "The email address is already in use by another account.",
+            });
+          }
+        }
+        this.setState({ hasError: true });
+      });
   };
 
   handleGoogleSignInClick = (e) => {
     e.preventDefault();
     console.log("Signing in with Google...");
     axios
-      .post("/google/signin")
+      .post(
+        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/google/signin"
+      )
       .then((res) => {
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });
       })
-      .catch((e) => console.log(e));
+      .catch((err) => {
+        console.log(err.status);
+      });
   };
-
+  //TODO check if Email is valid
   handleTextEmailChange = (e) => {
-    this.setState({
-      email: e.target.value,
-    });
+    this.setState({ email: e.target.value });
+    if (e.target.value.length === 0) this.setState({ hasEmptyEmail: true });
+    else this.setState({ hasEmptyEmail: false });
   };
 
+  //TODO check if Password is strong
   handleTextPasswordChange = (e) => {
-    this.setState({
-      password: e.target.value,
-    });
+    this.setState({ password: e.target.value });
+    if (e.target.value.length === 0) this.setState({ hasEmptyPassword: true });
+    else this.setState({ hasEmptyPassword: false });
+    if (e.target.value === this.state.confirmPassword)
+      this.setState({ passwordDontMatch: false });
+    else this.setState({ passwordDontMatch: true });
   };
 
   handleTextConfirmPasswordChange = (e) => {
-    this.setState({
-      confirmPassword: e.target.value,
-    });
+    this.setState({ confirmPassword: e.target.value });
+    if (e.target.value.length === 0)
+      this.setState({ hasEmptyComfirmPassword: true });
+    else this.setState({ hasEmptyComfirmPassword: false });
+
+    if (e.target.value === this.state.password)
+      this.setState({ passwordDontMatch: false });
+    else this.setState({ passwordDontMatch: true });
   };
 
   render() {
@@ -107,6 +152,15 @@ export default class SignUp extends Component {
                   autoComplete="email"
                 />
               </Grid>
+
+              {this.state.hasEmptyEmail ? (
+                <Grid item xs={12}>
+                  <ErrorText text="Email must not be empty" />
+                </Grid>
+              ) : (
+                <div />
+              )}
+
               <Grid item xs={12}>
                 <TextField
                   label="Password"
@@ -119,7 +173,13 @@ export default class SignUp extends Component {
                   autoComplete="current-password"
                 />
               </Grid>
-
+              {this.state.hasEmptyPassword ? (
+                <Grid item xs={12}>
+                  <ErrorText text="Password must not be empty" />
+                </Grid>
+              ) : (
+                <div />
+              )}
               <Grid item xs={12}>
                 <TextField
                   label="Confirm Password"
@@ -132,6 +192,20 @@ export default class SignUp extends Component {
                   autoComplete="current-password"
                 />
               </Grid>
+              {this.state.passwordDontMatch ? (
+                <Grid item xs={12}>
+                  <ErrorText text="Passwords don't match" />
+                </Grid>
+              ) : (
+                <div />
+              )}
+              {this.state.hasError ? (
+                <Grid item xs={12}>
+                  <ErrorText text={this.state.errorText} />
+                </Grid>
+              ) : (
+                <div />
+              )}
               <Grid item xs={12}>
                 <Button
                   type="submit"
@@ -157,7 +231,7 @@ export default class SignUp extends Component {
             <Grid container justify="flex-end">
               <Grid item>
                 <Link
-                  to="/signin"
+                  to="/"
                   style={{ color: "primary", textDecoration: "none" }}
                 >
                   <Typography>Already have an account? Sign in</Typography>

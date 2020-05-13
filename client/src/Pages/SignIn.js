@@ -20,18 +20,39 @@ export default class SignIn extends Component {
   // Handlle submit button
   handleLoginButtonClick = (e) => {
     e.preventDefault();
+    //TODO don't use alert
+    if (this.state.email.length === 0) {
+      alert("Email should not be empty!");
+      return;
+    }
+    if (this.state.password.length === 0) {
+      alert("Password should not be empty!");
+      return;
+    }
     console.log("Signing in...");
     axios
-      .post("/login", {
-        email: this.state.email,
-        password: this.state.password,
-      })
+      .post(
+        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/login",
+        {
+          email: this.state.email,
+          password: this.state.password,
+        }
+      )
       .then((res) => {
         // TODO handle multiple request
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });
       })
-      .catch((e) => console.log(e));
+      .catch((err) => {
+        // console.log(err.response)
+        if (err.response.status === 400) {
+          if (err.response.data.email === "Must be valid")
+            alert("Invalid Email");
+        }
+        if (err.response.status === 403) {
+          alert(err.response.data.general);
+        }
+      });
   };
 
   // TODO fully implement this later
@@ -39,14 +60,16 @@ export default class SignIn extends Component {
     e.preventDefault();
     console.log("Signing in with Google...");
     axios
-      .post("/google/signin")
+      .post(
+        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/google/signin"
+      )
       .then((res) => {
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });
       })
       .catch((e) => console.log(e));
   };
-  
+
   handleTextEmailChange = (e) => {
     this.setState({
       email: e.target.value,
@@ -58,7 +81,7 @@ export default class SignIn extends Component {
       password: e.target.value,
     });
   };
-
+  //TODO add "Remember Me" option
   render() {
     // Already isLoggedIn user get to the user page
     if (this.state.isLoggedIn) {

@@ -4,6 +4,8 @@ import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import User from "./Pages/User";
 import Create from "./Pages/Create";
+import Profile from "./Pages/Profile";
+import OtherProfile from "./Pages/OtherProfile";
 
 export default function WireFrame() {
   return (
@@ -11,9 +13,11 @@ export default function WireFrame() {
       <div>
         <Switch>
           <Route exact path="/create" component={Create} />
+          <Route exact path="/my/profile/" component={Profile} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/user" component={User} />
-          <Route exact path="/"  component={SignIn} />
+          <Route exact path="/" component={SignIn} />
+          <Route path="/user/:userId/profile" component={OtherProfile} />
         </Switch>
       </div>
     </Router>
