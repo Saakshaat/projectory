@@ -44,7 +44,7 @@ export default class User extends Component {
             <Button>My Profile</Button>
           </Link>
           <Button onClick={this.handleClick}>Logout</Button>
-          <Link to>Saakshaat Awesome Profile</Button>
+          {/* <Link to>Saakshaat Awesome Profile</Button> */}
           {/* TODO implement this latter */}
           {/* <Button onClick={this.handleShowProject}>Show project</Button> */}
         </div>
