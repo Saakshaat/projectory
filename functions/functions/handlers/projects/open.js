@@ -77,6 +77,7 @@ exports.getAllOpen = (req, res) => {
           createdAt: doc.data().createdAt,
           description: doc.data().description,
           github: doc.data().github,
+          links: doc.data().links,
           name: doc.data().name,
           interested: doc.data().interested,
           needed: doc.data().needed,
@@ -105,5 +106,34 @@ exports.getOne = (req, res) => {
     .catch((err) => {
       console.error(err);
       res.status(500).json({ error: err.code });
+    });
+};
+
+exports.getSkill = (req, res) => {
+
+  var resProjects = [];
+  db.collection("open")
+    .where("needed", 'array-contains', req.params.skill)
+    .get()
+    .then((projects) => {
+      projects.forEach(doc => {
+        resProjects.push({
+          creator: doc.data().creator,
+          createdAt: doc.data().createdAt,
+          description: doc.data().description,
+          github: doc.data().github,
+          links: doc.data().links,
+          name: doc.data().name,
+          interested: doc.data().interested,
+          needed: doc.data().needed,
+          team: doc.data().team,
+          user: doc.data().user
+        })
+      })
+
+      return res.status(200).json(resProjects);
+    })
+    .catch(err => {
+      return res.status(500).json({ error: `Error accessing projects` })
     });
 };

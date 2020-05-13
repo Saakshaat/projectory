@@ -36,48 +36,46 @@ exports.createProfile = (req, res) => {
 
   const credentials = req.body.credentials;
 
-  let stop = false;
-
-  db.collection("users")
-    .where("uid", "==", user.uid)
+  db.collection('users')
+    .where('uid', '==', `"${user.uid}"`)
+    .limit(1)
     .get()
     .then((doc) => {
-      if (doc.exists) stop = true;
+      if (doc.exists) return res.status(409).json(doc);
+      else {
+        const batch = db.batch();
+        let userId = db.collection("users").doc();
+        //Creating new user object
+        batch.set(userId, user);
+
+        userId = userId.path.split("/").pop();
+
+        //Linking user's ID to credentials and experience
+        credentials.user = userId;
+        experience.user = userId;
+
+        //Creating new credentials
+        batch.set(db.collection("credentials").doc(), credentials);
+
+        //Creating new experience
+        batch.set(db.collection("experience").doc(), experience);
+
+        return batch
+          .commit()
+          .then(() => {
+            return res.status(200).json({ user, experience, credentials });
+          })
+          .catch((err) => {
+            res
+              .status(500)
+              .json({ error: `Error in committing batch. ${err}` });
+          });
+      }
     })
     .catch((err) => {
       return res.status(500).json({ error: `Error: ${err}. Contact support.` });
     });
-
-  //TODO: Validate duplication. If so, stop.
-  if (stop === true)
-    return res.status(409).json({ error: `Profile already exists` });
-
-  const batch = db.batch();
-  let userId = db.collection("users").doc();
-  //Creating new user object
-  batch.set(userId, user);
-
-  userId = userId.path.split("/").pop();
-  //Linking user's ID to credentials and experience
-
-  credentials.user = userId;
-  experience.user = userId;
-
-  //Creating new credentials
-  batch.set(db.collection("credentials").doc(), credentials);
-
-  //Creating new experience
-  batch.set(db.collection("experience").doc(), experience);
-
-  return batch
-    .commit()
-    .then(() => {
-      return res.status(200).json({ user, experience, credentials });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: `Error in committing batch. ${err}` });
-    });
-}
+};
 
 exports.showProfile = (req, res) => {
   let profile = {

@@ -21,7 +21,8 @@ const {
   getAllOpenProjects,
   createProject,
   getOneOpenProject,
-  getOneClosedProject
+  getOneClosedProject,
+  getAllWithSkill
 } = require("./handlers/projects/projects");
 
 const authenticate = require("./util/authenticate");
@@ -50,6 +51,7 @@ app.post("/project", authenticate, createProject);
 app.get("/projects/open", getAllOpenProjects);
 app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
+app.get('/projects/open/skills/:skill', getAllWithSkill);
 /**
  * - Mark self as interested (apply). Can't apply if creator.
  * - Get profiles for all interested (only if creator)
@@ -96,7 +98,7 @@ exports.deleteUser = functions.firestore
 /**
  * Other APIs:
  * Deletion API:
- * - If the user deletes a project, send an email to interested/selected users. Remove it ƒrom the collection.
+ * - If the user deletes a project, send an email to interested/selected users and owner. Remove it ƒrom the collection.
  * Notifications API:
  * - Creator gets a push notification when someone applies for project.
  * - Intersted person gets a notification (and an email), when they get selected.
