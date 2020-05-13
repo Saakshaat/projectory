@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import { Redirect } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 export default class User extends Component {
   constructor() {
@@ -33,16 +33,21 @@ export default class User extends Component {
   //     .catch((e) => console.log(e));
   // };
 
+  //TODO move this to dashboard
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else
-    return (
-      <div>
-        <div>User Logged In!</div>
-        <Button onClick={this.handleClick}>Logout</Button>
-        {/* TODO implement this latter */}
-        {/* <Button onClick={this.handleShowProject}>Show project</Button> */}
-      </div>
-    );
+      return (
+        <div>
+          <div>User Logged In!</div>
+          <Link to="/my/profile" style={{ textDecoration: "none" }}>
+            <Button>My Profile</Button>
+          </Link>
+          <Button onClick={this.handleClick}>Logout</Button>
+          {/* <Link to>Saakshaat Awesome Profile</Button> */}
+          {/* TODO implement this latter */}
+          {/* <Button onClick={this.handleShowProject}>Show project</Button> */}
+        </div>
+      );
   }
 }
