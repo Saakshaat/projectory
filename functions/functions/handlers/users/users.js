@@ -1,8 +1,3 @@
-const {
-  validateSignup,
-  validateLogin,
-  validateExists,
-} = require("../../util/validators");
 const { showProfile, createProfile } = require("./profile");
 const {
   emailLogin,

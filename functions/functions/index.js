@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const app = require("express")();
+const app  = require("express")();
 
 const cors = require("cors");
 app.use(cors());
@@ -25,13 +25,17 @@ const {
   getAllWithSkill
 } = require("./handlers/projects/projects");
 
+const {
+    apply
+} = require('./handlers/applications/applications');
+
 const authenticate = require("./util/authenticate");
 
 //users routes
 app.post("/signup", emailSignup);
 app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
-app.post("/signout", signout);
+app.post("/signout", authenticate, signout);
 app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
@@ -39,11 +43,6 @@ app.get("/user/:userId/profile", getUserProfile);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
- * - Get all interested projects (/my/interested)
- * - Get all owned projects (my/created)
- * - Get all closed projects (my/closed)
- * - Get all open projects (my/open)
- *
  */
 
 //projects routes
@@ -53,12 +52,24 @@ app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
 app.get('/projects/open/skills/:skill', getAllWithSkill);
 /**
+ * - Get all closed projects ('/my/closed')
+ * - Get all open projects ('/my/open')
+ * - My teams
+ */
+
+//applications routes
+app.post('/apply/:projectId', authenticate, apply);
+
+/**
  * - Mark self as interested (apply). Can't apply if creator.
  * - Get profiles for all interested (only if creator)
- * - Get all projects that have a certain technology in the 'needed' field (for client filter with technologies)
+ * - Get all interested projects (/my/interested)
+ * - Get all owned projects (my/created)
  */
 
 exports.baseapi = functions.https.onRequest(app);
+exports.applications = functions.https.onRequest(app);
+
 exports.deleteUser = functions.firestore
   .document("/users/{userId}")
   .onDelete((snapshot, context) => {
