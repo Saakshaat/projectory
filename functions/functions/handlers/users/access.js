@@ -7,6 +7,11 @@ firebase.initializeApp(config);
 const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
+const {
+  validateSignup,
+  validateLogin,
+  validateExists,
+} = require("../../util/validators");
 
 //Email Login
 exports.emailLogin = (req, res) => {
