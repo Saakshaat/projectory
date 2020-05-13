@@ -31,13 +31,10 @@ export default class SignIn extends Component {
     }
     console.log("Signing in...");
     axios
-      .post(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/login",
-        {
-          email: this.state.email,
-          password: this.state.password,
-        }
-      )
+      .post("/baseapi/login", {
+        email: this.state.email,
+        password: this.state.password,
+      })
       .then((res) => {
         // TODO handle multiple request
         localStorage.setItem("FBIdToken", res.data.token);

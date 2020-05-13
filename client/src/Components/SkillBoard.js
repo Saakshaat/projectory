@@ -15,8 +15,8 @@ export default class SkillBoard extends Component {
     return (
       <TableRow>
         {this.state.skillsList.map((skill) => (
-          <TableCell>
-            <SkillChip skill={skill} key={skill} />
+          <TableCell key={skill}>
+            <SkillChip skill={skill} />
           </TableCell>
         ))}
       </TableRow>
