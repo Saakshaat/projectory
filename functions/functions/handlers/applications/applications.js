@@ -1,4 +1,5 @@
 const { db } = require("../../util/admin");
+const { showMultipleProfiles } = require("../users/profile");
 
 exports.apply = (req, res) => {
   /**
@@ -52,6 +53,29 @@ exports.showInterested = (req, res) => {
    * - traverse through the chosen project's interested array and return entire user objects
    * - Client should have a seperate component for small snapshots of the user object
    */
+  return db
+    .doc(`/open/${req.params.projectId}`)
+    .get()
+    .then((project) => {
+      if (!project.exists) {
+        return res.status(404).json({ error: `Project not found` });
+      } else if (project.data().user !== req.user.docId) {
+        return res.status(403).json({ error: `You're not the project owner` });
+      } else if (
+        project.data().interested == undefined ||
+        project.data().interested.length === 0
+      ) {
+        return res
+          .status(200)
+          .json({ general: `No one has applied yet. Hold tight!` });
+      } else {
+        req.body.users = project.data().interested;
+        return showMultipleProfiles(req, res);
+      }
+    })
+    .catch(err => {
+        return res.status(500).json({ error: `Internal Server Error. ${err.code}` })
+    })
 };
 
 exports.select = (req, res) => {
@@ -62,7 +86,7 @@ exports.select = (req, res) => {
    */
 };
 
-exports.showTeam = (req, res) => {
+exports.showTeam = (req, res, showMultipleProfiles) => {
   /**
    * - go through project's team array
    * - return entire user objects as response
