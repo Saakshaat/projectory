@@ -13,5 +13,6 @@ module.exports = [
   { name: "Ruby on Rails", color: "#4DBDFC" },
   { name: "Github", color: "#0366d6" },
   { name: "JavaScript", color: "#ffd33d" },
+  { name: "Express.js", color: "#4AD3BB" },
 
 ];

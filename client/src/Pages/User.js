@@ -49,7 +49,7 @@ export default class User extends Component {
           <Link
             style={{ textDecoration: "none" }}
             to={{
-              pathname: "/user/" + `${userId}` + "/profile",
+              pathname: `/user/${userId}/profile`,
             }}
           >
             Saakshaat Awesome Profile
