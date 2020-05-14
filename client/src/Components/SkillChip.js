@@ -22,10 +22,20 @@ export default class SkillChip extends Component {
   render() {
     return (
       <Chip
+        size='small'
         label={this.state.name}
-        style={{ backgroundColor: this.state.color }}
+        style={{ margin: 5, borderColor: this.state.color, color: this.state.color }}
         key={this.state.name}
+        clickable
+        variant='outlined'
       />
     );
   }
 }
+
+// font-family: Roboto;
+// font-style: normal;
+// font-weight: bold;
+// font-size: 18px;
+// line-height: 21px;
+// text-align: center;

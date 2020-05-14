@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TableRow, TableCell } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 
 import SkillChip from "../Components/SkillChip";
 
@@ -13,13 +13,20 @@ export default class SkillBoard extends Component {
 
   render() {
     return (
-      <TableRow>
-        {this.state.skillsList.map((skill) => (
-          <TableCell key={skill}>
-            <SkillChip skill={skill} />
-          </TableCell>
-        ))}
-      </TableRow>
+      <div>
+        <Container
+          style={{
+            display: "flex",
+            justifyItems: "start",
+            alignItems: "left",
+            flexWrap: "wrap",
+          }}
+        >
+          {this.state.skillsList.map((skill, index) => (
+            <SkillChip skill={skill} key={skill} />
+          ))}
+        </Container>
+      </div>
     );
   }
 }
