@@ -4,7 +4,6 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
-import { Grid, GridItem } from "@material-ui/core";
 import SkillBoard from "../Components/SkillBoard";
 export default class Profile extends Component {
   constructor(props) {
@@ -23,14 +22,11 @@ export default class Profile extends Component {
 
   getProfilePage() {
     axios
-      .get(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/my/profile",
-        {
-          headers: {
-            Authorization: localStorage.FBIdToken,
-          },
-        }
-      )
+      .get("/baseapi/my/profile", {
+        headers: {
+          Authorization: localStorage.FBIdToken,
+        },
+      })
       .then((res) => {
         // TODO handle different type of request
         this.setState({

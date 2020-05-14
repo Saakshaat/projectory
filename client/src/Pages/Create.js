@@ -74,7 +74,7 @@ export default class Create extends Component {
       },
     };
     axios
-      .post("https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/create", request)
+      .post("/baseapi/create", request)
       .then((res) => {
         // TODO handle different type of request
         this.setState({ created: true });
