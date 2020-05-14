@@ -26,7 +26,8 @@ const {
 } = require("./handlers/projects/projects");
 
 const {
-    apply
+    apply,
+    showInterested
 } = require('./handlers/applications/applications');
 
 const authenticate = require("./util/authenticate");
@@ -59,7 +60,7 @@ app.get('/projects/open/skills/:skill', getAllWithSkill);
 
 //applications routes
 app.post('/apply/:projectId', authenticate, apply);
-
+app.get('/interested/:projectId', authenticate, showInterested);
 /**
  * - Mark self as interested (apply). Can't apply if creator.
  * - Get profiles for all interested (only if creator)
@@ -70,6 +71,7 @@ app.post('/apply/:projectId', authenticate, apply);
 exports.baseapi = functions.https.onRequest(app);
 exports.applications = functions.https.onRequest(app);
 
+//TODO: Also do delete the user's doc reference from the `interested` and `team` field in a project
 exports.deleteUser = functions.firestore
   .document("/users/{userId}")
   .onDelete((snapshot, context) => {

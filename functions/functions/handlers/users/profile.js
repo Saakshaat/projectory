@@ -179,3 +179,28 @@ exports.showProfile = (req, res) => {
         .json({ error: `Internal Error. Try again. Error: ${err.code}` });
     });
 };
+
+exports.showMultipleProfiles = (req, res) => {
+  const applicants = [];
+  req.body.users.forEach(function(part, index) {
+    this[index] = db.doc(`/users/${this[index]}`);
+  }, req.body.users);
+
+  db.getAll(...req.body.users).then(doc => {
+    doc.forEach(data => {
+      applicants.push({
+        name: data.data().name,
+        institution: data.data().institution,
+        bio: data.data().bio,
+        socials: data.data().socials,
+        projects_created: data.data().projects_created,
+        projects_selected: data.data().projects_selected
+      });
+    })
+
+    return res.status(200).json(applicants);
+  })
+  .catch(err => {
+    return res.status(500).json({ error : `Internal Server Error: ${err.code}` });
+  })
+}
