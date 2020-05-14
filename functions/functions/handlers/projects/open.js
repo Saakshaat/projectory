@@ -18,50 +18,49 @@ exports.create = (req, res) => {
     team: [],
   };
 
-  db.collection("open")
+  return db.collection("open")
     .where("name", "==", project.name)
     .where("user", "==", project.user)
     .get()
     .then((doc) => {
-      if (doc.exists) {
+      if (doc.size > 0) {
         return res
           .status(409)
           .json({ error: `You already have a project with that name` });
+      } else {
+        return db.doc(`/users/${project.user}`).get();
       }
     })
-    .catch((err) => {
-      return res.status(500).json({ error: `Internal Server Error` });
-    });
-
-  let projects = 0;
-
-  db.doc(`/users/${req.user.docId}`)
-    .get()
     .then((user) => {
+      let projects = 0;
+
       projects = user.data().projects_created;
+      projects++;
+      const batch = db.batch();
+
+      const projectRef = db.collection("open").doc();
+
+      batch.set(projectRef, project);
+      batch.update(db.collection("users").doc(`/${req.user.docId}`), {
+        projects_created: projects,
+      });
+
+      return batch
+        .commit()
+        .then(() => {
+          return res.status(200).json({ general: `Project created` });
+        })
+        .catch((err) => {
+          return res
+            .status(500)
+            .json({ error: `Error in creating project: ${err}` });
+        });
     })
     .catch((err) => {
       return res.status(500).json({ error: `Error in accessing user` });
-    });
-  projects += 1;
-  const batch = db.batch();
-
-  const projectRef = db.collection("open").doc();
-
-  batch.set(projectRef, project);
-  batch.update(db.collection("users").doc(`/${req.user.docId}`), {
-    projects_created: projects,
-  });
-
-  return batch
-    .commit()
-    .then(() => {
-      return res.status(200).json({ general: `Project created` });
     })
     .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Error in creating project: ${err}` });
+      return res.status(500).json({ error: `Internal Server Error` });
     });
 };
 
@@ -110,13 +109,12 @@ exports.getOne = (req, res) => {
 };
 
 exports.getSkill = (req, res) => {
-
   var resProjects = [];
   db.collection("open")
-    .where("needed", 'array-contains', req.params.skill)
+    .where("needed", "array-contains", req.params.skill)
     .get()
     .then((projects) => {
-      projects.forEach(doc => {
+      projects.forEach((doc) => {
         resProjects.push({
           creator: doc.data().creator,
           createdAt: doc.data().createdAt,
@@ -127,13 +125,13 @@ exports.getSkill = (req, res) => {
           interested: doc.data().interested,
           needed: doc.data().needed,
           team: doc.data().team,
-          user: doc.data().user
-        })
-      })
+          user: doc.data().user,
+        });
+      });
 
       return res.status(200).json(resProjects);
     })
-    .catch(err => {
-      return res.status(500).json({ error: `Error accessing projects` })
+    .catch((err) => {
+      return res.status(500).json({ error: `Error accessing projects` });
     });
 };
