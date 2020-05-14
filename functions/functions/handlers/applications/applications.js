@@ -17,7 +17,10 @@ exports.apply = (req, res) => {
         return res
           .status(400)
           .json({ error: `You cannot apply to your own project` });
-      } else if (project.data().interested.length > 0 && project.data().interested.prototype.indexOf(req.user.docId) > -1) {
+      } else if (
+        project.data().interested.length > 0 &&
+        project.data().interested.includes(req.user.docId)
+      ) {
         return res
           .status(400)
           .json({ error: `You've already applied to this project` });
@@ -26,17 +29,21 @@ exports.apply = (req, res) => {
         interested.push(req.user.docId);
 
         return projRef
-          .update({interested: interested})
+          .update({ interested: interested })
           .then(() => {
             return res.status(200).json({ general: `Applied successfully` });
           })
           .catch((err) => {
-            return res.status(500).json({ error: `Internal Server Error: ${err.code}` });
+            return res
+              .status(500)
+              .json({ error: `Internal Server Error: ${err.code}` });
           });
       }
     })
     .catch((err) => {
-      return res.status(500).json({ error: `Internal Server Error${err.code}` });
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error${err.code}` });
     });
 };
 
