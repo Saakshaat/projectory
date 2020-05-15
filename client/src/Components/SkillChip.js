@@ -8,7 +8,7 @@ export default class SkillChip extends Component {
     super(props);
     this.state = {
       name: props.skill,
-      color: null,
+      color: null
     };
     //TODO impove searching process
     for (let i = 0; i < skills.length; i++) {
@@ -22,9 +22,12 @@ export default class SkillChip extends Component {
   render() {
     return (
       <Chip
+        size='small'
         label={this.state.name}
-        style={{ backgroundColor: this.state.color }}
+        style={{ margin: 5, borderColor: this.state.color, color: this.state.color }}
         key={this.state.name}
+        clickable
+        variant='outlined'
       />
     );
   }
