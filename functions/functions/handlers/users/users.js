@@ -1,4 +1,10 @@
-const { showProfile, createProfile } = require("./profile");
+const {
+  showProfile,
+  createProfile,
+  setProfileImage,
+  addResume,
+  getResume
+} = require("./profile");
 const {
   emailLogin,
   emailSignup,
@@ -40,3 +46,15 @@ exports.getUserProfile = (req, res) => {
   req.body.userRef = req.params.userId;
   return showProfile(req, res);
 };
+
+exports.setProfileImage = (req, res) => {
+  return setProfileImage(req, res);
+};
+
+exports.addResume = (req, res) => {
+  return addResume(req, res);
+};
+
+exports.getResume = (req, res) => {
+  return getResume(req, res);
+}
