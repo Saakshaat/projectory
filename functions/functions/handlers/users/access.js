@@ -8,7 +8,7 @@ const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 const {
-  validateSignup,
+  validateSignup, 
   validateLogin,
   validateExists,
 } = require("../../util/validators");

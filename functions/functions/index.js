@@ -62,8 +62,7 @@ app.get('/projects/open/skills/:skill', getAllWithSkill);
 app.post('/apply/:projectId', authenticate, apply);
 app.get('/interested/:projectId', authenticate, showInterested);
 /**
- * - Mark self as interested (apply). Can't apply if creator.
- * - Get profiles for all interested (only if creator)
+ * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  * - Get all interested projects (/my/interested)
  * - Get all owned projects (my/created)
  */
