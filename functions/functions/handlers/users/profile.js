@@ -1,4 +1,10 @@
-const { db } = require("../../util/admin");
+const { db, admin } = require("../../util/admin");
+const config = require("../../util/config");
+
+const BusBoy = require("busboy");
+const path = require("path");
+const os = require("os");
+const fs = require("fs");
 
 /**
  * Used for creating a user object when they sign up/in for the first time
@@ -25,6 +31,7 @@ exports.createProfile = (req, res) => {
     uid: req.body.uid,
     projects_created: 0,
     projects_selected: 0,
+    imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
   };
 
   const topSkills = [];
@@ -164,6 +171,7 @@ exports.showProfile = (req, res) => {
         bio: userObj.bio,
         socials: userObj.socials,
         institution: userObj.institution,
+        imageUrl: userObj.imageUrl,
       };
 
       profile.projects = {
@@ -178,7 +186,7 @@ exports.showProfile = (req, res) => {
           top,
           other,
         },
-        headline: experience.docs[0].headline,
+        headline: experience.docs[0].data().headline,
       };
       profile.credentials = credentialsObj;
 
@@ -191,6 +199,105 @@ exports.showProfile = (req, res) => {
     });
 };
 
+exports.setProfileImage = (req, res) => {
+  const busboy = new BusBoy({ headers: req.headers });
+
+  let fileName;
+  let fileToBeUploaded = {};
+
+  busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+    console.log(fieldname, file, filename, encoding, mimetype);
+    if (mimetype !== "image/jpeg" && mimetype !== "image/png") {
+      return res.status(400).json({ error: "Wrong file type submitted" });
+    }
+    const imageExtension = filename.split(".")[filename.split(".").length - 1];
+    // 32756238461724837.png
+    fileName = `${Math.round(
+      Math.random() * 1000000000000
+    ).toString()}.${imageExtension}`;
+    const filepath = path.join(os.tmpdir(), fileName);
+    fileToBeUploaded = { filepath, mimetype };
+    file.pipe(fs.createWriteStream(filepath));
+  });
+  busboy.on("finish", () => {
+    admin
+      .storage()
+      .bucket()
+      .upload(fileToBeUploaded.filepath, {
+        resumable: false,
+        destination: `images/${req.user.docId}`,
+        metadata: {
+          metadata: {
+            contentType: fileToBeUploaded.mimetype,
+          },
+        },
+      })
+      .then(() => {
+        const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${fileName}?alt=media`;
+        return db.doc(`/users/${req.user.docId}`).update({ imageUrl });
+      })
+      .then(() => {
+        return res.json({ general: "image uploaded successfully" });
+      })
+      .catch((err) => {
+        console.error(err);
+        return res.status(500).json({ error: "something went wrong" });
+      });
+  });
+  busboy.end(req.rawBody);
+};
+
+exports.addResume = (req, res) => {
+  const busboy = new BusBoy({ headers: req.headers });
+
+  let fileName;
+  let fileToBeUploaded = {};
+
+  busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+    console.log(fieldname, file, filename, encoding, mimetype);
+    if (mimetype !== "application/pdf" && mimetype !== "application/octet-stream") {
+      return res.status(400).json({ error: "Must be PDF or Word" });
+    }
+    const imageExtension = filename.split(".")[filename.split(".").length - 1];
+    // 32756238461724837.png
+    fileName = `${Math.round(
+      Math.random() * 1000000000000
+    ).toString()}.${imageExtension}`;
+    const filepath = path.join(os.tmpdir(), fileName);
+    fileToBeUploaded = { filepath, mimetype };
+    file.pipe(fs.createWriteStream(filepath));
+  });
+  busboy.on("finish", () => {
+    admin
+      .storage()
+      .bucket()
+      .upload(fileToBeUploaded.filepath, {
+        resumable: false,
+        destination: `resume/${req.user.docId}`,
+        metadata: {
+          metadata: {
+            contentType: fileToBeUploaded.mimetype,
+          },
+        },
+      })
+      .then(() => {
+        return db.collection('experience').where('user', '==', req.user.docId).get();
+      })
+      .then(doc => {
+        const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${fileName}?alt=media`;
+        return db.doc(`/experience/${doc.docs[0].id}`).update({ fileUrl });
+      })
+      .then(() => {
+        return res.json({ general: "resume uploaded successfully" });
+      })
+      .catch((err) => {
+        console.error(err);
+        return res.status(500).json({ error: "something went wrong" });
+      });
+  });
+  busboy.end(req.rawBody);
+};
+
 exports.showMultipleProfiles = (req, res) => {
   const users = [];
   req.body.users.forEach(function (part, index) {
@@ -201,28 +308,30 @@ exports.showMultipleProfiles = (req, res) => {
     .getAll(...req.body.users)
     .then((docs) => {
       docs.forEach((data) => {
-        const user = {
-          name: data.data().name,
-          bio: data.data().bio,
-          socials: data.data().socials,
-          projects_created: data.data().projects_created,
-          projects_selected: data.data().projects_selected,
-          institution: data.data().institution,
-        };
-
-        const experience = getExperience(data.id).then(exp => {
-          return {
-            skills: exp.skills,
-            headline: exp.headline
-          }
-        });
-
-        users.push({
-          user,
-          experience: experience,
-        });
+        db.collection("experience")
+          .where("user", "==", docRef)
+          .limit(1)
+          .get()
+          .then((exp) => {
+            const user = {
+              name: data.data().name,
+              bio: data.data().bio,
+              socials: data.data().socials,
+              projects_created: data.data().projects_created,
+              projects_selected: data.data().projects_selected,
+              institution: data.data().institution,
+              imageUrl: data.data().imageUrl,
+            };
+            const experience = {
+              skills: exp.docs[0].data().skills,
+              headline: exp.docs[0].data().headline,
+            };
+            users.push({
+              user,
+              experience,
+            });
+          });
       });
-
       return res.status(200).json(users);
     })
     .catch((err) => {
@@ -231,15 +340,3 @@ exports.showMultipleProfiles = (req, res) => {
         .json({ error: `Internal Server Error: ${err.code}` });
     });
 };
-
-
-function getExperience(docRef) {
-  return db
-    .collection("experience")
-    .where("user", "==", docRef)
-    .limit(1)
-    .get()
-    .then((exp) => {
-      return exp.docs[0].data();
-    });
-}

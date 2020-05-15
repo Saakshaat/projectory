@@ -15,6 +15,9 @@ const {
   passwordReset,
   getOwnEntireProfile,
   getUserProfile,
+  setProfileImage,
+  addResume,
+  getResume
 } = require("./handlers/users/users");
 
 const {
@@ -41,6 +44,11 @@ app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
 app.get("/user/:userId/profile", getUserProfile);
+
+//profile routes
+app.post("/my/profile/image", authenticate, setProfileImage);
+app.post("/my/profile/resume", authenticate, addResume);
+app.get("/my/profile/resume", authenticate, getResume);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
@@ -55,7 +63,7 @@ app.get('/projects/open/skills/:skill', getAllWithSkill);
 /**
  * - Get all closed projects ('/my/closed')
  * - Get all open projects ('/my/open')
- * - My teams
+ * - My teams 
  */
 
 //applications routes
@@ -107,6 +115,7 @@ exports.deleteUser = functions.firestore
       })
       .catch((err) => console.error(err));
   });
+
 /**
  * Other APIs:
  * Deletion API:
