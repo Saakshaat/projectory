@@ -34,19 +34,19 @@ exports.createProfile = (req, res) => {
     imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
   };
 
-  const topSkills = [];
-  const otherSkills = [];
+  const top = [];
+  const others = [];
   req.body.experience.skills.top.forEach((skill) => {
-    topSkills.push(skill);
+    top.push(skill);
   });
-  req.body.experience.skills.other.forEach((skill) => {
-    otherSkills.push(skill);
+  req.body.experience.skills.others.forEach((skill) => {
+    others.push(skill);
   });
 
   const experience = {
     skills: {
-      topSkills,
-      otherSkills,
+      top,
+      others,
     },
     headline: req.body.experience.headline,
   };
@@ -162,7 +162,7 @@ exports.showProfile = (req, res) => {
         top.push(skill);
       });
 
-      experience.docs[0].data().skills.other.forEach((skill) => {
+      experience.docs[0].data().skills.others.forEach((skill) => {
         other.push(skill);
       });
 
@@ -187,6 +187,7 @@ exports.showProfile = (req, res) => {
           other,
         },
         headline: experience.docs[0].data().headline,
+        resume: experience.docs[0].data().resume
       };
       profile.credentials = credentialsObj;
 
@@ -210,11 +211,11 @@ exports.setProfileImage = (req, res) => {
     if (mimetype !== "image/jpeg" && mimetype !== "image/png") {
       return res.status(400).json({ error: "Wrong file type submitted" });
     }
-    const imageExtension = filename.split(".")[filename.split(".").length - 1];
+    const fileExtension = filename.split(".")[filename.split(".").length - 1];
     // 32756238461724837.png
     fileName = `${Math.round(
       Math.random() * 1000000000000
-    ).toString()}.${imageExtension}`;
+    ).toString()}.${fileExtension}`;
     const filepath = path.join(os.tmpdir(), fileName);
     fileToBeUploaded = { filepath, mimetype };
     file.pipe(fs.createWriteStream(filepath));
@@ -262,7 +263,7 @@ exports.addResume = (req, res) => {
     // 32756238461724837.png
     fileName = `${Math.round(
       Math.random() * 1000000000000
-    ).toString()}.${imageExtension}`;
+    ).toString()}.${fileExtension}`;
     const filepath = path.join(os.tmpdir(), fileName);
     fileToBeUploaded = { filepath, mimetype };
     file.pipe(fs.createWriteStream(filepath));
@@ -285,7 +286,7 @@ exports.addResume = (req, res) => {
       })
       .then(doc => {
         const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${fileName}?alt=media`;
-        return db.doc(`/experience/${doc.docs[0].id}`).update({ fileUrl });
+        return db.doc(`/experience/${doc.docs[0].id}`).update({ resume: fileUrl });
       })
       .then(() => {
         return res.json({ general: "resume uploaded successfully" });
