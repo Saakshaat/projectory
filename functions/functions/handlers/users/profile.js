@@ -18,6 +18,8 @@ exports.createProfile = (req, res) => {
     socials: {
       github: req.body.information.socials.github,
       linkedin: req.body.information.socials.linkedin,
+      website: req.body.information.socials.website,
+      email: req.body.credentials.email,
     },
     bio: req.body.information.bio,
     uid: req.body.uid,
@@ -25,13 +27,21 @@ exports.createProfile = (req, res) => {
     projects_selected: 0,
   };
 
-  const skills = [];
-  req.body.experience.skills.forEach((skill) => {
-    skills.push(skill);
+  const topSkills = [];
+  const otherSkills = [];
+  req.body.experience.skills.top.forEach((skill) => {
+    topSkills.push(skill);
+  });
+  req.body.experience.skills.other.forEach((skill) => {
+    otherSkills.push(skill);
   });
 
   const experience = {
-    skills,
+    skills: {
+      topSkills,
+      otherSkills,
+    },
+    headline: req.body.experience.headline,
   };
 
   const credentials = req.body.credentials;
@@ -79,17 +89,7 @@ exports.createProfile = (req, res) => {
 };
 
 exports.showProfile = (req, res) => {
-  let profile = {
-    information: {},
-    projects: {
-      projects_created: 0,
-      projects_selected: 0,
-    },
-    credentials: [],
-    experience: {
-      skills: [],
-    },
-  };
+  let profile = {};
 
   let open = 0;
   let closed = 0;
@@ -148,10 +148,15 @@ exports.showProfile = (req, res) => {
       return db.collection("experience").where("user", "==", userRef).get();
     })
     .then((experience) => {
-      let skills = [];
+      let top = [];
+      let other = [];
 
-      experience.docs[0].data().skills.forEach((skill) => {
-        skills.push(skill);
+      experience.docs[0].data().skills.top.forEach((skill) => {
+        top.push(skill);
+      });
+
+      experience.docs[0].data().skills.other.forEach((skill) => {
+        other.push(skill);
       });
 
       profile.information = {
@@ -168,7 +173,13 @@ exports.showProfile = (req, res) => {
         closed: closed,
       };
 
-      profile.experience.skills = skills;
+      profile.experience = {
+        skills: {
+          top,
+          other,
+        },
+        headline: experience.docs[0].headline,
+      };
       profile.credentials = credentialsObj;
 
       return res.status(200).json(profile);
@@ -181,26 +192,54 @@ exports.showProfile = (req, res) => {
 };
 
 exports.showMultipleProfiles = (req, res) => {
-  const applicants = [];
-  req.body.users.forEach(function(part, index) {
+  const users = [];
+  req.body.users.forEach(function (part, index) {
     this[index] = db.doc(`/users/${this[index]}`);
   }, req.body.users);
 
-  db.getAll(...req.body.users).then(doc => {
-    doc.forEach(data => {
-      applicants.push({
-        name: data.data().name,
-        institution: data.data().institution,
-        bio: data.data().bio,
-        socials: data.data().socials,
-        projects_created: data.data().projects_created,
-        projects_selected: data.data().projects_selected
-      });
-    })
+  return db
+    .getAll(...req.body.users)
+    .then((docs) => {
+      docs.forEach((data) => {
+        const user = {
+          name: data.data().name,
+          bio: data.data().bio,
+          socials: data.data().socials,
+          projects_created: data.data().projects_created,
+          projects_selected: data.data().projects_selected,
+          institution: data.data().institution,
+        };
 
-    return res.status(200).json(applicants);
-  })
-  .catch(err => {
-    return res.status(500).json({ error : `Internal Server Error: ${err.code}` });
-  })
+        const experience = getExperience(data.id).then(exp => {
+          return {
+            skills: exp.skills,
+            headline: exp.headline
+          }
+        });
+
+        users.push({
+          user,
+          experience: experience,
+        });
+      });
+
+      return res.status(200).json(users);
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error: ${err.code}` });
+    });
+};
+
+
+function getExperience(docRef) {
+  return db
+    .collection("experience")
+    .where("user", "==", docRef)
+    .limit(1)
+    .get()
+    .then((exp) => {
+      return exp.docs[0].data();
+    });
 }
