@@ -40,7 +40,7 @@ app.post("/signup", emailSignup);
 app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
 app.post("/signout", authenticate, signout);
-app.post("/create", authenticate, createUser);
+app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
 app.get("/user/:userId/profile", getUserProfile);

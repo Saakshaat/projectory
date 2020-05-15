@@ -1,6 +1,7 @@
 const { db, admin } = require("../../util/admin");
 const config = require("../../util/config");
 
+
 const BusBoy = require("busboy");
 const path = require("path");
 const os = require("os");
@@ -18,6 +19,9 @@ exports.createProfile = (req, res) => {
    */
 
   //creating objects for distributing across collections
+  const avatarList = ['panda', 'brown_bear', 'ice_bear', 'rigby', 'mordecai', 'jake', 'shaggy', 'scooby'];
+  const avatar = `${avatarList[Math.floor(Math.random() * avatarList.length)]}.jpg`
+
   const user = {
     name: req.body.information.name,
     institution: req.body.information.institution,
@@ -31,7 +35,7 @@ exports.createProfile = (req, res) => {
     uid: req.body.uid,
     projects_created: 0,
     projects_selected: 0,
-    imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+    imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${avatar}?alt=media`,
   };
 
   const top = [];
@@ -203,7 +207,7 @@ exports.showProfile = (req, res) => {
 exports.setProfileImage = (req, res) => {
   const busboy = new BusBoy({ headers: req.headers });
 
-  let fileName;
+  let imageName;
   let fileToBeUploaded = {};
 
   busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
@@ -212,11 +216,8 @@ exports.setProfileImage = (req, res) => {
       return res.status(400).json({ error: "Wrong file type submitted" });
     }
     const fileExtension = filename.split(".")[filename.split(".").length - 1];
-    // 32756238461724837.png
-    fileName = `${Math.round(
-      Math.random() * 1000000000000
-    ).toString()}.${fileExtension}`;
-    const filepath = path.join(os.tmpdir(), fileName);
+    imageName = `${req.user.docId}.${fileExtension}`;
+    const filepath = path.join(os.tmpdir(), imageName);
     fileToBeUploaded = { filepath, mimetype };
     file.pipe(fs.createWriteStream(filepath));
   });
@@ -226,7 +227,7 @@ exports.setProfileImage = (req, res) => {
       .bucket()
       .upload(fileToBeUploaded.filepath, {
         resumable: false,
-        destination: `images/${req.user.docId}`,
+        destination: `images/${imageName}`,
         metadata: {
           metadata: {
             contentType: fileToBeUploaded.mimetype,
@@ -234,7 +235,7 @@ exports.setProfileImage = (req, res) => {
         },
       })
       .then(() => {
-        const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${fileName}?alt=media`;
+        const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/images%2F${imageName}?alt=media`;
         return db.doc(`/users/${req.user.docId}`).update({ imageUrl });
       })
       .then(() => {
@@ -259,11 +260,9 @@ exports.addResume = (req, res) => {
     if (mimetype !== "application/pdf" && mimetype !== "application/octet-stream") {
       return res.status(400).json({ error: "Must be PDF or Word" });
     }
-    const imageExtension = filename.split(".")[filename.split(".").length - 1];
-    // 32756238461724837.png
-    fileName = `${Math.round(
-      Math.random() * 1000000000000
-    ).toString()}.${fileExtension}`;
+    const fileExtension = filename.split(".")[filename.split(".").length - 1];
+   
+    fileName = `${req.user.docId}.${fileExtension}`;
     const filepath = path.join(os.tmpdir(), fileName);
     fileToBeUploaded = { filepath, mimetype };
     file.pipe(fs.createWriteStream(filepath));
@@ -274,7 +273,7 @@ exports.addResume = (req, res) => {
       .bucket()
       .upload(fileToBeUploaded.filepath, {
         resumable: false,
-        destination: `resume/${req.user.docId}`,
+        destination: `resume/${fileName}`,
         metadata: {
           metadata: {
             contentType: fileToBeUploaded.mimetype,
@@ -285,7 +284,7 @@ exports.addResume = (req, res) => {
         return db.collection('experience').where('user', '==', req.user.docId).get();
       })
       .then(doc => {
-        const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${fileName}?alt=media`;
+        const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/resume%2F${fileName}?alt=media`;
         return db.doc(`/experience/${doc.docs[0].id}`).update({ resume: fileUrl });
       })
       .then(() => {
