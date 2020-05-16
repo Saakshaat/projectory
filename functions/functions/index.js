@@ -27,7 +27,8 @@ const {
   getOneOpenProject,
   getOneClosedProject,
   getAllWithSkill,
-  getMyOpenProjects
+  getMyOpenProjects,
+  getMyClosedProjects
 } = require("./handlers/projects/projects");
 
 const {
@@ -64,6 +65,7 @@ app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
 app.get('/projects/open/skills/:skill', getAllWithSkill);
 app.get('/my/projects/open', authenticate, getMyOpenProjects);
+app.get('/my/projects/closed', authenticate, getMyClosedProjects);
 /**
  * - Get all closed projects ('/my/closed')
  * - Get all open projects ('/my/open')
