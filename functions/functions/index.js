@@ -17,7 +17,8 @@ const {
   getUserProfile,
   setProfileImage,
   addResume,
-  test
+  test,
+  editProfile
 } = require("./handlers/users/users");
 
 const {
@@ -42,14 +43,15 @@ app.post("/signup", emailSignup);
 app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
 app.post("/signout", authenticate, signout);
-app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
-app.get("/my/profile", authenticate, getOwnEntireProfile);
-app.get("/user/:userId/profile", getUserProfile);
 app.get('/test', test);
 //profile routes
+app.post("/create", createUser);
+app.get("/my/profile", authenticate, getOwnEntireProfile);
+app.get("/user/:userId/profile", getUserProfile);
 app.post("/my/profile/image", authenticate, setProfileImage);
 app.post("/my/profile/resume", authenticate, addResume);
+app.post("/edit/profile", authenticate, editProfile);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
