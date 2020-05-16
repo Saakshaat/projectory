@@ -124,8 +124,17 @@ exports.showMyApplications = (req, res) => {
         const id = project.id;
         const data = project.data();
         projects.push({
-          data,
-          id,
+          id: id,
+          creator: data.creator,
+          createdAt: data.createdAt,
+          description: data.description,
+          github: data.github,
+          links: data.links,
+          name: data.name,
+          interested: data.interested,
+          needed: data.needed,
+          team: data.team,
+          user: data.user,
         });
       });
 
