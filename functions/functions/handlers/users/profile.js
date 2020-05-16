@@ -1,7 +1,6 @@
 const { db, admin } = require("../../util/admin");
 const config = require("../../util/config");
 
-
 const BusBoy = require("busboy");
 const path = require("path");
 const os = require("os");
@@ -19,8 +18,19 @@ exports.createProfile = (req, res) => {
    */
 
   //creating objects for distributing across collections
-  const avatarList = ['panda', 'brown_bear', 'ice_bear', 'rigby', 'mordecai', 'jake', 'shaggy', 'scooby'];
-  const avatar = `${avatarList[Math.floor(Math.random() * avatarList.length)]}.jpg`
+  const avatarList = [
+    "panda",
+    "brown_bear",
+    "ice_bear",
+    "rigby",
+    "mordecai",
+    "jake",
+    "shaggy",
+    "scooby",
+  ];
+  const avatar = `${
+    avatarList[Math.floor(Math.random() * avatarList.length)]
+  }.jpg`;
 
   const user = {
     name: req.body.information.name,
@@ -191,7 +201,7 @@ exports.showProfile = (req, res) => {
           other,
         },
         headline: experience.docs[0].data().headline,
-        resume: experience.docs[0].data().resume
+        resume: experience.docs[0].data().resume,
       };
       profile.credentials = credentialsObj;
 
@@ -257,11 +267,14 @@ exports.addResume = (req, res) => {
 
   busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
     console.log(fieldname, file, filename, encoding, mimetype);
-    if (mimetype !== "application/pdf" && mimetype !== "application/octet-stream") {
+    if (
+      mimetype !== "application/pdf" &&
+      mimetype !== "application/octet-stream"
+    ) {
       return res.status(400).json({ error: "Must be PDF or Word" });
     }
     const fileExtension = filename.split(".")[filename.split(".").length - 1];
-   
+
     fileName = `${req.user.docId}.${fileExtension}`;
     const filepath = path.join(os.tmpdir(), fileName);
     fileToBeUploaded = { filepath, mimetype };
@@ -281,11 +294,16 @@ exports.addResume = (req, res) => {
         },
       })
       .then(() => {
-        return db.collection('experience').where('user', '==', req.user.docId).get();
+        return db
+          .collection("experience")
+          .where("user", "==", req.user.docId)
+          .get();
       })
-      .then(doc => {
+      .then((doc) => {
         const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/resume%2F${fileName}?alt=media`;
-        return db.doc(`/experience/${doc.docs[0].id}`).update({ resume: fileUrl });
+        return db
+          .doc(`/experience/${doc.docs[0].id}`)
+          .update({ resume: fileUrl });
       })
       .then(() => {
         return res.json({ general: "resume uploaded successfully" });
@@ -338,5 +356,20 @@ exports.showMultipleProfiles = (req, res) => {
       return res
         .status(500)
         .json({ error: `Internal Server Error: ${err.code}` });
+    });
+};
+
+exports.test = (req, res) => {
+  let proj = [];
+  return db
+    .collection("open")
+    .where("team", "array-contains", "ViMf40s006yfDOBmO9J6")
+    .get()
+    .then((teams) => {
+      teams.forEach((project) => {
+        proj.push(project.data());
+      });
+
+      return res.json(proj);
     });
 };

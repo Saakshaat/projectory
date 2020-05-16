@@ -17,7 +17,7 @@ const {
   getUserProfile,
   setProfileImage,
   addResume,
-  getResume
+  test
 } = require("./handlers/users/users");
 
 const {
@@ -25,12 +25,14 @@ const {
   createProject,
   getOneOpenProject,
   getOneClosedProject,
-  getAllWithSkill
+  getAllWithSkill,
+  getMyOpenProjects
 } = require("./handlers/projects/projects");
 
 const {
     apply,
-    showInterested
+    showInterested,
+    showMyApplications
 } = require('./handlers/applications/applications');
 
 const authenticate = require("./util/authenticate");
@@ -44,11 +46,10 @@ app.post("/create", createUser);
 app.post("/password_reset", passwordReset);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
 app.get("/user/:userId/profile", getUserProfile);
-
+app.get('/test', test);
 //profile routes
 app.post("/my/profile/image", authenticate, setProfileImage);
 app.post("/my/profile/resume", authenticate, addResume);
-app.get("/my/profile/resume", authenticate, getResume);
 /**
  * More Routes for:
  * - Editing their information: experience, user details, image, credentials
@@ -60,6 +61,7 @@ app.get("/projects/open", getAllOpenProjects);
 app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
 app.get('/projects/open/skills/:skill', getAllWithSkill);
+app.get('/my/projects/open', authenticate, getMyOpenProjects);
 /**
  * - Get all closed projects ('/my/closed')
  * - Get all open projects ('/my/open')
@@ -69,6 +71,7 @@ app.get('/projects/open/skills/:skill', getAllWithSkill);
 //applications routes
 app.post('/apply/:projectId', authenticate, apply);
 app.get('/interested/:projectId', authenticate, showInterested);
+app.get('/my/applications', authenticate, showMyApplications);
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  * - Get all interested projects (/my/interested)
