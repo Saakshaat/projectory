@@ -73,7 +73,7 @@ app.get('/my/projects/closed', authenticate, getMyClosedProjects);
  */
 
 //applications routes
-app.post('/apply/:projectId', authenticate, apply);
+app.get('/apply/:projectId', authenticate, apply);
 app.get('/interested/:projectId', authenticate, showInterested);
 app.get('/my/applications', authenticate, showMyApplications);
 /**
