@@ -45,6 +45,7 @@ export default class Profile extends Component {
       });
   }
 
+  //TODO add edit my profile option
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else {
