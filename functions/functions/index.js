@@ -29,9 +29,8 @@ const {
   getOneOpenProject,
   getOneClosedProject,
   getAllWithSkill,
-  getMyOpenProjects,
-  getMyClosedProjects,
-  editProject
+  editProject,
+  getMyProjects
 } = require("./handlers/projects/projects");
 
 const {
@@ -58,10 +57,7 @@ app.get("/user/:userId/profile", getUserProfile);
 app.post("/my/profile/image", authenticate, setProfileImage);
 app.post("/my/profile/resume", authenticate, addResume);
 app.post("/edit/profile", authenticate, editProfile);
-/**
- * More Routes for:
- * - Editing their information: experience, user details, image, credentials
- */
+
 
 //projects routes
 app.post("/project", authenticate, createProject);
@@ -69,14 +65,20 @@ app.get("/projects/open", getAllOpenProjects);
 app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
 app.get("/projects/open/skills/:skill", getAllWithSkill);
-app.get("/my/projects/open", authenticate, getMyOpenProjects);
-app.get("/my/projects/closed", authenticate, getMyClosedProjects);
 app.post('/edit/:projectId', authenticate, editProject);
+/**
+ * TODO: break down the endpoints for getting all open/closed projects into 2: created and selected
+ * just have a common callback (and route) for '/my/projects/:state/:position' where state = open/closed and position = created/selected
+ * Then in users.js, pass the callback flow to either open or closed basis req.params.state
+ * then in the respective file, use req.params.position to query the DB with .where('user', '==', req.user.docId) or .where(')
+ */
+app.get("/my/projects/:state/:position", authenticate, getMyProjects);
 /**
  * - Get all closed projects ('/my/closed')
  * - Get all open projects ('/my/open')
  * - My teams
  */
+
 
 //applications routes
 app.get("/apply/:projectId", authenticate, apply);
@@ -84,8 +86,6 @@ app.get("/interested/:projectId", authenticate, showInterested);
 app.get("/my/applications", authenticate, showMyApplications);
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
- * - Get all interested projects (/my/interested)
- * - Get all owned projects (my/created)
  */
 
 exports.baseapi = functions.https.onRequest(app);
