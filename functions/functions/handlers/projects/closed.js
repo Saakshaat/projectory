@@ -1,7 +1,7 @@
 const { db, admin } = require("../../util/admin");
 
 exports.getOneC = (req, res) => {
-    let projectData = {};
+  let projectData = {};
   return db
     .doc(`/closed/${req.params.projectId}`)
     .get()
@@ -17,14 +17,43 @@ exports.getOneC = (req, res) => {
       console.error(err);
       res.status(500).json({ error: err.code });
     });
-}
+};
 
 exports.getMyClosed = (req, res) => {
-    
-}
+  let response = [];
+  return db
+    .collection("closed")
+    .where("user", "==", req.user.docId)
+    .get()
+    .then((projects) => {
+      projects.forEach((project) => {
+        response.push(project.data());
+      });
+
+      return db
+        .collection("closed")
+        .where("team", "array-contains", req.user.docId)
+        .get()
+        .then((teams) => {
+          console.log(teams.docs[0].data());
+          teams.forEach((project) => {
+            response.push(project.data());
+          });
+          return res.status(200).json(response);
+        })
+        .catch((err) => {
+          return res.status(500).json({ error: `Error in getting teams` });
+        });
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error. ${err.code}` });
+    });
+};
 
 exports.reopenProject = (req, res) => {
-    /**
-     * - Move project from closed to open collection
-     */
-}
+  /**
+   * - Move project from closed to open collection
+   */
+};

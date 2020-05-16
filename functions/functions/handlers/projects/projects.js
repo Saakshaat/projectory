@@ -29,3 +29,7 @@ exports.getAllWithSkill = (req, res) => {
 exports.getMyOpenProjects = (req, res) => {
   return getMyOpen(req, res);
 };
+
+exports.getMyClosedProjects = (req, res) => {
+  return getMyClosed(req, res);
+}
