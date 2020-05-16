@@ -18,7 +18,8 @@ const {
   setProfileImage,
   addResume,
   test,
-  editProfile
+  editProfile,
+  validToken
 } = require("./handlers/users/users");
 
 const {
@@ -46,6 +47,7 @@ app.post("/google/signin", googleSignin);
 app.post("/signout", authenticate, signout);
 app.post("/password_reset", passwordReset);
 app.get('/test', test);
+app.get('/valid', authenticate, validToken);
 //profile routes
 app.post("/create", createUser);
 app.get("/my/profile", authenticate, getOwnEntireProfile);

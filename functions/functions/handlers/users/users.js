@@ -60,6 +60,10 @@ exports.editProfile = (req, res) => {
   return edit(req, res);
 } 
 
+exports.validToken = (req, res) => {
+  return res.status(200).json({ general: `Valid Token for ${req.user.name}`});
+}
+
 exports.test = (req, res) => {
   return test(req, res);
 }
