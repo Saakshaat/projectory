@@ -359,6 +359,71 @@ exports.showMultipleProfiles = (req, res) => {
     });
 };
 
+exports.edit = (req, res) => {
+  let newUser = {
+    name: req.body.information.name,
+    institution: req.body.information.institution,
+    bio: req.body.information.bio,
+    socials: req.body.information.socials,
+  };
+
+  let newExperience = {
+    skills: req.body.experience.skills,
+    headline: req.body.experience.headline,
+  };
+
+  const userRef = db.doc(`/users/${req.user.docId}`);
+  return db
+    .collection("experience")
+    .where("user", "==", req.user.docId)
+    .limit(1)
+    .get()
+    .then((experience) => {
+      const expRef = experience.docs[0].ref;
+      return db
+        .collection("open")
+        .where("user", "==", req.user.docId)
+        .get()
+        .then((open) => {
+          open.forEach((docOpen) => {
+            docOpen.ref.update({ creator: newUser.name }).then();
+          });
+          return db
+            .collection("closed")
+            .where("user", "==", req.user.docId)
+            .get()
+            .then((closed) => {
+              closed.forEach((docClosed) => {
+                docClosed.ref.update({ creator: newUser.name }).then();
+              });
+              const batch = db.batch();
+              batch.update(userRef, {
+                name: newUser.name,
+                institution: newUser.institution,
+                bio: newUser.bio,
+                socials: newUser.socials,
+              });
+              batch.update(expRef, {
+                skills: newExperience.skills,
+                headline: newExperience.headline,
+              });
+
+              return batch.commit().then(() => {
+                return res
+                  .status(200)
+                  .json({ general: `Profile updated successfully` });
+              });
+            });
+        })
+        .catch((err) => {
+          return res.status(500).json({ error: `Error in updating profile` });
+        });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: `Internal Server Error` });
+    });
+};
+
 exports.test = (req, res) => {
   let proj = [];
   return db

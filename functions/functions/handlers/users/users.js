@@ -3,7 +3,8 @@ const {
   createProfile,
   setProfileImage,
   addResume,
-  test
+  test,
+  edit
 } = require("./profile");
 const {
   emailLogin,
@@ -54,6 +55,10 @@ exports.setProfileImage = (req, res) => {
 exports.addResume = (req, res) => {
   return addResume(req, res);
 };
+
+exports.editProfile = (req, res) => {
+  return edit(req, res);
+} 
 
 exports.test = (req, res) => {
   return test(req, res);
