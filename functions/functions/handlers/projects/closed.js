@@ -27,7 +27,12 @@ exports.getMyClosed = (req, res) => {
     .get()
     .then((projects) => {
       projects.forEach((project) => {
-        response.push(project.data());
+        const id = project.id;
+        const data = project.data();
+        response.push({
+          id,
+          data,
+        });
       });
 
       return db
@@ -37,7 +42,12 @@ exports.getMyClosed = (req, res) => {
         .then((teams) => {
           console.log(teams.docs[0].data());
           teams.forEach((project) => {
-            response.push(project.data());
+            const id = project.id;
+            const data = project.data();
+            response.push({
+              data,
+              id,
+            });
           });
           return res.status(200).json(response);
         })

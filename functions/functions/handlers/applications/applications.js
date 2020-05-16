@@ -120,13 +120,20 @@ exports.showMyApplications = (req, res) => {
     .where("interested", "array-contains", req.user.docId)
     .get()
     .then((docs) => {
-      docs.forEach(project => {
-        projects.push(project.data());
+      docs.forEach((project) => {
+        const id = project.id;
+        const data = project.data();
+        projects.push({
+          data,
+          id,
+        });
       });
 
       return res.status(200).json(projects);
     })
-    .catch(err => {
-      return res.status(500).json({ error : `Internal Server Error. ${err.code}` });
-    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error. ${err.code}` });
+    });
 };

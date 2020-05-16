@@ -73,6 +73,7 @@ exports.getAllOpen = (req, res) => {
 
       data.forEach((doc) => {
         projects.push({
+          id: doc.id,
           creator: doc.data().creator,
           createdAt: doc.data().createdAt,
           description: doc.data().description,
@@ -117,6 +118,7 @@ exports.getSkill = (req, res) => {
     .then((projects) => {
       projects.forEach((doc) => {
         resProjects.push({
+          id: doc.id,
           creator: doc.data().creator,
           createdAt: doc.data().createdAt,
           description: doc.data().description,
@@ -144,23 +146,31 @@ exports.getMyOpen = (req, res) => {
     .where("user", "==", req.user.docId)
     .get()
     .then((projects) => {
-
       projects.forEach((project) => {
-        response.push(project.data());
+        const id = project.id;
+        const data = project.data();
+        response.push({
+          id,
+          data,
+        });
       });
 
       return db
         .collection("open")
-        .where("team", 'array-contains', req.user.docId)
+        .where("team", "array-contains", req.user.docId)
         .get()
         .then((teams) => {
-          console.log(teams.docs[0].data());
           teams.forEach((project) => {
-            response.push(project.data());
-          })
+            const id = project.id;
+            const data = project.data();
+            response.push({
+              id,
+              data,
+            });
+          });
           return res.status(200).json(response);
         })
-        .catch(err => {
+        .catch((err) => {
           return res.status(500).json({ error: `Error in getting teams` });
         });
     })
