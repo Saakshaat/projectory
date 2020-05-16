@@ -21,63 +21,65 @@ exports.getOneC = (req, res) => {
 
 exports.getMyClosed = (req, res) => {
   let response = [];
-  return db
-    .collection("closed")
-    .where("user", "==", req.user.docId)
-    .get()
-    .then((projects) => {
-      projects.forEach((project) => {
-        const id = project.id;
-        const data = project.data();
-        response.push({
-          id: id,
-          creator: data.creator,
-          createdAt: data.createdAt,
-          description: data.description,
-          github: data.github,
-          links: data.links,
-          name: data.name,
-          interested: data.interested,
-          needed: data.needed,
-          team: data.team,
-          user: data.user,
-        });
-      });
 
-      return db
-        .collection("closed")
-        .where("team", "array-contains", req.user.docId)
-        .get()
-        .then((teams) => {
-          console.log(teams.docs[0].data());
-          teams.forEach((project) => {
-            const id = project.id;
-            const data = project.data();
-            response.push({
-              id: id,
-              creator: data.creator,
-              createdAt: data.createdAt,
-              description: data.description,
-              github: data.github,
-              links: data.links,
-              name: data.name,
-              interested: data.interested,
-              needed: data.needed,
-              team: data.team,
-              user: data.user,
-            });
+  if (req.params.position === "created") {
+    return db
+      .collection("closed")
+      .where("user", "==", req.user.docId)
+      .get()
+      .then((projects) => {
+        projects.forEach((project) => {
+          const id = project.id;
+          const data = project.data();
+          response.push({
+            id: id,
+            creator: data.creator,
+            createdAt: data.createdAt,
+            description: data.description,
+            github: data.github,
+            links: data.links,
+            name: data.name,
+            interested: data.interested,
+            needed: data.needed,
+            team: data.team,
+            user: data.user,
           });
-          return res.status(200).json(response);
-        })
-        .catch((err) => {
-          return res.status(500).json({ error: `Error in getting teams` });
         });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Internal Server Error. ${err.code}` });
-    });
+
+        return res.status(200).json(response);
+      });
+  } else if (req.params.position === "selected") {
+    return db
+      .collection("closed")
+      .where("team", "array-contains", req.user.docId)
+      .get()
+      .then((teams) => {
+        teams.forEach((project) => {
+          const id = project.id;
+          const data = project.data();
+
+          response.push({
+            id: id,
+            creator: data.creator,
+            createdAt: data.createdAt,
+            description: data.description,
+            github: data.github,
+            links: data.links,
+            name: data.name,
+            interested: data.interested,
+            needed: data.needed,
+            team: data.team,
+            user: data.user,
+          });
+        });
+
+        return res.status(200).json(response);
+      });
+  } else {
+    return res
+      .status(404)
+      .json({ error: `Could not find endpoint for position` });
+  }
 };
 
 exports.reopenProject = (req, res) => {

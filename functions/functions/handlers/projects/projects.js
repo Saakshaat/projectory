@@ -33,13 +33,15 @@ exports.getAllWithSkill = (req, res) => {
   return getSkill(req, res);
 };
 
-exports.getMyOpenProjects = (req, res) => {
-  return getMyOpen(req, res);
-};
-
-exports.getMyClosedProjects = (req, res) => {
-  return getMyClosed(req, res);
-};
+exports.getMyProjects = (req, res) => {
+  if(req.params.state == 'open') {
+    return getMyOpen(req, res);
+  } else if (req.params.state == 'closed') {
+    return getMyClosed(req, res);
+  } else {
+    return res.status(404).json({ error: `Could not find endpoint` });
+  }
+}
 
 exports.editProject = (req, res) => {
   return edit(req, res);
