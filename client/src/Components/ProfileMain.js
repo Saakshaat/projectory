@@ -1,11 +1,28 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import { Container, Divider, Grid, Button } from "@material-ui/core";
+
+import { Container, Divider, Grid, Button, Avatar } from "@material-ui/core";
 import SkillChip from "../Components/SkillChip";
 import WorkIcon from "@material-ui/icons/Work";
 import EmailIcon from "@material-ui/icons/Email";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import LanguageIcon from "@material-ui/icons/Language";
+import axios from "axios";
+
+import { makeStyles } from "@material-ui/core/styles";
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+  large: {
+    width: theme.spacing(20),
+    height: theme.spacing(20),
+  },
+}));
 
 const ProfileMain = (props) => {
   return (
@@ -15,13 +32,7 @@ const ProfileMain = (props) => {
           <Grid container spacing={3}>
             <Grid item xs={12} container>
               <Grid item xs={12}>
-                <Typography variant="h4">
-                  {props.profile.information.name}
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Contact profile={props.profile} />
+                <Header profile={props.profile} />
               </Grid>
             </Grid>
 
@@ -46,10 +57,8 @@ const ProfileMain = (props) => {
               />
             </Grid>
 
-            <Grid item xs={6} container spacing={3}>
-              <Grid item xs={12}>
-                <Info profile={props.profile} />
-              </Grid>
+            <Grid item xs={6}>
+              <Info profile={props.profile} />
             </Grid>
           </Grid>
         </Container>
@@ -59,6 +68,38 @@ const ProfileMain = (props) => {
 };
 
 export default ProfileMain;
+
+const Header = (props) => {
+  const classes = useStyles();
+
+  return (
+    <Grid container direction="column" alignItems="center" justify="center">
+      <Grid item xs={12}>
+        <Avatar
+          className={classes.large}
+          src={props.profile.information.imageUrl}
+          alt="Profile Picture"
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant="h4">{props.profile.information.name}</Typography>
+        <Divider
+          variant="middle"
+          style={{
+            margin: 5,
+            backgroundColor: "#4B5BEA",
+          }}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography>{props.profile.experience.headline}</Typography>
+        <hr style={{ visibility: "hidden" }} />
+      </Grid>
+    </Grid>
+  );
+};
 
 const Skill = (props) => {
   return (
@@ -73,7 +114,11 @@ const Skill = (props) => {
         }}
       />
       <p />
-      {props.skills.map((skill, index) => (
+      {props.skills.top.map((skill, index) => (
+        <SkillChip skill={skill} key={skill} />
+      ))}
+
+      {props.skills.other.map((skill, index) => (
         <SkillChip skill={skill} key={skill} />
       ))}
     </Container>
@@ -83,6 +128,7 @@ const Skill = (props) => {
 const Project = (props) => {
   return (
     <Container>
+      {/* TODO make this click able */}
       <Typography variant="h4">Project</Typography>
       <Divider
         variant="middle"
@@ -124,6 +170,9 @@ const Info = (props) => {
         }}
       />
       <p />
+      <Contact profile={props.profile} />
+
+      <p />
 
       <Typography>{props.profile.information.bio}</Typography>
 
@@ -139,34 +188,82 @@ const Info = (props) => {
         </Grid>
 
         <Grid item xs={2}>
-          <Button variant="outlined">Download Resume</Button>
+          <Button
+            variant="outlined"
+            onClick={handleDownloadButton}
+            value={props.profile.experience.resume}
+          >
+            Download Resume
+          </Button>
         </Grid>
+        <a href={props.profile.experience.resume} download="proposed_file_name">Download</a>
       </Grid>
     </Container>
   );
 };
 
 const Contact = (props) => {
-  console.log(props);
   return (
-    <div>
-      {/* TODO hide this if there are no github link */}
-      <a style={{ margin: 5 }} href={props.profile.information.socials.github}>
-        <GitHubIcon color="primary" />
-      </a>
+    <Grid container>
+      {!(props.profile.information.socials.github.length === 0) ? (
+        <Grid item>
+          <a
+            style={{ margin: 5 }}
+            href={props.profile.information.socials.github}
+          >
+            <GitHubIcon style={{ color: "black" }} />
+          </a>
+        </Grid>
+      ) : (
+        <div />
+      )}
 
-      {/* TODO hide this if there are no linkedin link */}
-      <a style={{ margin: 5 }} href={props.profile.information.socials.github}>
-        <LinkedInIcon color="primary" />
-      </a>
+      {!(props.profile.information.socials.linkedin.length === 0) ? (
+        <Grid item>
+          <a
+            style={{ margin: 5 }}
+            href={props.profile.information.socials.linkedin}
+          >
+            <LinkedInIcon color="primary" />
+          </a>
+        </Grid>
+      ) : (
+        <div />
+      )}
 
-      {/* TODO hide this if there are no email link */}
-      <a
-        style={{ margin: 5 }}
-        href={"mailto:" + props.profile.credentials[0].email}
-      >
-        <EmailIcon color="primary" />
-      </a>
-    </div>
+      {!(props.profile.information.socials.email.length === 0) ? (
+        <Grid item>
+          <a
+            style={{ margin: 5 }}
+            href={"mailto:" + props.profile.information.socials.email}
+          >
+            <EmailIcon color="primary" style={{ color: "red" }} />
+          </a>
+        </Grid>
+      ) : (
+        <div />
+      )}
+
+      {!(props.profile.information.socials.website.length === 0) ? (
+        <Grid item>
+          <a
+            style={{ margin: 5 }}
+            href={props.profile.information.socials.website}
+          >
+            <LanguageIcon color="primary" style={{ color: "green" }} />
+          </a>
+        </Grid>
+      ) : (
+        <div />
+      )}
+    </Grid>
   );
+};
+
+const handleDownloadButton = (e) => {
+  var link = document.createElement("a");
+  link.download = "file.pdf";
+
+  link.href = e.currentTarget.value;
+  link.dispatchEvent(new MouseEvent("click"));
 };
