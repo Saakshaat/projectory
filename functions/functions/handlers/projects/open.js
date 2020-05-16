@@ -150,8 +150,17 @@ exports.getMyOpen = (req, res) => {
         const id = project.id;
         const data = project.data();
         response.push({
-          id,
-          data,
+          id: id,
+          creator: data.creator,
+          createdAt: data.createdAt,
+          description: data.description,
+          github: data.github,
+          links: data.links,
+          name: data.name,
+          interested: data.interested,
+          needed: data.needed,
+          team: data.team,
+          user: data.user,
         });
       });
 
@@ -163,9 +172,19 @@ exports.getMyOpen = (req, res) => {
           teams.forEach((project) => {
             const id = project.id;
             const data = project.data();
+
             response.push({
-              id,
-              data,
+              id: id,
+              creator: data.creator,
+              createdAt: data.createdAt,
+              description: data.description,
+              github: data.github,
+              links: data.links,
+              name: data.name,
+              interested: data.interested,
+              needed: data.needed,
+              team: data.team,
+              user: data.user,
             });
           });
           return res.status(200).json(response);
@@ -179,4 +198,44 @@ exports.getMyOpen = (req, res) => {
         .status(500)
         .json({ error: `Internal Server Error. ${err.code}` });
     });
+};
+
+exports.edit = (req, res) => {
+  /**
+   * TODO:
+   * - update the data of the project object with the request data
+   */
+
+  const newProject = {
+    name: req.body.name,
+    needed: req.body.needed,
+    description: req.body.description,
+    github: req.body.github,
+    links: req.body.links,
+  };
+
+  const batch = db.batch();
+  batch.update(db.doc(`/open/${req.params.projectId}`), {
+    name: newProject.name,
+    needed: newProject.needed,
+    description: newProject.description,
+    github: newProject.github,
+    links: newProject.links,
+  });
+  batch.commit().then(() => {
+    return res.status(200).json({ general: `Project updated successfully` });
+  })
+  .catch(err => {
+    return res.status(500).json({ error: `Internal Server Error` });
+  })
+};
+
+exports.delete = (req, res) => {
+  /**
+   * TODO:
+   * - delete project object
+   * - email all people in team about deletion
+   * - decrement all selected members' 'projects_selected'
+   * - decrement the creator's 'projects_created'
+   */
 };

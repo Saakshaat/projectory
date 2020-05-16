@@ -1,5 +1,12 @@
 const { db } = require("../../util/admin");
-const { create, getAllOpen, getOne, getSkill, getMyOpen } = require("./open");
+const {
+  create,
+  getAllOpen,
+  getOne,
+  getSkill,
+  getMyOpen,
+  edit,
+} = require("./open");
 const { getOneC, getMyClosed, reopenProject } = require("./closed");
 
 //get all projects
@@ -32,4 +39,8 @@ exports.getMyOpenProjects = (req, res) => {
 
 exports.getMyClosedProjects = (req, res) => {
   return getMyClosed(req, res);
-}
+};
+
+exports.editProject = (req, res) => {
+  return edit(req, res);
+};

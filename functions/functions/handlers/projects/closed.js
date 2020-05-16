@@ -30,8 +30,17 @@ exports.getMyClosed = (req, res) => {
         const id = project.id;
         const data = project.data();
         response.push({
-          id,
-          data,
+          id: id,
+          creator: data.creator,
+          createdAt: data.createdAt,
+          description: data.description,
+          github: data.github,
+          links: data.links,
+          name: data.name,
+          interested: data.interested,
+          needed: data.needed,
+          team: data.team,
+          user: data.user,
         });
       });
 
@@ -45,8 +54,17 @@ exports.getMyClosed = (req, res) => {
             const id = project.id;
             const data = project.data();
             response.push({
-              data,
-              id,
+              id: id,
+              creator: data.creator,
+              createdAt: data.createdAt,
+              description: data.description,
+              github: data.github,
+              links: data.links,
+              name: data.name,
+              interested: data.interested,
+              needed: data.needed,
+              team: data.team,
+              user: data.user,
             });
           });
           return res.status(200).json(response);

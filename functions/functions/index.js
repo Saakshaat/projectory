@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
-const app  = require("express")();
+const app = require("express")();
+const firebase_for_storage  = require('firebase/storage');
 
 const cors = require("cors");
 app.use(cors());
@@ -19,7 +20,7 @@ const {
   addResume,
   test,
   editProfile,
-  validToken
+  validToken,
 } = require("./handlers/users/users");
 
 const {
@@ -29,14 +30,15 @@ const {
   getOneClosedProject,
   getAllWithSkill,
   getMyOpenProjects,
-  getMyClosedProjects
+  getMyClosedProjects,
+  editProject
 } = require("./handlers/projects/projects");
 
 const {
-    apply,
-    showInterested,
-    showMyApplications
-} = require('./handlers/applications/applications');
+  apply,
+  showInterested,
+  showMyApplications,
+} = require("./handlers/applications/applications");
 
 const authenticate = require("./util/authenticate");
 
@@ -46,8 +48,9 @@ app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
 app.post("/signout", authenticate, signout);
 app.post("/password_reset", passwordReset);
-app.get('/test', test);
-app.get('/valid', authenticate, validToken);
+app.get("/test", test);
+app.get("/valid", authenticate, validToken);
+
 //profile routes
 app.post("/create", createUser);
 app.get("/my/profile", authenticate, getOwnEntireProfile);
@@ -65,19 +68,20 @@ app.post("/project", authenticate, createProject);
 app.get("/projects/open", getAllOpenProjects);
 app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
-app.get('/projects/open/skills/:skill', getAllWithSkill);
-app.get('/my/projects/open', authenticate, getMyOpenProjects);
-app.get('/my/projects/closed', authenticate, getMyClosedProjects);
+app.get("/projects/open/skills/:skill", getAllWithSkill);
+app.get("/my/projects/open", authenticate, getMyOpenProjects);
+app.get("/my/projects/closed", authenticate, getMyClosedProjects);
+app.post('/edit/:projectId', authenticate, editProject);
 /**
  * - Get all closed projects ('/my/closed')
  * - Get all open projects ('/my/open')
- * - My teams 
+ * - My teams
  */
 
 //applications routes
-app.get('/apply/:projectId', authenticate, apply);
-app.get('/interested/:projectId', authenticate, showInterested);
-app.get('/my/applications', authenticate, showMyApplications);
+app.get("/apply/:projectId", authenticate, apply);
+app.get("/interested/:projectId", authenticate, showInterested);
+app.get("/my/applications", authenticate, showMyApplications);
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  * - Get all interested projects (/my/interested)
@@ -91,8 +95,11 @@ exports.applications = functions.https.onRequest(app);
 exports.deleteUser = functions.firestore
   .document("/users/{userId}")
   .onDelete((snapshot, context) => {
+    const imageRef =  firebase.storage().ref().child(`images/${userId}.jpg`);
+    const resumeRef = firebase.storage().ref().child(`resume/${userId}.pdf`);
     const userId = context.params.userId;
     const batch = db.batch();
+
     return db
       .collection("credentials")
       .where("user", "==", userId)
@@ -120,6 +127,12 @@ exports.deleteUser = functions.firestore
         data.forEach((doc) => {
           batch.delete(db.doc(`/closed/${doc.id}`));
         });
+        return imageRef.delete();
+      })
+      .then(() => {
+        return resumeRef.delete();
+      })
+      .then(() => {
         return batch.commit();
       })
       .catch((err) => console.error(err));
