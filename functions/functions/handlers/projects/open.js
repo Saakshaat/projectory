@@ -18,7 +18,8 @@ exports.create = (req, res) => {
     team: [],
   };
 
-  return db.collection("open")
+  return db
+    .collection("open")
     .where("name", "==", project.name)
     .where("user", "==", project.user)
     .get()
@@ -133,5 +134,39 @@ exports.getSkill = (req, res) => {
     })
     .catch((err) => {
       return res.status(500).json({ error: `Error accessing projects` });
+    });
+};
+
+exports.getMyOpen = (req, res) => {
+  let response = [];
+  return db
+    .collection("open")
+    .where("user", "==", req.user.docId)
+    .get()
+    .then((projects) => {
+
+      projects.forEach((project) => {
+        response.push(project.data());
+      });
+
+      return db
+        .collection("open")
+        .where("team", 'array-contains', req.user.docId)
+        .get()
+        .then((teams) => {
+          console.log(teams.docs[0].data());
+          teams.forEach((project) => {
+            response.push(project.data());
+          })
+          return res.status(200).json(response);
+        })
+        .catch(err => {
+          return res.status(500).json({ error: `Error in getting teams` });
+        });
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error. ${err.code}` });
     });
 };

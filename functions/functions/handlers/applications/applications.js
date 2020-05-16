@@ -73,9 +73,11 @@ exports.showInterested = (req, res) => {
         return showMultipleProfiles(req, res);
       }
     })
-    .catch(err => {
-        return res.status(500).json({ error: `Internal Server Error. ${err.code}` })
-    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error. ${err.code}` });
+    });
 };
 
 exports.select = (req, res) => {
@@ -111,7 +113,20 @@ exports.finalizeTeam = (req, res) => {
 };
 
 exports.showMyApplications = (req, res) => {
-  /**
-   * Go through open projects return all projects where user's ID is in interested.
-   */
+  let projects = [];
+
+  return db
+    .collection("open")
+    .where("interested", "array-contains", req.user.docId)
+    .get()
+    .then((docs) => {
+      docs.forEach(project => {
+        projects.push(project.data());
+      });
+
+      return res.status(200).json(projects);
+    })
+    .catch(err => {
+      return res.status(500).json({ error : `Internal Server Error. ${err.code}` });
+    })
 };
