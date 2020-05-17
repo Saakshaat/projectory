@@ -21,7 +21,7 @@ export default function WireFrame() {
           <Route exact path="/user" component={User} />
           <Route path="/user/:userId/profile" component={OtherProfile} />
           <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/" component={Dashboard} />
+          <Route exact path="/" component={SignIn} />
         </Switch>
       </div>
     </Router>
