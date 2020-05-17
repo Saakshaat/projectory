@@ -316,49 +316,6 @@ exports.addResume = (req, res) => {
   busboy.end(req.rawBody);
 };
 
-exports.showMultipleProfiles = (req, res) => {
-  const users = [];
-  req.body.users.forEach(function (part, index) {
-    this[index] = db.doc(`/users/${this[index]}`);
-  }, req.body.users);
-
-  return db
-    .getAll(...req.body.users)
-    .then((docs) => {
-      docs.forEach((data) => {
-        db.collection("experience")
-          .where("user", "==", docRef)
-          .limit(1)
-          .get()
-          .then((exp) => {
-            const user = {
-              name: data.data().name,
-              bio: data.data().bio,
-              socials: data.data().socials,
-              projects_created: data.data().projects_created,
-              projects_selected: data.data().projects_selected,
-              institution: data.data().institution,
-              imageUrl: data.data().imageUrl,
-            };
-            const experience = {
-              skills: exp.docs[0].data().skills,
-              headline: exp.docs[0].data().headline,
-            };
-            users.push({
-              user,
-              experience,
-            });
-          });
-      });
-      return res.status(200).json(users);
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Internal Server Error: ${err.code}` });
-    });
-};
-
 exports.edit = (req, res) => {
   let newUser = {
     name: req.body.information.name,
@@ -424,17 +381,46 @@ exports.edit = (req, res) => {
     });
 };
 
-exports.test = (req, res) => {
-  let proj = [];
-  return db
-    .collection("open")
-    .where("team", "array-contains", "ViMf40s006yfDOBmO9J6")
-    .get()
-    .then((teams) => {
-      teams.forEach((project) => {
-        proj.push(project.data());
-      });
+exports.showMultipleProfiles = (req, res) => {
+  const { stringify,parse } = require('flatted/cjs');
+  const users = [];
+  req.body.users.forEach(function (part, index) {
+    this[index] = db.doc(`/users/${this[index]}`);
+  }, req.body.users);
 
-      return res.json(proj);
+  return db.getAll(...req.body.users).then((docs) => {
+    docs.forEach((data) => {
+      users.push(
+        stringify(parse(stringify({
+          informaton: data.data(),
+          experience: db
+            .collection("experience")
+            .where("user", "==", data.id)
+            .get()
+            .then((exp) => {
+              return exp.docs[0].exists
+            })
+          }
+      ))));
     });
+    return res.status(200).json(users);
+  });
+  // .catch((err) => {
+  //   return res
+  //     .status(500)
+  //     .json({ error: `Internal Server Error: ${err.code}` });
+  // });
+};
+
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
 };
