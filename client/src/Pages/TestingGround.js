@@ -1,15 +1,9 @@
 import React, { Component } from "react";
 import {
-  Grid,
-  Tooltip,
-  Button,
-  TextField,
-  Chip,
-  Typography,
   Container,
 } from "@material-ui/core";
-import ProfileSnapshot from "../Components/ProfileSnapshot";
-import firebase from "firebase";
+import ProjectList from "../Components/ProjectList";
+
 import axios from "axios";
 
 export default class TestingGround extends Component {
@@ -52,9 +46,7 @@ export default class TestingGround extends Component {
   render() {
     return (
       <Container>
-       
-
-        <ProfileSnapshot userId="8JAj8O2rI7PoyBuzm8Ji"/>
+        <ProjectList endpoint="/baseapi/projects/open" applicable={true} />
       </Container>
     );
   }

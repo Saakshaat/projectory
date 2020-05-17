@@ -6,7 +6,7 @@ import firebase from "firebase";
 
 const App = () => {
   return (
-    <NavDrawer />
+    <WireFrame />
   );
 };
 

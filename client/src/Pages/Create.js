@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   Grid,
-  Tooltip,
   Button,
   TextField,
   Chip,
@@ -383,8 +382,9 @@ export default class Create extends Component {
                   renderInput={(params) => (
                     <TextField
                       {...params}
+                      required
                       variant="standard"
-                      label="Best Skills *"
+                      label="Best Skills"
                       placeholder="You best at"
                     />
                   )}

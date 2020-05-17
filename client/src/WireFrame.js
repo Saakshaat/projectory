@@ -18,10 +18,10 @@ export default function WireFrame() {
           <Route exact path="/testing" component={TestingGround} />
           <Route exact path="/my/profile/" component={Profile} />
           <Route exact path="/signup" component={SignUp} />
+          <Route exact path="/" component={SignIn} />
           <Route exact path="/user" component={User} />
           <Route path="/user/:userId/profile" component={OtherProfile} />
           <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/" component={SignIn} />
         </Switch>
       </div>
     </Router>
