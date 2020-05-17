@@ -8,7 +8,7 @@ export default class SkillChip extends Component {
     super(props);
     this.state = {
       name: props.skill,
-      color: null,
+      color: null
     };
     //TODO impove searching process
     for (let i = 0; i < skills.length; i++) {
