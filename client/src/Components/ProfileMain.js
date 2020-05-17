@@ -8,6 +8,8 @@ import EmailIcon from "@material-ui/icons/Email";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import LanguageIcon from "@material-ui/icons/Language";
+import EditIcon from "@material-ui/icons/Edit";
+
 import axios from "axios";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -83,7 +85,10 @@ const Header = (props) => {
       </Grid>
 
       <Grid item xs={12}>
-        <Typography variant="h4">{props.profile.information.name}</Typography>
+        <Typography variant="h4">
+          {props.profile.information.name}
+          <EditIcon fontSize="small" style={{ color: "blue" }} />
+        </Typography>
         <Divider
           variant="middle"
           style={{
@@ -196,7 +201,6 @@ const Info = (props) => {
             Download Resume
           </Button>
         </Grid>
-        <a href={props.profile.experience.resume} download="proposed_file_name">Download</a>
       </Grid>
     </Container>
   );
