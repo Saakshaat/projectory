@@ -50,7 +50,7 @@ export default class Profile extends Component {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else {
       if (!this.state.hadData) return <Typography>Loading...</Typography>;
-      else return <ProfileMain profile={this.state.profile}></ProfileMain>;
+      else return <ProfileMain profile={this.state.profile} auth={true}></ProfileMain>;
     }
   }
 }

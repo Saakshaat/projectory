@@ -46,6 +46,9 @@ export default class OtherProfile extends Component {
     if (!this.state.hadData) return <Typography>Loading...</Typography>;
     else if (this.state.hasError)
       return <ErrorText text={this.state.errorText} />;
-    else return <ProfileMain profile={this.state.profile}></ProfileMain>;
+    else
+      return (
+        <ProfileMain profile={this.state.profile} auth={false}></ProfileMain>
+      );
   }
 }
