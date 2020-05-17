@@ -14,7 +14,27 @@ export default class SignIn extends Component {
       password: "",
       isLoggedIn: false,
     };
-    if (localStorage.FBIdToken) this.state.isLoggedIn = true;
+  }
+
+  componentDidMount() {
+    if (localStorage.FBIdToken) {
+      axios.get('/baseapi/valid', {
+        headers: {
+          Authorization: localStorage.FBIdToken,
+        },
+      })
+        .then(response => {
+          if (response.status === 200)
+            this.setState({
+              isLoggedIn: true,
+            })
+        }).catch(error => {
+          console.log(error)
+          this.setState({ isLoggedIn: false })
+        })
+    } else {
+      this.setState({ isLoggedIn: false })
+    }
   }
 
   // Handlle submit button

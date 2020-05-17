@@ -1,9 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import WireFrame from "./WireFrame";
+import NavDrawer from "./Components/NavDrawer";
 
 const App = () => {
-  return <WireFrame />;
+  return (
+    <NavDrawer />
+  );
 };
 
 ReactDOM.render(

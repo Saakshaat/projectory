@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useContext } from "react";
 import { Card, CardContent, Typography, CardActions, Button, TableRow, TableCell, Chip, Container, Link, Divider } from "@material-ui/core";
 import SkillBoard from '../Components/SkillBoard'
 import '../Utils/Skill'
@@ -7,10 +7,14 @@ import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import DoneIcon from '@material-ui/icons/Done';
+import axios from 'axios';
 
 const styles = (theme) => ({
     root: {
@@ -54,12 +58,59 @@ const DialogActions = withStyles((theme) => ({
 
 
 let skills = require('../Utils/Skill')
-let applied = false;
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Project = (props) => {
     const [open, setOpen] = React.useState(false);
+    const [openSnack, setOpenSnack] = React.useState(false);
+    const [applied, setApplied] = React.useState(false);
+    const [appliedAlert, setAlert] = React.useState();
+
+    const handleApplySuccess = () => {
+        setApplied(true);
+        setAlert(
+            <Alert onClose={handleCloseSnack} severity="success">
+                Applied Successfully to {props.project.name}
+            </Alert>);
+        setOpenSnack(true);
+    }
+
+    const handleCloseSnack = (event, reason) => {
+        if (reason === "clickaway") {
+            setOpenSnack(false);
+            return;
+        }
+        setOpenSnack(false);
+    };
+
+
+    const handleApplyFailure = (error) => {
+        setAlert(
+            <Alert onClose={handleCloseSnack} severity="error">
+                {error}
+            </Alert>);
+        setOpenSnack(true);
+    }
 
     const handleApply = () => {
+        axios.get('/applications/apply/' + props.project.id, {
+            headers: {
+                Authorization: localStorage.FBIdToken,
+            },
+        }).then(res => {
+            if (res.status === 200) {
+                handleApplySuccess();
+            } else {
+                handleApplyFailure();
+            }
+            console.log(res.data);
+        }).catch(error => {
+            console.log(error.toString())
+            handleApplyFailure(error.toString())
+        });
     }
 
     const handleClickOpen = () => {
@@ -69,21 +120,21 @@ const Project = (props) => {
         setOpen(false);
     };
     return (
-        <div>
+        <div style={{ alignSelf: 'baseline' }}>
             {props ? (
-                <Card elevation={8} style={{ borderRadius: 10 }}>
+                <Card elevation={8} style={{ borderRadius: 10, height: '100%' }}>
                     <CardContent>
-                        <Typography gutterBottom variant='h5' component='h2' style={{ margin: 0 }}>
+                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0 }}>
                             {props.project.name}
                         </Typography>
-                        <Typography textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
+                        <Typography noWrap textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
                             <Link href='#' variant='body2'>by {props.project.creator}</Link>
                         </Typography>
                         <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
                             {props.project.description}
                         </Typography>
                         <div style={{ marginTop: 15, marginBottom: -10, marginLeft: -5 }}>
-                            <SkillBoard style={{}} skillsList={props.project.needed} />
+                            <SkillBoard skillsList={props.project.needed} />
                         </div>
                     </CardContent>
                     <CardActions >
@@ -92,12 +143,15 @@ const Project = (props) => {
                                 onClick={handleClickOpen}>
                                 Details
                             </Button>
-                            {applied ? (<Button style={{ flex: 1, margin: 4 }} startIcon={<DoneIcon />} variant='contained' size='medium' color='primary' disabled>
+                            {props.applicable ? (applied ? (<Button style={{ flex: 1, margin: 4 }} startIcon={<DoneIcon />} variant='contained' size='medium' color='secondary' disableElevation disableTouchRipple disableFocusRipple disableRipple>
                                 Applied
                             </Button>) :
                                 (<Button style={{ flex: 1, margin: 4 }} variant='contained' size='medium' color='primary' onClick={handleApply}>
                                     Apply
-                                </Button>)}
+                                </Button>)) : null}
+                            <Snackbar open={openSnack} autoHideDuration={2000} onClose={handleCloseSnack}>
+                                {appliedAlert}
+                            </Snackbar>
                             <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                                 <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{ marginBottom: -15 }} >
                                     {props.project.name}

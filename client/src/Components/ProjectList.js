@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
-import { Grid, TextField, Card, CircularProgress, Container, InputAdornment } from '@material-ui/core'
+import { Grid, TextField, Card, CircularProgress, Container, InputAdornment, Paper } from '@material-ui/core'
 import SearchIcon from "@material-ui/icons/Search";
 import axios from 'axios'
 import Project from './Project'
+import NavDrawer from './NavDrawer';
 
 class ProjectList extends Component {
 
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
             isLoading: false,
+            endpoint: props.link,
             projects: [
                 {
+                    id: '',
                     creator: '',
                     createdAt: '',
                     description: '',
@@ -33,11 +36,16 @@ class ProjectList extends Component {
 
     getProjects = () => {
         this.setState({ isLoading: true }, () => {
-            axios.get('/baseapi/projects/open')
+            axios.get(this.props.endpoint, {
+                headers: {
+                    Authorization: this.props.header,
+                },
+            })
                 .then(response => {
                     let array = new Array(response.data.length)
                     for (var i in response.data) {
                         array[i] = {
+                            id: response.data[i].id,
                             creator: response.data[i].creator,
                             createdAt: response.data[i].createdAt,
                             description: response.data[i].description,
@@ -52,8 +60,11 @@ class ProjectList extends Component {
                         isLoading: false,
                         projects: array
                     })
+                    console.log(response);
+                    console.log(response.status);
                 }).catch(error => {
                     console.log(error)
+                    console.log(error.status);
                 })
         });
     }
@@ -72,32 +83,20 @@ class ProjectList extends Component {
         const { isLoading, projects } = this.state
         return (
             <div>
-
-                {isLoading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress size={50} /></div> : (this.state.projects ? (
+                {isLoading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress size={50} /></div> : (this.state.projects.length > 0 ? (
                     <div>
                         <Container style={{ display: 'flex', width: '100vh', alignContent: 'center', justifyContent: 'center', flex: 1 }}>
-                            <TextField style={{ padding: 20 }}
-                                id='searchInput'
-                                placeholder='Search for Projects'
-                                margin='normal'
-                                onChange={this.onSeachInputChange}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            /></Container>
-                        <Grid container spacing={5} style={{ padding: 10, margin: 0, width: '100%' }}>
+                        </Container>
+                        <Grid alignItems='stretch' container spacing={5} style={{ alignItems: 'stretch', padding: 10, margin: 0, width: '100%' }}>
                             {this.state.projects.map(currentProject => (
-                                <Grid item key={currentProject.name} xs={10} sm={6} lg={4} xl={3}>
-                                    <Project project={currentProject} />
+                                // style={{}} xs={10} sm={6} lg={4} xl={3} 
+                                <Grid item key={currentProject.name} lg={4}>
+                                    <Project project={currentProject} applicable={this.props.applicable} />
                                 </Grid>
                             ))}
                         </Grid>
                     </div>
-                ) : "No Projects Found")}
+                ) : <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>No Projects Found</div>)}
             </div>
         )
     }
