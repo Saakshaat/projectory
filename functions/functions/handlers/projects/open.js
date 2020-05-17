@@ -195,6 +195,57 @@ exports.getMyOpen = (req, res) => {
 
         return res.status(200).json(response);
       });
+  } else if (req.params.position == 'all') {
+    return db
+      .collection("open")
+      .where("user", "==", req.user.docId)
+      .get()
+      .then((projects) => {
+        projects.forEach((project) => {
+          const id = project.id;
+          const data = project.data();
+
+          response.push({
+            id: id,
+            creator: data.creator,
+            createdAt: data.createdAt,
+            description: data.description,
+            github: data.github,
+            links: data.links,
+            name: data.name,
+            interested: data.interested,
+            needed: data.needed,
+            team: data.team,
+            user: data.user,
+          });
+        });
+        return db
+          .collection("open")
+          .where("team", "array-contains", req.user.docId)
+          .get();
+      })
+      .then((projects) => {
+        projects.forEach((project) => {
+          const id = project.id;
+          const data = project.data();
+
+          response.push({
+            id: id,
+            creator: data.creator,
+            createdAt: data.createdAt,
+            description: data.description,
+            github: data.github,
+            links: data.links,
+            name: data.name,
+            interested: data.interested,
+            needed: data.needed,
+            team: data.team,
+            user: data.user,
+          });
+        });
+
+        return res.status(200).json(response);
+      });
   } else {
     return res
       .status(404)

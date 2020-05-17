@@ -49,10 +49,6 @@ exports.apply = (req, res) => {
 };
 
 exports.showInterested = (req, res) => {
-  /**
-   * - traverse through the chosen project's interested array and return entire user objects
-   * - Client should have a seperate component for small snapshots of the user object
-   */
   return db
     .doc(`/open/${req.params.projectId}`)
     .get()
@@ -73,11 +69,11 @@ exports.showInterested = (req, res) => {
         return showMultipleProfiles(req, res);
       }
     })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ error: `Internal Server Error. ${err.code}` });
-    });
+    // .catch((err) => {
+    //   return res
+    //     .status(500)
+    //     .json({ error: `Internal Server Error. ${err.code}` });
+    // });
 };
 
 exports.select = (req, res) => {

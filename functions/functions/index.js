@@ -66,12 +66,6 @@ app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
 app.get("/projects/open/skills/:skill", getAllWithSkill);
 app.post('/edit/:projectId', authenticate, editProject);
-/**
- * TODO: break down the endpoints for getting all open/closed projects into 2: created and selected
- * just have a common callback (and route) for '/my/projects/:state/:position' where state = open/closed and position = created/selected
- * Then in users.js, pass the callback flow to either open or closed basis req.params.state
- * then in the respective file, use req.params.position to query the DB with .where('user', '==', req.user.docId) or .where(')
- */
 app.get("/my/projects/:state/:position", authenticate, getMyProjects);
 /**
  * - Get all closed projects ('/my/closed')
