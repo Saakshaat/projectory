@@ -32,25 +32,36 @@ export default class SignUp extends Component {
   handleLoginButtonClick = (e) => {
     e.preventDefault();
 
-    if (this.state.hasEmptyEmail) return;
-    if (this.state.hasEmptyPassword) return;
-    if (this.state.hasEmptyComfirmPassword) return;
-    if (this.state.passwordDontMatch) return;
+    this.setState({ hasEmptyEmail: false });
+    this.setState({ hasEmptyPassword: false });
+    this.setState({ hasError: false });
+    this.setState({ passwordDontMatch: false });
+
+    if (this.state.email.length === 0) {
+      this.setState({ hasEmptyEmail: true });
+      return;
+    }
+    if (this.state.password.length === 0) {
+      this.setState({ hasEmptyPassword: true });
+      return;
+    }
+    if (this.state.password !== this.state.confirmPassword) {
+      this.setState({ passwordDontMatch: true });
+      return;
+    }
+
+    console.log("Signing up...");
 
     axios
-      .post(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/signup",
-        {
-          email: this.state.email,
-          password: this.state.password,
-          confirmPassword: this.state.confirmPassword,
-        }
-      )
+      .post("/baseapi/signup", {
+        email: this.state.email,
+        password: this.state.password,
+        confirmPassword: this.state.confirmPassword,
+      })
       .then((res) => {
         // TODO handle different type of request
         credentials = res.data.credentials;
         uid = res.data.uid;
-
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ hasCredential: true });
       })
@@ -59,6 +70,15 @@ export default class SignUp extends Component {
           if (err.response.data.email === "Must be valid") {
             this.setState({
               errorText: "Invalid email address.",
+            });
+          }
+          if (
+            err.response.data.password ===
+            "Password must be 8 characters long and must contain atleast one number and special character"
+          ) {
+            this.setState({
+              errorText:
+                "Password must be 8 characters long and must contain atleast one number and special character.",
             });
           }
         }
@@ -81,9 +101,7 @@ export default class SignUp extends Component {
     e.preventDefault();
     console.log("Signing in with Google...");
     axios
-      .post(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/google/signin"
-      )
+      .post("/baseapi/google/signin")
       .then((res) => {
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });
@@ -92,32 +110,19 @@ export default class SignUp extends Component {
         console.log(err.status);
       });
   };
+
   //TODO check if Email is valid
   handleTextEmailChange = (e) => {
     this.setState({ email: e.target.value });
-    if (e.target.value.length === 0) this.setState({ hasEmptyEmail: true });
-    else this.setState({ hasEmptyEmail: false });
   };
 
   //TODO check if Password is strong
   handleTextPasswordChange = (e) => {
     this.setState({ password: e.target.value });
-    if (e.target.value.length === 0) this.setState({ hasEmptyPassword: true });
-    else this.setState({ hasEmptyPassword: false });
-    if (e.target.value === this.state.confirmPassword)
-      this.setState({ passwordDontMatch: false });
-    else this.setState({ passwordDontMatch: true });
   };
 
   handleTextConfirmPasswordChange = (e) => {
     this.setState({ confirmPassword: e.target.value });
-    if (e.target.value.length === 0)
-      this.setState({ hasEmptyComfirmPassword: true });
-    else this.setState({ hasEmptyComfirmPassword: false });
-
-    if (e.target.value === this.state.password)
-      this.setState({ passwordDontMatch: false });
-    else this.setState({ passwordDontMatch: true });
   };
 
   render() {

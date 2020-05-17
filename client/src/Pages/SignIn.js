@@ -4,6 +4,8 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { Link, Redirect } from "react-router-dom";
 import { Typography } from "@material-ui/core";
+import ErrorText from "../Components/ErrorText";
+
 import axios from "axios";
 
 export default class SignIn extends Component {
@@ -12,7 +14,12 @@ export default class SignIn extends Component {
     this.state = {
       email: "",
       password: "",
+      hasEmptyEmail: false,
+      hasEmptyPassword: false,
       isLoggedIn: false,
+      hasError: false,
+      errorText: "",
+      hasProflie: true,
     };
   }
 
@@ -40,38 +47,48 @@ export default class SignIn extends Component {
   // Handlle submit button
   handleLoginButtonClick = (e) => {
     e.preventDefault();
-    //TODO don't use alert
+    this.setState({ hasEmptyEmail: false });
+    this.setState({ hasEmptyPassword: false });
+    this.setState({ hasError: false });
+
     if (this.state.email.length === 0) {
-      alert("Email should not be empty!");
+      this.setState({ hasEmptyEmail: true });
       return;
     }
     if (this.state.password.length === 0) {
-      alert("Password should not be empty!");
+      this.setState({ hasEmptyPassword: true });
       return;
     }
+
     console.log("Signing in...");
     axios
-      .post(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/login",
-        {
-          email: this.state.email,
-          password: this.state.password,
-        }
-      )
+      .post("/baseapi/login", {
+        email: this.state.email,
+        password: this.state.password,
+      })
       .then((res) => {
+        console.log(res);
         // TODO handle multiple request
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });
       })
       .catch((err) => {
-        // console.log(err.response)
+        console.log(err.response);
+
+        if (err.response.status === 404) {
+          this.setState({ hasProflie: false });
+          return;
+        }
+
         if (err.response.status === 400) {
           if (err.response.data.email === "Must be valid")
-            alert("Invalid Email");
+            this.setState({ errorText: "Invalid Email" });
         }
         if (err.response.status === 403) {
-          alert(err.response.data.general);
+          this.setState({ errorText: err.response.data.general });
         }
+
+        this.setState({ hasError: true });
       });
   };
 
@@ -91,18 +108,17 @@ export default class SignIn extends Component {
   };
 
   handleTextEmailChange = (e) => {
-    this.setState({
-      email: e.target.value,
-    });
+    this.setState({ email: e.target.value });
   };
 
   handleTextPasswordChange = (e) => {
-    this.setState({
-      password: e.target.value,
-    });
+    this.setState({ password: e.target.value });
   };
+
   //TODO add "Remember Me" option
   render() {
+    if (!this.state.hasProflie) return <Redirect to="/create" />;
+
     // Already isLoggedIn user get to the user page
     if (this.state.isLoggedIn) {
       return <Redirect to="/user" />;
@@ -123,6 +139,13 @@ export default class SignIn extends Component {
             autoComplete="email"
             autoFocus
           />
+          {this.state.hasEmptyEmail ? (
+            <Grid item xs={12}>
+              <ErrorText text="Email must not be empty" />
+            </Grid>
+          ) : (
+            <div />
+          )}
 
           <TextField
             label="Password"
@@ -134,7 +157,20 @@ export default class SignIn extends Component {
             id="password"
             autoComplete="current-password"
           />
-
+          {this.state.hasEmptyPassword ? (
+            <Grid item xs={12}>
+              <ErrorText text="Password must not be empty" />
+            </Grid>
+          ) : (
+            <div />
+          )}
+          {this.state.hasError ? (
+            <Grid item xs={12}>
+              <ErrorText text={this.state.errorText} />
+            </Grid>
+          ) : (
+            <div />
+          )}
           <Button
             fullWidth
             type="submit"

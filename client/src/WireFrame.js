@@ -7,7 +7,7 @@ import Create from "./Pages/Create";
 import Dashboard from './Pages/Dashboard';
 import Profile from "./Pages/Profile";
 import OtherProfile from "./Pages/OtherProfile";
-import ProjectList from "./Components/ProjectList";
+import TestingGround from "./Pages/TestingGround";
 
 export default function WireFrame() {
   return (
@@ -15,6 +15,7 @@ export default function WireFrame() {
       <div>
         <Switch>
           <Route exact path="/create" component={Create} />
+          <Route exact path="/testing" component={TestingGround} />
           <Route exact path="/my/profile/" component={Profile} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/user" component={User} />

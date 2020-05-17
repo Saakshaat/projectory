@@ -1,19 +1,15 @@
 import React, { Component } from "react";
 import Typography from "@material-ui/core/Typography";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
-import { Grid, GridItem } from "@material-ui/core";
-import SkillBoard from "../Components/SkillBoard";
 import ErrorText from "../Components/ErrorText";
+import ProfileMain from "../Components/ProfileMain";
 
 export default class OtherProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       profile: null,
-      userId: props.userId,
+      userId: this.props.match.params.userId,
       hadData: false,
       hasError: false,
       errorText: "",
@@ -26,11 +22,7 @@ export default class OtherProfile extends Component {
 
   getProfilePage() {
     axios
-      .get(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/user/" +
-          this.state.userId +
-          "/profile"
-      )
+      .get("/baseapi/user/" + this.state.userId + "/profile")
       .then((res) => {
         // TODO handle different type of request
         this.setState({
@@ -45,6 +37,7 @@ export default class OtherProfile extends Component {
           this.setState({ errorText: "User does not exist." });
           this.setState({ hasError: true });
           this.setState({ hadData: true });
+          console.log(this.state.hasError);
         }
       });
   }
@@ -52,48 +45,7 @@ export default class OtherProfile extends Component {
   render() {
     if (!this.state.hadData) return <Typography>Loading...</Typography>;
     else if (this.state.hasError)
-      return <ErrorText>{this.state.errorText}</ErrorText>;
-    else
-      return (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            textAlign: "center",
-          }}
-        >
-          <div>
-            <Typography variant="h3">
-              {this.state.profile.information.name}
-            </Typography>
-            <p />
-
-            <Typography>
-              {this.state.profile.information.institution}
-            </Typography>
-            {/* TODO hide this if there are no github link */}
-            <a href={this.state.profile.information.socials.github}>
-              <GitHubIcon color="primary" />
-            </a>
-
-            {/* TODO hide this if there are no linkedin link */}
-            <a href={this.state.profile.information.socials.linkedin}>
-              <LinkedInIcon color="primary" />
-            </a>
-            <p />
-
-            <Typography variant="caption">
-              {this.state.profile.information.bio}
-            </Typography>
-
-            <p />
-            <Typography>Technologies and Skills</Typography>
-            <SkillBoard
-              skills={this.state.profile.experience.skills}
-            ></SkillBoard>
-          </div>
-        </div>
-      );
+      return <ErrorText text={this.state.errorText} />;
+    else return <ProfileMain profile={this.state.profile}></ProfileMain>;
   }
 }

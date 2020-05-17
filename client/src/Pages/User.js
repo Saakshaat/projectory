@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Button } from "@material-ui/core";
+import { Button, Container } from "@material-ui/core";
 import { Link, Redirect } from "react-router-dom";
+import ProfileSnapot from "../Components/ProfileSnapshot";
 
 export default class User extends Component {
   constructor() {
@@ -19,35 +20,19 @@ export default class User extends Component {
     console.log(this.state);
   };
 
-  // handleShowProject = (e) => {
-  //   e.preventDefault();
-  //   console.log("Showing Projects ...");
-  //   axios
-  //     .post("/project")
-  //     .then((res) => {
-  //       console.log(res);
-  //       this.state = {
-  //         isLoggedIn: false,
-  //       };
-  //     })
-  //     .catch((e) => console.log(e));
-  // };
-
-  //TODO move this to dashboard
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else
       return (
-        <div>
+        <Container>
           <div>User Logged In!</div>
           <Link to="/my/profile" style={{ textDecoration: "none" }}>
             <Button>My Profile</Button>
           </Link>
           <Button onClick={this.handleClick}>Logout</Button>
-          {/* <Link to>Saakshaat Awesome Profile</Button> */}
-          {/* TODO implement this latter */}
-          {/* <Button onClick={this.handleShowProject}>Show project</Button> */}
-        </div>
+        </Container>
       );
   }
 }
+
+

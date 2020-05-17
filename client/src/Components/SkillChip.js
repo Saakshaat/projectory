@@ -32,3 +32,10 @@ export default class SkillChip extends Component {
     );
   }
 }
+
+// font-family: Roboto;
+// font-style: normal;
+// font-weight: bold;
+// font-size: 18px;
+// line-height: 21px;
+// text-align: center;
