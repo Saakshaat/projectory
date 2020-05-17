@@ -382,7 +382,6 @@ exports.edit = (req, res) => {
 };
 
 exports.showMultipleProfiles = (req, res) => {
-  const { stringify,parse } = require('flatted/cjs');
   const users = [];
   req.body.users.forEach(function (part, index) {
     this[index] = db.doc(`/users/${this[index]}`);
@@ -390,26 +389,15 @@ exports.showMultipleProfiles = (req, res) => {
 
   return db.getAll(...req.body.users).then((docs) => {
     docs.forEach((data) => {
-      users.push(
-        stringify(parse(stringify({
-          informaton: data.data(),
-          experience: db
-            .collection("experience")
-            .where("user", "==", data.id)
-            .get()
-            .then((exp) => {
-              return exp.docs[0].exists
-            })
-          }
-      ))));
+      users.push(data.data());
     });
     return res.status(200).json(users);
+  })
+  .catch((err) => {
+    return res
+      .status(500)
+      .json({ error: `Internal Server Error: ${err.code}` });
   });
-  // .catch((err) => {
-  //   return res
-  //     .status(500)
-  //     .json({ error: `Internal Server Error: ${err.code}` });
-  // });
 };
 
 const getCircularReplacer = () => {

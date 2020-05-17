@@ -6,6 +6,7 @@ const {
   getSkill,
   getMyOpen,
   edit,
+  getCannotApply
 } = require("./open");
 const { getOneC, getMyClosed, reopenProject } = require("./closed");
 
@@ -46,3 +47,7 @@ exports.getMyProjects = (req, res) => {
 exports.editProject = (req, res) => {
   return edit(req, res);
 };
+
+exports.getCannotApply = (req, res) => {
+  return getCannotApply(req, res);
+}

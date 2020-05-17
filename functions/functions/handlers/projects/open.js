@@ -253,6 +253,35 @@ exports.getMyOpen = (req, res) => {
   }
 };
 
+exports.getCannotApply = (req, res) => {
+  let proj = [];
+
+  return db.collection('open').where('user', '==', req.user.docId).get().then(created => {
+    created.forEach(e => {
+      proj.push(e.id);
+    })
+
+    return db.collection('open').where('teams', 'array-contains', req.user.docId).get();
+  })
+  .then(selected => {
+    selected.forEach(e => {
+      proj.push(e.id);
+    })
+
+    return db.collection('open').where('interested', 'array-contains', req.user.docId).get();
+  })
+  .then(interested => {
+    interested.forEach(e => {
+      proj.push(e.id);
+    })
+
+    return res.status(200).json(proj);
+  })
+  .catch(err => {
+    return res.status(500).json({ error: `Internal Server Error` });
+  })
+}
+
 exports.edit = (req, res) => {
   const newProject = {
     name: req.body.name,
