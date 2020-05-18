@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import clsx from 'clsx';
-import { Router, Route, Link, BrowserRouter, Switch } from "react-router-dom";
+import { Router, Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
 import { createBrowserHistory } from "history";
 
 import { withStyles } from '@material-ui/core/styles';
@@ -13,6 +13,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import SignUp from "../Pages/SignUp";
 import User from "../Pages/User";
@@ -31,6 +33,7 @@ import MyProjects from '../Pages/MyProjects'
 import NavBar from './NavBar';
 import { CssBaseline, makeStyles, ListItemIcon } from '@material-ui/core';
 import SignIn from '../Pages/SignIn';
+import axios from 'axios';
 
 
 const drawerWidth = 250;
@@ -49,10 +52,13 @@ const styles = makeStyles({
     },
 });
 
+
 function NavDrawer() {
+
     const classes = styles();
     const [drawer, setDrawer] = useState(false);
     const [title, setTitle] = useState('Dashboard')
+    const [isLoggedIn, setLogIn] = useState(true);
 
     const toggleDrawer = () => {
         setDrawer(!drawer)
@@ -63,11 +69,25 @@ function NavDrawer() {
         setDrawer(!drawer);
     }
 
+    // if (!isLoggedIn) {
+    //     return <Redirect to='/signin' />;
+    // }
+
     return (
         <div>
             <CssBaseline />
             <NavBar toggleDrawer={toggleDrawer} title={title} />
             <BrowserRouter history={history}>
+                <Fab color="primary" aria-label="add" size='medium' style={{
+                    margin: 0,
+                    top: 'auto',
+                    right: 40,
+                    bottom: 40,
+                    left: 'auto',
+                    position: 'fixed',
+                }}>
+                    <AddIcon />
+                </Fab>
                 <Drawer variant='temporary' open={drawer} onClose={toggleDrawer} classes={{ paper: classes.drawerPaper }}>
                     <List>
                         <ListItem color='primary' component={Typography}>
@@ -87,7 +107,7 @@ function NavDrawer() {
                             </ListItemIcon>
                             <ListItemText>Profile</ListItemText>
                         </ListItem>
-                        <ListItem button component={Link} to='/signin' onClick={onItemClick('SignIn')}>
+                        <ListItem button component={Link} to='/signin' onClick={onItemClick('Teams')}>
                             <ListItemIcon>
                                 <GroupIcon />
                             </ListItemIcon>
@@ -109,10 +129,10 @@ function NavDrawer() {
                 </Drawer>
                 <main>
                     <Switch>
-                        <Route exact path="/my/profile/" component={SignUp} />
+                        <Route exact path="/my/profile/" component={Profile} />
+                        <Route exact path="/signin" component={SignIn} />
                         <Route exact path="/my/applications/" component={MyApplications} />
                         <Route exact path="/my/projects/" component={MyProjects} />
-                        <Route exact path="/signin" component={SignIn} />
                         <Route exact path="/dashboard" component={Dashboard} />
                         <Route exact path="/" component={Dashboard} />
                     </Switch>
