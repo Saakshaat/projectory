@@ -69,11 +69,11 @@ exports.showInterested = (req, res) => {
         return showMultipleProfiles(req, res);
       }
     })
-    // .catch((err) => {
-    //   return res
-    //     .status(500)
-    //     .json({ error: `Internal Server Error. ${err.code}` });
-    // });
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error. ${err.code}` });
+    });
 };
 
 exports.select = (req, res) => {
@@ -84,12 +84,33 @@ exports.select = (req, res) => {
    */
 };
 
-exports.showTeam = (req, res, showMultipleProfiles) => {
-  /**
-   * - go through project's team array
-   * - return entire user objects as response
-   * - Client needs to make seperate components for small snapshots
-   */
+exports.showProjectTeam = (req, res) => {
+  return db
+  .doc(`/${req.params.state}/${req.params.projectId}`)
+  .get()
+  .then((project) => {
+    if (!project.exists) {
+      return res.status(404).json({ error: `Project not found` });
+    } else if (!project.data().team.includes(req.user.docId)) {
+      return res.status(403).json({ error: `You're not in this team` });
+    } else if (
+      project.data().team == undefined ||
+      project.data().team.length === 1
+    ) {
+      return res
+        .status(200)
+        .json({ general: `You're the only one here. Yet!` });
+    } else {
+      console.log(project.data().team)
+      req.body.users = project.data().team;
+      return showMultipleProfiles(req, res);
+    }
+  })
+  .catch((err) => {
+    return res
+      .status(500)
+      .json({ error: `Internal Server Error. ${err.code}` });
+  });
 };
 
 exports.removeMember = (req, res) => {
