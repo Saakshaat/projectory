@@ -38,6 +38,7 @@ const {
   apply,
   showInterested,
   showMyApplications,
+  showProjectTeam
 } = require("./handlers/applications/applications");
 
 const authenticate = require("./util/authenticate");
@@ -69,17 +70,13 @@ app.get("/projects/open/skills/:skill", getAllWithSkill);
 app.post('/edit/:projectId', authenticate, editProject);
 app.get("/my/projects/:state/:position", authenticate, getMyProjects);
 app.get('/my/static', authenticate, getCannotApply);
-/**
- * - Get all closed projects ('/my/closed')
- * - Get all open projects ('/my/open')
- * - My teams
- */
 
 
 //applications routes
 app.get("/apply/:projectId", authenticate, apply);
 app.get("/interested/:projectId", authenticate, showInterested);
 app.get("/my/applications", authenticate, showMyApplications);
+app.get('/my/team/:state/:projectId', authenticate, showProjectTeam);
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  */
