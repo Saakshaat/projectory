@@ -4,12 +4,14 @@ import SearchIcon from "@material-ui/icons/Search";
 import axios from 'axios'
 import Project from './Project'
 import NavDrawer from './NavDrawer';
+import CreatedProject from './CreatedProject';
 
 class ProjectList extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            created: [],
             isLoading: false,
             endpoint: props.link,
             projects: [
@@ -31,7 +33,12 @@ class ProjectList extends Component {
     }
 
     componentDidMount() {
-        this.getProjects()
+        this.getProjects();
+        this.getCreatedProjects();
+    }
+
+    getCreatedProjects = () => {
+
     }
 
     getProjects = () => {
@@ -58,10 +65,30 @@ class ProjectList extends Component {
                     }
                     this.setState({
                         isLoading: false,
-                        projects: array
+                        projects: array,
                     })
                     console.log(response);
                     console.log(response.status);
+                    // /baseapi/my/projects/open/all
+                    axios.get('/baseapi/projects/open/', {
+                        headers: {
+                            Authorization: this.props.header,
+                        },
+                    })
+                        .then(response => {
+                            let createdArray = new Array(response.data.length)
+                            for (var i in response.data) {
+                                createdArray.push(response.data[i].id);
+                            }
+                            this.setState({
+                                created: createdArray,
+                            })
+                            console.log(response);
+                            console.log(response.status);
+                        }).catch(error => {
+                            console.log(error)
+                            console.log(error.status);
+                        });
                 }).catch(error => {
                     console.log(error)
                     console.log(error.status);
@@ -80,7 +107,8 @@ class ProjectList extends Component {
     }
 
     render() {
-        const { isLoading, projects } = this.state
+        const { isLoading, projects, created } = this.state
+
         return (
             <div>
                 {isLoading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress size={50} /></div> : (this.state.projects.length > 0 ? (
@@ -91,7 +119,8 @@ class ProjectList extends Component {
                             {this.state.projects.map(currentProject => (
                                 // style={{}} xs={10} sm={6} lg={4} xl={3} 
                                 <Grid item key={currentProject.name} lg={4}>
-                                    <Project project={currentProject} applicable={this.props.applicable} />
+                                    {this.state.created.includes(currentProject.id) ? <CreatedProject project={currentProject} applicable={this.props.applicable} /> :
+                                        <Project project={currentProject} applicable={this.props.applicable} />}
                                 </Grid>
                             ))}
                         </Grid>
