@@ -12,6 +12,11 @@ import {
   Chip,
   TextField,
   CircularProgress,
+  Card,
+  CardMedia,
+  Tooltip,
+  Menu,
+  MenuItem,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -30,7 +35,7 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import LanguageIcon from "@material-ui/icons/Language";
 import EditIcon from "@material-ui/icons/Edit";
-
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import axios from "axios";
 
 const skills = require("../Utils/Skill");
@@ -280,7 +285,7 @@ const ProfileMain = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={12} container>
             <Grid item xs={12}>
-              <Header profile={props.profile} />
+              <Header profile={props.profile} auth={props.auth} />
             </Grid>
           </Grid>
 
@@ -308,7 +313,7 @@ const ProfileMain = (props) => {
 
           <Grid item xs={6} container spacing={3}>
             <Grid item>
-              <Info profile={props.profile} />
+              <Info profile={props.profile} auth={props.auth} />
             </Grid>
 
             {/*Edit Profile*/}
@@ -397,7 +402,7 @@ const ProfileMain = (props) => {
 
             {/* headline */}
             <Grid item xs={12}>
-              {!emptyHeadline ? (
+              {!emptyHeadline && !headlineTooLong ? (
                 <TextField
                   label="Headline"
                   multiline
@@ -416,7 +421,7 @@ const ProfileMain = (props) => {
                   placeholder="Describe yourself in just a few words"
                   onChange={handleHeadlineChange}
                   error
-                  helperText="Headline cannot be empty."
+                  helperText="Headline should have between 1 and 100 characters"
                 />
               )}
             </Grid>
@@ -596,18 +601,69 @@ const ProfileMain = (props) => {
 
 export default ProfileMain;
 
+const avaStyles = makeStyles((theme) => ({
+  hover: {
+    "&:hover": {
+      backgroundColor: "#FF0000",
+    },
+  },
+}));
+
 const Header = (props) => {
+  const hanldeUploadAvatar = (e) => {
+    if (e.target.files[0] === undefined) return;
+    const data = new FormData();
+    data.append("picture", e.target.files[0], e.target.files[0].name);
+    axios
+      .post("/baseapi/my/profile/image", data, {
+        headers: {
+          Authorization: localStorage.FBIdToken,
+        },
+      })
+      .then((res) => {
+        window.location.reload(false);
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  };
+
+  const ava = avaStyles();
   const classes = useStyles();
   return (
     <Grid container direction="column" alignItems="center" justify="center">
       <Grid item xs={12}>
-        <div>
-          <Avatar
-            className={classes.large}
-            src={props.profile.information.imageUrl}
-            alt="Profile Picture"
-          />
-        </div>
+        {props.auth ? (
+          <div>
+            <Tooltip title="Edit Profile Picture" placement="right">
+              <IconButton
+                size="small"
+                component="label"
+                className={ava.hover}
+                onChange={hanldeUploadAvatar}
+              >
+                <Avatar
+                  className={classes.large}
+                  src={props.profile.information.imageUrl}
+                  alt="Profile Picture"
+                />
+                <input
+                  accept="image/*"
+                  type="file"
+                  style={{ display: "none" }}
+                />
+              </IconButton>
+            </Tooltip>
+          </div>
+        ) : (
+          <div>
+            <Avatar
+              className={classes.large}
+              src={props.profile.information.imageUrl}
+              alt="Profile Picture"
+            />
+          </div>
+        )}
       </Grid>
 
       <Grid item xs={12}>
@@ -686,6 +742,39 @@ const Project = (props) => {
 };
 
 const Info = (props) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const hanldeUploadResume = (e) => {
+    if (e.target.files[0] === undefined) return;
+    const data = new FormData();
+    data.append("resume", e.target.files[0], e.target.files[0].name);
+    axios
+      .post("/baseapi/my/profile/resume", data, {
+        headers: {
+          Authorization: localStorage.FBIdToken,
+        },
+      })
+      .then((res) => {
+        setAnchorEl(null);
+        window.location.reload(false);
+      })
+      .catch((err) => {
+        console.log("uploadResume Error");
+      });
+  };
+
+  const handleViewButton = (e) => {
+    window.open(props.profile.experience.resume);
+  };
+
   return (
     <Container>
       <Typography variant="h4">About Me</Typography>
@@ -716,14 +805,44 @@ const Info = (props) => {
         </Grid>
 
         <Grid item xs={2}>
-          <Button
-            variant="outlined"
-            onClick={handleDownloadButton}
-            value={props.profile.experience.resume}
-          >
-            View Resume
-          </Button>
+          {props.auth ? (
+            <div>
+              <Button
+                variant="outlined"
+                // onClick={handleDownloadButton}
+                value={props.profile.experience.resume}
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+              >
+                View Resume
+              </Button>
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleViewButton}>View Resume</MenuItem>
+                <MenuItem onChange={hanldeUploadResume} component="label">
+                  Edit Resume
+                  <input type="file" style={{ display: "none" }} />
+                </MenuItem>
+              </Menu>
+            </div>
+          ) : (
+            <Button variant="outlined" onClick={handleViewButton}>
+              View Resume
+            </Button>
+          )}
         </Grid>
+
+        {/* <Grid item xs={1}>
+          <IconButton>
+            <EditIcon color="primary" />
+          </IconButton>
+        </Grid> */}
       </Grid>
     </Container>
   );
@@ -785,8 +904,4 @@ const Contact = (props) => {
       )}
     </Grid>
   );
-};
-
-const handleDownloadButton = (e) => {
-  window.open(e.currentTarget.value);
 };

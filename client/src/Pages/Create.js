@@ -204,18 +204,7 @@ export default class Create extends Component {
   //   this.setState({ profilePic: e.target.files[0] });
   // };
 
-  // uploadProfilePic = () => {
-  //   const data = new FormData();
-  //   data.append("file", this.state.profilePic);
-  //   axios
-  //     .post("/baseapi/my/profile/image", data)
-  //     .then((res) => {
-  //       this.setState({ profilePicUploaded: true });
-  //     })
-  //     .catch((err) => {
-  //       this.setState({ hasError: true });
-  //     });
-  // };
+
 
   uploadResume = () => {
     const data = new FormData();
