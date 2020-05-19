@@ -18,7 +18,6 @@ const {
   getUserProfile,
   setProfileImage,
   addResume,
-  test,
   editProfile,
   validToken,
 } = require("./handlers/users/users");
@@ -38,8 +37,10 @@ const {
   apply,
   showInterested,
   showMyApplications,
-  showProjectTeam
+  showProjectTeam,
 } = require("./handlers/applications/applications");
+
+const  {test} = require('./handlers/applications/emails')
 
 const authenticate = require("./util/authenticate");
 
@@ -77,6 +78,7 @@ app.get("/apply/:projectId", authenticate, apply);
 app.get("/interested/:projectId", authenticate, showInterested);
 app.get("/my/applications", authenticate, showMyApplications);
 app.get('/my/team/:state/:projectId', authenticate, showProjectTeam);
+app.get('/test', test);
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  */
