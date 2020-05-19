@@ -51,3 +51,7 @@ exports.editProject = (req, res) => {
 exports.getCannotApply = (req, res) => {
   return getCannotApply(req, res);
 }
+
+exports.reopen = (req, res) => {
+  return reopenProject(req, res);
+}

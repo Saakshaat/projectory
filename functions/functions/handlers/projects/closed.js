@@ -1,4 +1,5 @@
 const { db, admin } = require("../../util/admin");
+const { reopenTellInterested } = require("../applications/emails");
 
 exports.getOneC = (req, res) => {
   let projectData = {};
@@ -75,7 +76,7 @@ exports.getMyClosed = (req, res) => {
 
         return res.status(200).json(response);
       });
-  }  else if (req.params.position == "all") {
+  } else if (req.params.position == "all") {
     return db
       .collection("closed")
       .where("user", "==", req.user.docId)
@@ -134,7 +135,62 @@ exports.getMyClosed = (req, res) => {
 };
 
 exports.reopenProject = (req, res) => {
-  /**
-   * - Move project from closed to open collection
-   */
+  const owner = req.user.docId;
+  const projectId = req.params.projectId;
+
+  return db
+    .doc(`/closed/${projectId}`)
+    .get()
+    .then((projData) => {
+      if (!projData.exists) {
+        return res.status(404).json({ error: `Project not found` });
+      } else if (owner !== projData.data().user) {
+        return res
+          .status(403)
+          .json({ error: `Nice try. But you're not the project owner` });
+      } else {
+        let interested = projData.data().interested;
+
+        interested.forEach(function (part, index) {
+          this[index] = db.doc(`/users/${this[index]}`);
+        }, interested);
+
+        return db
+          .getAll(...interested)
+          .then((docs) => {
+            let interestedEmails = [];
+            docs.forEach((data) => {
+              interestedEmails.push(data.data().socials.email);
+            });
+
+            const batch = db.batch();
+            batch.set(db.collection('open').doc(), projData.data());
+            batch.delete(db.doc(`/closed/${projectId}`));
+
+            batch
+              .commit()
+              .then(() => {
+                reopenTellInterested(interestedEmails, projData.data().name);
+                return res
+                  .status(200)
+                  .json({ general: `${projData.data().name} reopened` });
+              })
+              .catch((err) => {
+                return res
+                  .status(500)
+                  .json({ error: `Error in updating values: ${err.code}` });
+              });
+          })
+          .catch((err) => {
+            return res
+              .status(500)
+              .json({ error: `Error in getting emails: ${err.code}` });
+          });
+      }
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Error in getting project: ${err.code}` });
+    });
 };

@@ -30,7 +30,8 @@ const {
   getAllWithSkill,
   editProject,
   getMyProjects,
-  getCannotApply
+  getCannotApply,
+  reopen
 } = require("./handlers/projects/projects");
 
 const {
@@ -70,6 +71,7 @@ app.get("/projects/open/skills/:skill", getAllWithSkill);
 app.post('/edit/:projectId', authenticate, editProject);
 app.get("/my/projects/:state/:position", authenticate, getMyProjects);
 app.get('/my/static', authenticate, getCannotApply);
+app.get('/project/closed/reopen/:projectId', authenticate, reopen);
 
 
 //applications routes
