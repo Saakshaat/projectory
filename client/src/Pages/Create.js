@@ -6,6 +6,10 @@ import {
   TextField,
   Chip,
   Typography,
+  CssBaseline,
+  Paper,
+  Container,
+  Card,
 } from "@material-ui/core";
 import ErrorText from "../Components/ErrorText";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -243,17 +247,26 @@ export default class Create extends Component {
     } else {
       return (
         <div>
-          <Typography component="h1" variant="h5">
-            More about you
-          </Typography>
-          <form noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+          <CssBaseline />
+          <Card elevation={10}
+            alignItems="center"
+            justify="center" style={{
+              width: '70%', marginLeft: '15%', padding: 40, marginTop: 80, marginBottom: 80, borderRadius: 20
+            }}>
+            <Typography component="h1" variant="h5" style={{ justifySelf: 'center', flexDirection: 'row' }}>
+              Create Profile
+            </Typography>
+            <form>
+              <Grid item >
                 <TextField
-                  label="Name"
+                  variant="outlined"
+                  margin="normal"
+                  onChange={this.handleNameChange}
                   required
                   fullWidth
-                  onChange={this.handleNameChange}
+                  id="name"
+                  label="Name"
+                  autoFocus
                 />
               </Grid>
               {this.state.hasEmptyName ? (
@@ -261,14 +274,16 @@ export default class Create extends Component {
                   <ErrorText text="Name cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
 
               <Grid item xs={12}>
                 <TextField
-                  label="Institution"
+                  variant="outlined"
+                  margin="normal"
                   required
                   fullWidth
+                  label="Institution"
                   onChange={this.handleInstitutionChange}
                 />
               </Grid>
@@ -277,17 +292,19 @@ export default class Create extends Component {
                   <ErrorText text="Institutuion cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
 
               <Grid item xs={12}>
                 <TextField
-                  label="Headline"
-                  placeholder="Describe yourself in just a few words"
+                  variant="outlined"
+                  margin="normal"
                   required
                   fullWidth
                   multiline
+                  label="Headline"
                   onChange={this.handleHeadlineChange}
+                  placeholder='Describe yourself in just a few words'
                 />
               </Grid>
               {this.state.isHeadlineTooLong ? (
@@ -295,38 +312,42 @@ export default class Create extends Component {
                   <ErrorText text="Headline cannot contain more than 100 characters!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
               {this.state.hasEmptyHeadline ? (
                 <Grid item xs={12}>
                   <ErrorText text="Headline cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
 
               <Grid item xs={12}>
                 <TextField
-                  label="Bio"
+                  variant="outlined"
+                  margin="normal"
                   required
                   fullWidth
-                  onChange={this.handleBioChange}
                   multiline
+                  label="Bio"
+                  onChange={this.handleBioChange}
                 />
               </Grid>
+
               {this.state.hasEmptyBio ? (
                 <Grid item xs={12}>
                   <ErrorText text="Bio cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
-
+                  <div />
+                )}
               <Grid item xs={12}>
                 <TextField
-                  label="GitHub"
+                  variant="outlined"
+                  margin="normal"
                   required
                   fullWidth
+                  label="Github"
                   onChange={this.handleGithubChange}
                 />
               </Grid>
@@ -335,31 +356,45 @@ export default class Create extends Component {
                   <ErrorText text="Github cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
 
-              <Grid item xs={12}>
-                <TextField
-                  label="LinkedIn"
-                  fullWidth
-                  onChange={this.handleLinkedinChange}
-                />
-              </Grid>
               {this.state.hasEmptyLinkedIn ? (
                 <Grid item xs={12}>
                   <ErrorText text="LinkedIn cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
 
               <Grid item xs={12}>
                 <TextField
-                  label="Website"
+                  variant="outlined"
+                  margin="normal"
                   fullWidth
+                  label="LinkedIn"
+                  onChange={this.handleLinkedinChange}
+                />
+              </Grid>
+
+              {this.state.hasEmptyLinkedIn ? (
+                <Grid item xs={12}>
+                  <ErrorText text="LinkedIn cannot be empty!" />
+                </Grid>
+              ) : (
+                  <div />
+                )}
+
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  label="Website"
                   onChange={this.handleWebsiteChange}
                 />
               </Grid>
+
               <Grid item xs={12}>
                 <Autocomplete
                   multiple
@@ -391,22 +426,24 @@ export default class Create extends Component {
                   onChange={this.handleTopSkillChange}
                 />
               </Grid>
+
               {this.state.hasTooManyTopSkill ? (
                 <Grid item xs={12}>
                   <ErrorText text="You can select at most 5 top skills" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
               {this.state.hasEmptyTopSkill ? (
                 <Grid item xs={12}>
                   <ErrorText text="Top Skills cannot be empty!" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
               <Grid item xs={12}>
                 <Autocomplete
+                  style={{ marginTop: 10 }}
                   multiple
                   options={skills}
                   getOptionLabel={(option) => option.name}
@@ -436,55 +473,58 @@ export default class Create extends Component {
                   onChange={this.handleOtherSkillChange}
                 />
               </Grid>
-
-              <Grid item>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  component="label"
-                  onChange={this.handleResumeChange}
-                >
-                  Upload Your Resume
+              <Button
+                color="primary"
+                variant="contained"
+                component="label"
+                fullWidth
+                style={{ marginTop: 30, justifySelf: 'center', alignSelf: 'center' }}
+                onChange={this.handleResumeChange}
+              >
+                Upload Your Resume
                   <input type="file" style={{ display: "none" }} />
-                </Button>
-                {this.state.resume !== undefined ? (
-                  <Grid item xs={12}>
-                    <Typography variant="caption">
-                      {this.state.resume.name} selected!
+              </Button>
+
+              {this.state.resume !== undefined ? (
+                <Grid item xs={12}>
+                  <Typography variant="caption">
+                    {this.state.resume.name} selected!
                     </Typography>
-                  </Grid>
-                ) : (
+                </Grid>
+              ) : (
                   <div />
                 )}
-              </Grid>
 
               {this.state.hasNoResume ? (
                 <Grid item xs={12}>
                   <ErrorText text="You must upload a resume" />
                 </Grid>
               ) : (
-                <div />
-              )}
+                  <div />
+                )}
 
               <Grid item xs={12}>
                 <Button
                   type="submit"
                   fullWidth
+                  variant="contained"
                   color="primary"
+                  style={{ marginTop: 20 }}
                   onClick={this.handleSummitButton}
                 >
                   Submit
-                </Button>
+                  </Button>
               </Grid>
               {this.state.hasError ? (
                 <Grid item xs={12}>
                   <ErrorText text={this.state.errorText} />
                 </Grid>
               ) : (
-                <div />
-              )}
-            </Grid>
-          </form>
+                  <div />
+                )}
+            </form>
+          </Card>
+          {/* </Grid> */}
         </div>
       );
     }
