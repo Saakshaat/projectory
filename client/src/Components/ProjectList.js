@@ -69,8 +69,7 @@ class ProjectList extends Component {
                     })
                     console.log(response);
                     console.log(response.status);
-                    // /baseapi/my/projects/open/all
-                    axios.get('/baseapi/projects/open/', {
+                    axios.get('/baseapi/my/projects/open/all', {
                         headers: {
                             Authorization: this.props.header,
                         },

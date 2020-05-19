@@ -107,7 +107,7 @@ function NavDrawer() {
                             </ListItemIcon>
                             <ListItemText>Profile</ListItemText>
                         </ListItem>
-                        <ListItem button component={Link} to='/signin' onClick={onItemClick('Teams')}>
+                        <ListItem button component={Link} to='/create' onClick={onItemClick('Teams')}>
                             <ListItemIcon>
                                 <GroupIcon />
                             </ListItemIcon>
@@ -131,6 +131,7 @@ function NavDrawer() {
                     <Switch>
                         <Route exact path="/my/profile/" component={Profile} />
                         <Route exact path="/signin" component={SignIn} />
+                        <Route exact path="/create" component={Create} />
                         <Route exact path="/my/applications/" component={MyApplications} />
                         <Route exact path="/my/projects/" component={MyProjects} />
                         <Route exact path="/dashboard" component={Dashboard} />
