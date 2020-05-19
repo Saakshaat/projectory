@@ -119,14 +119,8 @@ function NavDrawer() {
             return;
         }
 
-        setEmptyLinks(false);
-        if (links.length === 0) {
-            setEmptyLinks(true);
-            return;
-        }
-
         const request = {
-            creator: name,
+            name: name,
             github: gitHub,
             description: description,
             needed: needed,
@@ -134,7 +128,6 @@ function NavDrawer() {
         };
 
         console.log("Creating Project ...");
-        setOpen(false);
 
         axios
             .post("/baseapi/project", request, {
@@ -143,17 +136,31 @@ function NavDrawer() {
                 },
             })
             .then((res) => {
+                setOpen(false);
                 console.log(res)
-                setEmptyName(false);
-                setEmptyDescription(false);
-                setEmptyGitHub(false);
-                setEmptyLinks(false);
-                setEmptyNeeded(false);
+                setInitial();
+                return;
             })
             .catch((err) => {
+                setOpen(false);
                 console.log(err.response);
+                setInitial();
+                return;
             });
     };
+
+    const setInitial = () => {
+        setName('');
+        setEmptyName(false);
+        setDescription('');
+        setEmptyDescription(false);
+        setGitHub('');
+        setEmptyGitHub(false);
+        setLinks('');
+        setEmptyLinks(false);
+        setNeeded([]);
+        setEmptyNeeded(false);
+    }
 
     const handleNameChange = (e) => {
         setName(e.target.value);
@@ -364,7 +371,7 @@ function NavDrawer() {
                     <DialogActions>
                         <Button onClick={handleSubmit} variant='contained' color="primary">
                             Submit
-              </Button>
+                        </Button>
                     </DialogActions>
                 </Dialog>
 
