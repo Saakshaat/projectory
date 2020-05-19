@@ -12,6 +12,7 @@ class ProjectList extends Component {
         super(props)
         this.state = {
             created: [],
+            static: [],
             isLoading: false,
             endpoint: props.link,
             projects: [
@@ -34,11 +35,6 @@ class ProjectList extends Component {
 
     componentDidMount() {
         this.getProjects();
-        this.getCreatedProjects();
-    }
-
-    getCreatedProjects = () => {
-
     }
 
     getProjects = () => {
@@ -84,10 +80,33 @@ class ProjectList extends Component {
                             })
                             console.log(response);
                             console.log(response.status);
+
+                            axios.get('/baseapi/my/static', {
+                                headers: {
+                                    Authorization: this.props.header,
+                                },
+                            })
+                                .then(response => {
+                                    let staticArray = new Array(response.data.length)
+                                    for (var i in response.data) {
+                                        staticArray.push(response.data[i]);
+                                    }
+                                    this.setState({
+                                        static: staticArray,
+                                    })
+                                    console.log(response);
+                                    console.log(response.status);
+                                }).catch(error => {
+                                    console.log(error)
+                                    console.log(error.status);
+                                });
+
+
                         }).catch(error => {
                             console.log(error)
                             console.log(error.status);
                         });
+
                 }).catch(error => {
                     console.log(error)
                     console.log(error.status);
@@ -118,8 +137,13 @@ class ProjectList extends Component {
                             {this.state.projects.map(currentProject => (
                                 // style={{}} xs={10} sm={6} lg={4} xl={3} 
                                 <Grid item key={currentProject.name} lg={4}>
-                                    {this.state.created.includes(currentProject.id) ? <CreatedProject project={currentProject} applicable={this.props.applicable} /> :
-                                        <Project project={currentProject} applicable={this.props.applicable} />}
+                                    {this.state.created.includes(currentProject.id) ?
+                                        <CreatedProject project={currentProject} applicable={this.props.applicable} /> :
+                                        ((this.state.static.includes(currentProject.id) ?
+                                            (<Project project={currentProject} applicable={false} />) :
+                                            (<Project project={currentProject} applicable={this.props.applicable} />)))
+
+                                    }
                                 </Grid>
                             ))}
                         </Grid>
