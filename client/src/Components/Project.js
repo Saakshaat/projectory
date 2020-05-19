@@ -15,6 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import DoneIcon from '@material-ui/icons/Done';
 import axios from 'axios';
+import OtherProfile from '../Pages/OtherProfile'
 
 const styles = (theme) => ({
     root: {
@@ -124,11 +125,11 @@ const Project = (props) => {
             {props ? (
                 <Card elevation={8} style={{ borderRadius: 10, height: '100%' }}>
                     <CardContent>
-                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0 }}>
+                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0, marginBottom: 0 }}>
                             {props.project.name}
                         </Typography>
-                        <Typography noWrap textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
-                            <Link href='#' variant='body2'>by {props.project.creator}</Link>
+                        <Typography noWrap textSize={14} color='textSecondary' variant='caption' display="block" gutterBottom>
+                            <Link href='#' variant='body2' >by {props.project.creator}</Link>
                         </Typography>
                         <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
                             {props.project.description}
@@ -156,7 +157,7 @@ const Project = (props) => {
                                 <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{ marginBottom: -15 }} >
                                     {props.project.name}
                                     < Typography textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
-                                        <Link href='#' variant='body2'>by {props.project.creator}</Link>
+                                        <Link href={<OtherProfile userId={props.project.user} />} variant='body2'>by {props.project.creator}</Link>
                                     </Typography>
                                     <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
                                         Created on: {props.project.createdAt}

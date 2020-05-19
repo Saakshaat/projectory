@@ -133,10 +133,10 @@ const CreatedProject = (props) => {
             {props ? (
                 <Card elevation={8} style={{ borderRadius: 10, height: '100%' }}>
                     <CardContent>
-                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0 }}>
+                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0, marginBottom: 0 }}>
                             {props.project.name}
                         </Typography>
-                        <Typography noWrap textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
+                        <Typography noWrap textSize={14} color='textSecondary' variant='caption' display="block" gutterBottom>
                             <Link href='#' variant='body2'>by {props.project.creator}</Link>
                         </Typography>
                         <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
