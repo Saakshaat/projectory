@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, Container } from "@material-ui/core";
 import { Link, Redirect } from "react-router-dom";
-import ProfileSnapot from "../Components/ProfileSnapshot";
 
 export default class User extends Component {
   constructor() {
