@@ -1,5 +1,6 @@
 const { db } = require("../../util/admin");
 const { showMultipleProfiles } = require("../users/profile");
+const { selection } = require("./emails");
 
 exports.apply = (req, res) => {
   /**
@@ -82,35 +83,101 @@ exports.select = (req, res) => {
    * - update selected user's `projects_selected` field in the user object
    * - send selected user an email about selection
    */
+  const project = req.params.projectId;
+  const member = req.params.userId;
+  const owner = req.user.docId;
+
+  return db
+    .doc(`/open/${project}`)
+    .get()
+    .then((proj) => {
+      if (!proj.exists) {
+        return res.status(404).json({ error: `Project does not exist` });
+      } else if (proj.data().team.includes(member)) {
+        return res.status(409).json({ error: `User is already in your team` });
+      } else if (!proj.data().interested.includes(member)) {
+        return res.status(404).json({ error: `Selected user not found` });
+      } else if (proj.data().user !== owner) {
+        return res.status(403).json({ error: `You're not the project owner` });
+      } else {
+        return db
+          .doc(`/users/${member}`)
+          .get()
+          .then((user) => {
+            let interested = proj.data().interested;
+            interested.splice(interested.indexOf(member), 1);
+            let team = proj.data().team;
+            team.push(member);
+            let projects_selected = user.data().projects_selected + 1;
+            const batch = db.batch();
+            batch.update(db.doc(`/open/${project}`), {
+              interested: interested,
+            });
+            batch.update(db.doc(`/open/${project}`), {
+              team: team,
+            });
+            batch.update(db.doc(`/users/${member}`), {
+              projects_selected: projects_selected,
+            });
+            batch
+              .commit()
+              .then(() => {
+                selection(
+                  user.data().socials.email,
+                  user.data().name,
+                  proj.data().name
+                );
+                return res.status(200).json({
+                  general: `${user.data().name} successfully selected`,
+                });
+              })
+              .catch((err) => {
+                return res
+                  .status(500)
+                  .json({ error: `Error in updating values` });
+              });
+          })
+          .catch((err) => {
+            return res
+              .status(500)
+              .json({ error: `Error in getting user: ${err.code}` });
+          });
+      }
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Error in getting project: ${err.code}` });
+    });
 };
 
 exports.showProjectTeam = (req, res) => {
   return db
-  .doc(`/${req.params.state}/${req.params.projectId}`)
-  .get()
-  .then((project) => {
-    if (!project.exists) {
-      return res.status(404).json({ error: `Project not found` });
-    } else if (!project.data().team.includes(req.user.docId)) {
-      return res.status(403).json({ error: `You're not in this team` });
-    } else if (
-      project.data().team == undefined ||
-      project.data().team.length === 1
-    ) {
+    .doc(`/${req.params.state}/${req.params.projectId}`)
+    .get()
+    .then((project) => {
+      if (!project.exists) {
+        return res.status(404).json({ error: `Project not found` });
+      } else if (!project.data().team.includes(req.user.docId)) {
+        return res.status(403).json({ error: `You're not in this team` });
+      } else if (
+        project.data().team == undefined ||
+        project.data().team.length === 1
+      ) {
+        return res
+          .status(200)
+          .json({ general: `You're the only one here. Yet!` });
+      } else {
+        console.log(project.data().team);
+        req.body.users = project.data().team;
+        return showMultipleProfiles(req, res);
+      }
+    })
+    .catch((err) => {
       return res
-        .status(200)
-        .json({ general: `You're the only one here. Yet!` });
-    } else {
-      console.log(project.data().team)
-      req.body.users = project.data().team;
-      return showMultipleProfiles(req, res);
-    }
-  })
-  .catch((err) => {
-    return res
-      .status(500)
-      .json({ error: `Internal Server Error. ${err.code}` });
-  });
+        .status(500)
+        .json({ error: `Internal Server Error. ${err.code}` });
+    });
 };
 
 exports.removeMember = (req, res) => {
