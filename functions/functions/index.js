@@ -38,9 +38,8 @@ const {
   showInterested,
   showMyApplications,
   showProjectTeam,
+  select
 } = require("./handlers/applications/applications");
-
-const  {test} = require('./handlers/applications/emails')
 
 const authenticate = require("./util/authenticate");
 
@@ -50,7 +49,6 @@ app.post("/login", emailLogin);
 app.post("/google/signin", googleSignin);
 app.post("/signout", authenticate, signout);
 app.post("/password_reset", passwordReset);
-app.get("/test", test);
 app.get("/valid", authenticate, validToken);
 
 //profile routes
@@ -78,7 +76,7 @@ app.get("/apply/:projectId", authenticate, apply);
 app.get("/interested/:projectId", authenticate, showInterested);
 app.get("/my/applications", authenticate, showMyApplications);
 app.get('/my/team/:state/:projectId', authenticate, showProjectTeam);
-app.get('/test', test);
+app.get('/select/:projectId/:userId', authenticate, select);
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  */
