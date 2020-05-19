@@ -16,7 +16,7 @@ export default class MyProjects extends Component {
     render() {
         return (
             <div>
-                <ProjectList endpoint='/baseapi/my/projects/open/selected' header={localStorage.FBIdToken} applicable={false} />
+                <ProjectList endpoint='/baseapi/my/projects/open/all' header={localStorage.FBIdToken} applicable={false} />
             </div>
         );
     }

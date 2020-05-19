@@ -14,7 +14,7 @@ export default class Dashboard extends Component {
   render() {
     return (
       <div>
-        <ProjectList endpoint='/baseapi/projects/open' applicable={true} />
+        <ProjectList endpoint='/baseapi/projects/open' header={localStorage.FBIdToken} applicable={true} />
       </div>
     );
   }

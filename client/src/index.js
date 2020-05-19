@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import WireFrame from "./WireFrame";
 import NavDrawer from "./Components/NavDrawer";
 import firebase from "firebase";
+import { BrowserRouter } from "react-router-dom";
 
 const App = () => {
   return (
@@ -11,8 +12,10 @@ const App = () => {
 };
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <BrowserRouter>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </BrowserRouter>,
   document.getElementById("root")
 );
