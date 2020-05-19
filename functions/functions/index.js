@@ -38,7 +38,8 @@ const {
   showInterested,
   showMyApplications,
   showProjectTeam,
-  select
+  select,
+  finalizeTeam
 } = require("./handlers/applications/applications");
 
 const authenticate = require("./util/authenticate");
@@ -77,6 +78,7 @@ app.get("/interested/:projectId", authenticate, showInterested);
 app.get("/my/applications", authenticate, showMyApplications);
 app.get('/my/team/:state/:projectId', authenticate, showProjectTeam);
 app.get('/select/:projectId/:userId', authenticate, select);
+app.get('/finalize/:projectId', authenticate, finalizeTeam)
 /**
  * - Get all members of a teams for a certain project (either owner or selected team member) (same logic as showInterested)
  */

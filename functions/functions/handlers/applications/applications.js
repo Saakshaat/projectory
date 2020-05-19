@@ -1,6 +1,6 @@
 const { db } = require("../../util/admin");
 const { showMultipleProfiles } = require("../users/profile");
-const { selection } = require("./emails");
+const { selection, rejection, finalTeam } = require("./emails");
 
 exports.apply = (req, res) => {
   /**
@@ -99,6 +99,8 @@ exports.select = (req, res) => {
         return res.status(404).json({ error: `Selected user not found` });
       } else if (proj.data().user !== owner) {
         return res.status(403).json({ error: `You're not the project owner` });
+      } else if (member === owner) {
+        return res.status(400).json({ error: `Come on man, you can't select yourself.` })
       } else {
         return db
           .doc(`/users/${member}`)
@@ -188,12 +190,83 @@ exports.removeMember = (req, res) => {
    */
 };
 
+/**
+ * - Send an email to everyone not selected (in the interested) about rejection.
+ * - move project from open collection to closed collection
+ * - (Optional) Delete the interested array
+ */
 exports.finalizeTeam = (req, res) => {
-  /**
-   * - Send an email to everyone not selected (in the interested) about rejection.
-   * - move project from open collection to closed collection
-   * - (Optional) Delete the interested array
-   */
+  let project = req.params.projectId;
+  let owner = req.user.docId;
+
+  return db
+    .doc(`/open/${project}`)
+    .get()
+    .then((proj) => {
+      if (!proj.exists) {
+        return res
+          .status(404)
+          .json({
+            error: `Project not found. Is it perhaps a closed proejct?`,
+          });
+      } else if (proj.data().user !== owner) {
+        return res.status(403).json({ error: `You're not the project owner` });
+      } else if (proj.data().team.length === 0) {
+        return res.status(400).json({ error: `No team members yet` });
+      } else {
+        let rejected = proj.data().interested;
+        let team = proj.data().team;
+        const batch = db.batch();
+        batch.set(db.collection("closed").doc(), proj.data());
+        batch.delete(db.doc(`/open/${project}`));
+
+        batch
+          .commit()
+          .then(() => {
+            rejected.forEach(function (part, index) {
+              this[index] = db.doc(`/users/${this[index]}`);
+            }, rejected);
+
+            team.forEach(function (part, index) {
+              this[index] = db.doc(`/users/${this[index]}`);
+            }, team);
+
+            return db.getAll(...rejected).then((docs) => {
+              let rejectedEmails = [];
+              docs.forEach(rejectedData => {
+                rejectedEmails.push(rejectedData.data().socials.email);
+              });
+
+              return db.getAll(...team).then(teamDoc => {
+                let teamEmails = [];
+                teamDoc.forEach(teamData => {
+                  teamEmails.push(teamData.data().socials.email);
+                })
+
+                rejection(rejectedEmails, proj.data().name);
+                finalTeam(teamEmails, proj.data().name, req.user.name);
+                return res
+                  .status(200)
+                  .json({
+                    general: `Project ${
+                      proj.data().name
+                    } closed for hiring. Team and rejected informed.`,
+                  });
+              })
+            })
+          })
+          .catch((err) => {
+            return res
+              .status(500)
+              .json({ error: `Error while updating values: ${err.code}` });
+          });
+      }
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error: ${err.code}` });
+    });
 };
 
 exports.showMyApplications = (req, res) => {
