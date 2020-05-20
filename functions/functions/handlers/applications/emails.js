@@ -4,7 +4,8 @@ const {
   selection_html,
   rejection_html,
   finalTeam_html,
-  reopenTellInterested_html
+  reopenTellInterested_html,
+  deleted_html,
 } = require("./emailMarkup");
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -34,8 +35,9 @@ exports.selection = (email, name, project) => {
 };
 
 exports.rejection = (emails, project) => {
-  mailOptions.to = emails.join(", ");
-  mailOptions.subject = `Updates on your ${project} application`;
+  mailOptions.to = env.nodemailer.email;
+  mailOptions.bcc = emails.join(", ");
+  mailOptions.subject = `Update on your ${project} application`;
   mailOptions.text = `Hey there,\nWe're afraid that we have some unfavorable news. Unfortunately, you were not selected for ${project} which has now closed hiring.\n\nWe understand that this must
    be frustrating; the founders of this project have, themselves, experienced this frustration at multiple points in their life. However, this isn't the end. There are still plenty projects out there and this is a great opportunity for you 
    grow your skills and try them out in a, perhaps, more fitting venture.\n\nIn the event that this project reopens hiring, you will be the first person to be informed.\n\n We look forward to seeing your
@@ -59,7 +61,8 @@ exports.finalTeam = (emails, project, owner) => {
 };
 
 exports.reopenTellInterested = (emails, project) => {
-  mailOptions.to = emails.join(", ");
+  mailOptions.to = env.nodemailer.email;
+  mailOptions.bcc = emails.join(", ");
   mailOptions.subject = `${project} is back in action`;
   mailOptions.html = reopenTellInterested_html(project);
   transporter.sendMail(mailOptions, (err, info) => {
@@ -68,4 +71,34 @@ exports.reopenTellInterested = (emails, project) => {
   });
 };
 
-exports.deleteProject = (emails) => {};
+exports.deleteProjectInformOwner = (email, project) => {
+  mailOptions.to = email;
+  mailOptions.subject = `[ALERT:] ${project} HAS BEEN DELETED`;
+  mailOptions.html = deleted_html(project);
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) console.error(err);
+    else console.log("Email sent: " + info.response);
+  });
+};
+
+exports.deleteProjectInformInterested = (emails, project) => {
+  mailOptions.to = env.nodemailer.email;
+  mailOptions.bcc = emails.join(", ");
+  mailOptions.subject = `${project} is off the grid`;
+  mailOptions.html = deleted_html(project);
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) console.error(err);
+    else console.log("Email sent: " + info.response);
+  });
+};
+
+exports.deleteProjectInformTeam = (emails, project, owner) => {
+  mailOptions.to = env.nodemailer.email;
+  mailOptions.bcc = emails.join(", ");
+  mailOptions.subject = `${owner} has taken ${project} is off the grid`;
+  mailOptions.html = deleted_html(project);
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) console.error(err);
+    else console.log("Email sent: " + info.response);
+  });
+};

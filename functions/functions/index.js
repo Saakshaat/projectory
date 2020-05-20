@@ -1,6 +1,5 @@
 const functions = require("firebase-functions");
 const app = require("express")();
-const firebase_for_storage  = require('firebase/storage');
 
 const cors = require("cors");
 app.use(cors());
@@ -31,7 +30,8 @@ const {
   editProject,
   getMyProjects,
   getCannotApply,
-  reopen
+  reopen,
+  deleteProject
 } = require("./handlers/projects/projects");
 
 const {
@@ -72,7 +72,7 @@ app.post('/edit/:projectId', authenticate, editProject);
 app.get("/my/projects/:state/:position", authenticate, getMyProjects);
 app.get('/my/static', authenticate, getCannotApply);
 app.get('/project/closed/reopen/:projectId', authenticate, reopen);
-
+app.delete('/project/:state/:projectId', authenticate, deleteProject);
 
 //applications routes
 app.get("/apply/:projectId", authenticate, apply);

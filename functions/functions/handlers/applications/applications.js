@@ -172,6 +172,7 @@ exports.showProjectTeam = (req, res) => {
       } else {
         console.log(project.data().team);
         req.body.users = project.data().team;
+        req.body.users.push(req.user.docId);
         return showMultipleProfiles(req, res);
       }
     })
@@ -207,15 +208,13 @@ exports.finalizeTeam = (req, res) => {
         return res
           .status(404)
           .json({
-            error: `Project not found. Is it perhaps a closed proejct?`,
+            error: `Project not found. Is it perhaps a closed project?`,
           });
       } else if (proj.data().user !== owner) {
         return res.status(403).json({ error: `You're not the project owner` });
       } else if (proj.data().team.length === 0) {
         return res.status(400).json({ error: `No team members yet` });
       } else {
-        let rejected = proj.data().interested;
-        let team = proj.data().team;
         const batch = db.batch();
         batch.set(db.collection("closed").doc(), proj.data());
         batch.delete(db.doc(`/open/${project}`));
@@ -223,6 +222,11 @@ exports.finalizeTeam = (req, res) => {
         batch
           .commit()
           .then(() => {
+            let rejected = proj.data().interested;
+            let team = proj.data().team;
+            if(rejected.length === 0) rejected.push('Z5kdGE2CRRJVmSt3TQFy');
+            if(team.length === 0) team.push('Z5kdGE2CRRJVmSt3TQFy');
+
             rejected.forEach(function (part, index) {
               this[index] = db.doc(`/users/${this[index]}`);
             }, rejected);
@@ -255,11 +259,11 @@ exports.finalizeTeam = (req, res) => {
               })
             })
           })
-          .catch((err) => {
-            return res
-              .status(500)
-              .json({ error: `Error while updating values: ${err.code}` });
-          });
+          // .catch((err) => {
+          //   return res
+          //     .status(500)
+          //     .json({ error: `Error while updating values: ${err}` });
+          // });
       }
     })
     .catch((err) => {
