@@ -141,115 +141,197 @@ export default class SignUp extends Component {
       );
     } else
       return (
-        <div style={{
-          backgroundImage: "url(" + "https://i.pinimg.com/originals/3b/d5/a7/3bd5a78fede2560fc13ed5d55aa42538.jpg" + ")",
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          height: '100vh',
-        }}>
+        <div
+          style={{
+            backgroundImage:
+              "url(https://i.pinimg.com/originals/3b/d5/a7/3bd5a78fede2560fc13ed5d55aa42538.jpg)",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            height: "100vh",
+          }}
+        >
           <CssBaseline />
-          <Grid container component="main" justify='center' container component={Paper} elevation={15} style={{
-            width: '70%',
-            borderRadius: 20, position: 'absolute', left: '50%', top: '50%',
-            transform: 'translate(-50%, -50%)',
-            paddingLeft: 20,
-            paddingRight: 20,
-          }}>
-            <Grid item xs={false} style={{ width: '40%', marginRight: 50, marginTop: 50 }}>
-              <Typography variant='h2' style={{ justifyItems: 'center', alignItems: 'center', marginLeft: '20%', marginBottom: 20 }}>
+          <Grid
+            container
+            justify="center"
+            component={Paper}
+            elevation={15}
+            style={{
+              width: "70%",
+              borderRadius: 20,
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              paddingLeft: 20,
+              paddingRight: 20,
+            }}
+          >
+            <Grid
+              item
+              xs={false}
+              style={{ width: "40%", marginRight: 50, marginTop: 50 }}
+            >
+              <Typography
+                variant="h2"
+                style={{
+                  justifyItems: "center",
+                  alignItems: "center",
+                  marginLeft: "20%",
+                  marginBottom: 20,
+                }}
+              >
                 Projectory
-      </Typography>
+              </Typography>
               <CardMedia
-                image={require('../auth_ill.png')}
+                image={require("../auth_ill.png")}
                 title="Login"
                 style={{
-                  padding: '40%',
-                  paddingLeft: '70%',
-                  paddinRight: '50%',
-                  marginRight: '50%',
-                  marginBottom: 20
+                  padding: "40%",
+                  paddingLeft: "70%",
+                  paddinRight: "50%",
+                  marginRight: "50%",
+                  marginBottom: 20,
                 }}
               />
             </Grid>
             <Grid item xs>
               <div style={{ padding: 30, borderRadius: 20, paddingTop: 50 }}>
-                <Typography component="h1" variant="h5" style={{ justifySelf: 'center', flexDirection: 'row' }}>
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  style={{ justifySelf: "center", flexDirection: "row" }}
+                >
                   Sign Up
-        </Typography>
+                </Typography>
                 <form>
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
-                    onChange={this.handleTextEmailChange}
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    autoFocus
-                  />
-                  {this.state.hasEmptyEmail ? (
-                    <Grid item xs={12}>
-                      <ErrorText text="Email must not be empty" />
-                    </Grid>
-                  ) : (
-                      <div />
+                  {/* Email Address */}
+                  <div>
+                    {this.state.hasEmptyEmail ? (
+                      <TextField
+                        error
+                        helperText="Email Address must not be empty"
+                        variant="outlined"
+                        margin="normal"
+                        onChange={this.handleTextEmailChange}
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        autoFocus
+                      />
+                    ) : (
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        onChange={this.handleTextEmailChange}
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        autoFocus
+                      />
                     )}
+                  </div>
 
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    onChange={this.handleTextPasswordChange}
-                  />
-                  {this.state.hasEmptyPassword ? (
-                    <Grid item xs={12}>
-                      <ErrorText text="Password must not be empty" />
-                    </Grid>
-                  ) : (
-                      <div />
+                  {/* Password */}
+                  <div>
+                    {this.state.hasEmptyPassword ? (
+                      <TextField
+                        error
+                        helperText="Password must not be empty"
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                        onChange={this.handleTextPasswordChange}
+                      />
+                    ) : (
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                        onChange={this.handleTextPasswordChange}
+                      />
                     )}
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div>
+                    {this.state.passwordDontMatch ? (
+                      <TextField
+                        error
+                        helperText="Passwords don't match"
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="confirm-password"
+                        label="Confirm Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                        onChange={this.handleTextConfirmPasswordChange}
+                      />
+                    ) : (
+                      <div>
+                        {this.state.hasEmptyComfirmPassword ? (
+                          <TextField
+                            error
+                            helperText="Confirm password must not be empty"
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="confirm-password"
+                            label="Confirm Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            onChange={this.handleTextConfirmPasswordChange}
+                          />
+                        ) : (
+                          <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="confirm-password"
+                            label="Confirm Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            onChange={this.handleTextConfirmPasswordChange}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+
                   {this.state.hasError ? (
                     <Grid item xs={12}>
                       <ErrorText text={this.state.errorText} />
                     </Grid>
                   ) : (
-                      <div />
-                    )}
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="confirm-password"
-                    label="Confirm Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    onChange={this.handleTextConfirmPasswordChange}
-                  />
-                  {this.state.hasEmptyPassword ? (
-                    <Grid item xs={12}>
-                      <ErrorText text="Password must not be empty" />
-                    </Grid>
-                  ) : (
-                      <div />
-                    )}
-                  {this.state.hasError ? (
-                    <Grid item xs={12}>
-                      <ErrorText text={this.state.errorText} />
-                    </Grid>
-                  ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
+
                   <Button
                     type="submit"
                     fullWidth
@@ -259,27 +341,38 @@ export default class SignUp extends Component {
                     onClick={this.handleLoginButtonClick}
                   >
                     Sign Up
-          </Button>
+                  </Button>
+
                   <Button
                     fullWidth
                     type="submit"
-                    variant='outlined'
-                    color='primary'
-                    style={{ marginTop: 10, }}
+                    variant="outlined"
+                    color="primary"
+                    style={{ marginTop: 10 }}
                     onClick={this.handleGoogleSignInClick}
                   >
                     Sign In With Google
                   </Button>
-                  <Grid container spacing={0}
+
+                  <Grid
+                    container
+                    spacing={0}
                     direction="column"
                     alignItems="center"
-                    justify="center">
+                    justify="center"
+                  >
                     <Grid item xs style={{ marginTop: 40, marginBottom: 10 }}>
                       <Link
                         to="/"
                         style={{ color: "black", textDecoration: "none" }}
                       >
-                        <Typography variant='caption' color='black' gutterBottom>Already have an account? Sign in</Typography>
+                        <Typography
+                          variant="caption"
+                          color="black"
+                          gutterBottom
+                        >
+                          Already have an account? Sign in
+                        </Typography>
                       </Link>
                     </Grid>
                   </Grid>
