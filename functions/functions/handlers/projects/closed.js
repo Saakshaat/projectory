@@ -150,7 +150,7 @@ exports.reopenProject = (req, res) => {
           .json({ error: `Nice try. But you're not the project owner` });
       } else {
         let interested = projData.data().interested;
-
+        if(interested.length === 0) interested.push('Z5kdGE2CRRJVmSt3TQFy');
         interested.forEach(function (part, index) {
           this[index] = db.doc(`/users/${this[index]}`);
         }, interested);

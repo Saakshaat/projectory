@@ -195,7 +195,7 @@ exports.getMyOpen = (req, res) => {
 
         return res.status(200).json(response);
       });
-  } else if (req.params.position == 'all') {
+  } else if (req.params.position == "all") {
     return db
       .collection("open")
       .where("user", "==", req.user.docId)
@@ -256,31 +256,41 @@ exports.getMyOpen = (req, res) => {
 exports.getCannotApply = (req, res) => {
   let proj = [];
 
-  return db.collection('open').where('user', '==', req.user.docId).get().then(created => {
-    created.forEach(e => {
-      proj.push(e.id);
-    })
+  return db
+    .collection("open")
+    .where("user", "==", req.user.docId)
+    .get()
+    .then((created) => {
+      created.forEach((e) => {
+        proj.push(e.id);
+      });
 
-    return db.collection('open').where('teams', 'array-contains', req.user.docId).get();
-  })
-  .then(selected => {
-    selected.forEach(e => {
-      proj.push(e.id);
+      return db
+        .collection("open")
+        .where("teams", "array-contains", req.user.docId)
+        .get();
     })
+    .then((selected) => {
+      selected.forEach((e) => {
+        proj.push(e.id);
+      });
 
-    return db.collection('open').where('interested', 'array-contains', req.user.docId).get();
-  })
-  .then(interested => {
-    interested.forEach(e => {
-      proj.push(e.id);
+      return db
+        .collection("open")
+        .where("interested", "array-contains", req.user.docId)
+        .get();
     })
+    .then((interested) => {
+      interested.forEach((e) => {
+        proj.push(e.id);
+      });
 
-    return res.status(200).json(proj);
-  })
-  .catch(err => {
-    return res.status(500).json({ error: `Internal Server Error` });
-  })
-}
+      return res.status(200).json(proj);
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: `Internal Server Error` });
+    });
+};
 
 exports.edit = (req, res) => {
   const newProject = {
@@ -291,30 +301,19 @@ exports.edit = (req, res) => {
     links: req.body.links,
   };
 
-  const batch = db.batch();
-  batch.update(db.doc(`/open/${req.params.projectId}`), {
-    name: newProject.name,
-    needed: newProject.needed,
-    description: newProject.description,
-    github: newProject.github,
-    links: newProject.links,
-  });
-  batch
-    .commit()
+  return db
+    .doc(`/open/${req.params.projectId}`)
+    .update({
+      name: newProject.name,
+      needed: newProject.needed,
+      description: newProject.description,
+      github: newProject.github,
+      links: newProject.links,
+    })
     .then(() => {
       return res.status(200).json({ general: `Project updated successfully` });
     })
     .catch((err) => {
       return res.status(500).json({ error: `Internal Server Error` });
     });
-};
-
-exports.delete = (req, res) => {
-  /**
-   * TODO:
-   * - delete project object
-   * - email all people in team about deletion
-   * - decrement all selected members' 'projects_selected'
-   * - decrement the creator's 'projects_created'
-   */
 };
