@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import {
-  Container,
-} from "@material-ui/core";
+import { Container, Button } from "@material-ui/core";
 import ProjectList from "../Components/ProjectList";
+import { Link, Redirect } from "react-router-dom";
 
 import axios from "axios";
+import OtherProfile from "./OtherProfile";
+
+let userId = "sUYPCPcbXrajiFjYGCXYrVD0jxE3";
 
 export default class TestingGround extends Component {
   constructor() {
@@ -14,39 +16,12 @@ export default class TestingGround extends Component {
     };
   }
 
-  handleResumeChange = (e) => {
-    this.setState({ resume: e.target.files[0] });
-  };
-
-  uploadResume = () => {
-    const data = new FormData();
-
-    data.append("resume", this.state.resume, this.state.resume.name);
-
-    console.log("Sending Resume... with file " + this.state.resume.name);
-    console.log(this.state.resume);
-    console.log(data);
-
-    axios
-      .post("/baseapi/my/profile/resume", data, {
-        headers: {
-          Authorization: localStorage.FBIdToken,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err.response);
-        console.log(localStorage.FBIdToken);
-        this.setState({ hasError: true });
-      });
-  };
-
   render() {
     return (
       <Container>
-        <ProjectList endpoint="/baseapi/projects/open" applicable={true} />
+        <Link to={"/user/" + userId + "/profile"}>
+          <Button>Profile</Button>
+        </Link>
       </Container>
     );
   }

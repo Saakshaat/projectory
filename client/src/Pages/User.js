@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button, Container } from "@material-ui/core";
 import { Link, Redirect } from "react-router-dom";
 
+let userId ="3tZgh6yjpVG1CFdlkEyM";
 export default class User extends Component {
   constructor() {
     super();
@@ -28,10 +29,8 @@ export default class User extends Component {
           <Link to="/my/profile" style={{ textDecoration: "none" }}>
             <Button>My Profile</Button>
           </Link>
-          <Button onClick={this.handleClick}>Logout</Button>
+          
         </Container>
       );
   }
 }
-
-

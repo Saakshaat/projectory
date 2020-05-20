@@ -11,9 +11,6 @@ import {
   Dialog,
   Chip,
   TextField,
-  CircularProgress,
-  Card,
-  CardMedia,
   Tooltip,
   Menu,
   MenuItem,
@@ -35,7 +32,6 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import LanguageIcon from "@material-ui/icons/Language";
 import EditIcon from "@material-ui/icons/Edit";
-import VisibilityIcon from "@material-ui/icons/Visibility";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
@@ -146,6 +142,7 @@ const ProfileMain = (props) => {
   const [topSkillsTooLong, setTopSkillsTooLong] = React.useState(false);
   const [waiting, setWaiting] = React.useState(false);
   const history = useHistory();
+
 
   const handleClickOpen = () => {
     setOpen(true);

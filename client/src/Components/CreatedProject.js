@@ -262,8 +262,8 @@ const CreatedProject = (props) => {
                         <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0, marginBottom: 0 }}>
                             {props.project.name}
                         </Typography>
-                        <Typography noWrap textSize={14} color='textSecondary' variant='caption' display="block" gutterBottom>
-                            <Link href='#' variant='body2'>by {props.project.creator}</Link>
+                        <Typography noWrap textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
+                            <Link href={"/user/" + props.project.user + "/profile"} variant='body2'>by {props.project.creator}</Link>
                         </Typography>
                         <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
                             {props.project.description}

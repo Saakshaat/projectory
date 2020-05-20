@@ -423,6 +423,8 @@ function NavDrawer() {
                         <Route exact path="/my/applications/" component={MyApplications} />
                         <Route exact path="/my/projects/" component={MyProjects} />
                         <Route exact path="/dashboard" component={Dashboard} />
+                        <Route path="/user/:userId/profile" component={OtherProfile} />
+
                         <Route exact path="/" component={Dashboard} />
                     </Switch>
                 </main>
