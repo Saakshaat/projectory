@@ -27,6 +27,7 @@ class ProjectList extends Component {
                     needed: [],
                     team: [],
                     user: '',
+                    links: '',
                 }
             ],
             searchString: ''
@@ -57,6 +58,7 @@ class ProjectList extends Component {
                             needed: response.data[i].needed,
                             team: response.data[i].team,
                             user: response.data[i].user,
+                            links: response.data[i].links,
                         }
                     }
                     this.setState({
