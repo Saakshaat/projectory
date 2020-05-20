@@ -1,5 +1,5 @@
 import React, { Component, useContext } from "react";
-import { Card, CardContent, Typography, CardActions, Button, TableRow, TableCell, Chip, Container, Link, Divider, TextField } from "@material-ui/core";
+import { Card, CardContent, Typography, CardActions, Button, TableRow, TableCell, Chip, Container, Link, Divider, TextField, Grid } from "@material-ui/core";
 import SkillBoard from './SkillBoard'
 import '../Utils/Skill'
 import { withStyles } from '@material-ui/core/styles';
@@ -16,6 +16,9 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
 import axios from 'axios';
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import DeleteIcon from '@material-ui/icons/Delete';
+import { useHistory } from "react-router-dom";
 
 const styles = (theme) => ({
     root: {
@@ -64,12 +67,42 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+const getSkillList = (skillArr) => {
+    let res = [];
+    for (let j = 0; j < skillArr.length; j++) {
+        for (let i = 0; i < skills.length; i++) {
+            if (skills[i].name === skillArr[j]) {
+                res.push(skills[i]);
+                break;
+            }
+        }
+    }
+    return res;
+};
+
 const CreatedProject = (props) => {
     const [open, setOpen] = React.useState(false);
     const [openEdit, setOpenEdit] = React.useState(false);
     const [openSnack, setOpenSnack] = React.useState(false);
     const [applied, setApplied] = React.useState(false);
     const [appliedAlert, setAlert] = React.useState();
+
+    const [name, setName] = React.useState(props.project.name);
+    const [emptyName, setEmptyName] = React.useState(false);
+
+    const [gitHub, setGitHub] = React.useState(props.project.github);
+    const [emptyGitHub, setEmptyGitHub] = React.useState(false);
+
+    const [description, setDescription] = React.useState(props.project.description);
+    const [emptyDescription, setEmptyDescription] = React.useState(false);
+
+    const [needed, setNeeded] = React.useState(props.project.needed);
+    const [emptyNeeded, setEmptyNeeded] = React.useState(false);
+
+    const [links, setLinks] = React.useState(props.project.links);
+    const [emptyLink, setEmptyLinks] = React.useState(false);
+
+    const history = useHistory();
 
     const handleApplySuccess = () => {
         setApplied(true);
@@ -88,6 +121,98 @@ const CreatedProject = (props) => {
         setOpenSnack(false);
     };
 
+    const handleSubmit = () => {
+
+        setEmptyName(false);
+        if (name.length === 0) {
+            setEmptyName(true);
+            return;
+        }
+
+        setEmptyDescription(false);
+        if (description.length === 0) {
+            setEmptyDescription(true);
+            return;
+        }
+
+        setEmptyGitHub(false);
+        if (gitHub.length === 0) {
+            setEmptyGitHub(true);
+            return;
+        }
+
+        setEmptyNeeded(false);
+        if (needed.length === 0) {
+            setEmptyNeeded(true);
+            return;
+        }
+
+        const request = {
+            name: name,
+            github: gitHub,
+            description: description,
+            needed: needed,
+            links: links,
+        };
+
+        console.log("Editing Project ...");
+
+        axios
+            .post("/baseapi/edit/" + props.project.id + "/", request, {
+                headers: {
+                    Authorization: localStorage.FBIdToken,
+                },
+            })
+            .then((res) => {
+                setOpenEdit(false);
+                console.log(res)
+                setInitial();
+                history.push('/dashboard');
+                return;
+            })
+            .catch((err) => {
+                setOpenEdit(false);
+                console.log(err.response);
+                setInitial();
+                history.push('/dashboard');
+                return;
+            });
+    };
+
+    const setInitial = () => {
+        setName(props.project.name);
+        setEmptyName(false);
+        setDescription(props.project.description);
+        setEmptyDescription(false);
+        setGitHub(props.project.github);
+        setEmptyGitHub(false);
+        setLinks(props.project.links);
+        setEmptyLinks(false);
+        setNeeded(props.project.needed);
+        setEmptyNeeded(false);
+    }
+
+    const handleNameChange = (e) => {
+        setName(e.target.value);
+    };
+
+    const handleGithubChange = (e) => {
+        setGitHub(e.target.value);
+    };
+
+    const handleDescriptionChange = (e) => {
+        setDescription(e.target.value);
+    };
+
+    const handleNeededChange = (e, data) => {
+        let temp = [];
+        for (let i = 0; i < data.length; i++) temp.push(data[i].name);
+        setNeeded(temp);
+    };
+
+    const handleLinkChange = (e) => {
+        setLinks(e.target.value);
+    };
 
     const handleApplyFailure = (error) => {
         setAlert(
@@ -128,12 +253,13 @@ const CreatedProject = (props) => {
     const handleCloseEdit = () => {
         setOpenEdit(false);
     };
+
     return (
         <div style={{ alignSelf: 'baseline' }}>
             {props ? (
                 <Card elevation={8} style={{ borderRadius: 10, height: '100%' }}>
                     <CardContent>
-                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0 }}>
+                        <Typography gutterBottom variant='h5' component='h2' style={{ marginTop: 0, marginBottom: 0 }}>
                             {props.project.name}
                         </Typography>
                         <Typography noWrap textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
@@ -158,6 +284,8 @@ const CreatedProject = (props) => {
                             <Snackbar open={openSnack} autoHideDuration={2000} onClose={handleCloseSnack}>
                                 {appliedAlert}
                             </Snackbar>
+
+
                             <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                                 <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{ marginBottom: -15 }} >
                                     {props.project.name}
@@ -186,47 +314,174 @@ const CreatedProject = (props) => {
                                     </Button>
                                 </DialogActions>
                             </Dialog>
-                            <Dialog onClose={handleCloseEdit} aria-labelledby="customized-dialog-title" open={openEdit}>
-                                <DialogTitle id="customized-dialog-title" onClose={handleCloseEdit} style={{ marginBottom: -15 }} >
-                                    <TextField
-                                        margin="normal"
-                                        id="name"
-                                        helperText={'Original: ' + props.project.name}
-                                        label='Title'
-                                        variant="outlined"
-                                        color='primary'
-                                    />
-                                    < Typography textSize={18} color='textSecondary' variant='caption' display="block" gutterBottom>
-                                        <Link href='#' variant='body2'>by {props.project.creator}</Link>
-                                    </Typography>
-                                    <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
-                                        Created on: {props.project.createdAt}
-                                    </Typography>
-                                </DialogTitle>
-                                <DialogContent style={{ margin: 0 }}>
-                                    <Container style={{ marginBottom: 15, padding: 0, display: 'flex', justifyItems: 'left' }}>
-                                        <Link target='/' href={props.project.github}>
-                                            <Chip size='small' icon={<GitHubIcon style={{ color: 'white' }} />} href={props.project.github} label='GitHub' clickable
-                                                style={{ elevation: 10, paddingTop: 2, paddingBottom: 2, marginTop: 5, marginRight: 5, backgroundColor: 'black', borderColor: 'black', color: 'white' }} />
-                                        </Link>
-                                        <SkillBoard style={{ flex: 1 }} skillsList={props.project.needed} />
-                                    </Container>
-                                    <TextField
-                                        margin="normal"
-                                        id="description"
-                                        helperText={'Original: ' + props.project.description}
-                                        label='Description'
-                                        variant="outlined"
 
-                                        multiline
-                                    />
+                            <Dialog onClose={handleCloseEdit} aria-labelledby="customized-dialog-title" open={openEdit}>
+                                <DialogTitle id="customized-dialog-title" onClose={handleCloseEdit} style={{ marginBottom: -15 }}>
+                                    Edit Project
+                                </DialogTitle>
+
+                                <DialogContent style={{ margin: 0 }}>
+                                    <Grid container spacing={2}>
+                                        {/* name */}
+                                        <Grid item xs={12}>
+                                            {!emptyName ? (
+                                                <TextField
+                                                    label="Name"
+                                                    required
+                                                    fullWidth
+                                                    defaultValue={props.project.name}
+                                                    onChange={handleNameChange}
+                                                />
+                                            ) : (
+                                                    <TextField
+                                                        label="Name"
+                                                        required
+                                                        fullWidth
+                                                        onChange={handleNameChange}
+                                                        error
+                                                        helperText="Name cannot be empty."
+                                                    />
+                                                )}
+                                        </Grid>
+
+                                        {/* Description */}
+                                        <Grid item xs={12}>
+                                            {!emptyDescription ? (
+                                                <TextField
+                                                    label="Description"
+                                                    required
+                                                    fullWidth
+                                                    defaultValue={props.project.description}
+                                                    onChange={handleDescriptionChange}
+                                                />
+                                            ) : (
+                                                    <TextField
+                                                        label="Description"
+                                                        required
+                                                        fullWidth
+                                                        onChange={handleDescriptionChange}
+                                                        error
+                                                        helperText="Description cannot be empty."
+                                                    />
+                                                )}
+                                        </Grid>
+
+                                        {/* GitHub */}
+                                        <Grid item xs={12}>
+                                            {!emptyGitHub ? (
+                                                <TextField
+                                                    label="GitHub"
+                                                    multiline
+                                                    required
+                                                    fullWidth
+                                                    defaultValue={props.project.github}
+                                                    onChange={handleGithubChange}
+                                                />
+                                            ) : (
+                                                    <TextField
+                                                        label="GitHub"
+                                                        multiline
+                                                        required
+                                                        fullWidth
+                                                        onChange={handleGithubChange}
+                                                        error
+                                                        helperText="GitHub Link cannot be empty"
+                                                    />
+                                                )}
+                                        </Grid>
+
+                                        {/* Link */}
+                                        <Grid item xs={12}>
+                                            {(
+                                                <TextField
+                                                    label="Link"
+                                                    fullWidth
+                                                    defaultValue={props.project.links}
+                                                    onChange={handleLinkChange}
+                                                />
+                                            )}
+                                        </Grid>
+
+                                        {/* Needed Skills */}
+                                        <Grid item xs={12}>
+                                            {!emptyNeeded ? (
+                                                <Autocomplete
+                                                    multiple
+                                                    options={skills}
+                                                    defaultValue={getSkillList(props.project.needed)}
+                                                    getOptionLabel={(option) => option.name}
+                                                    renderTags={(tagValue, getTagProps) =>
+                                                        tagValue.map((option, index) => (
+                                                            <Chip
+                                                                size="small"
+                                                                variant="outlined"
+                                                                label={option.name}
+                                                                style={{
+                                                                    margin: 5,
+                                                                    color: option.color,
+                                                                    borderColor: option.color
+                                                                }}
+                                                                {...getTagProps({ index })}
+                                                            />
+                                                        ))
+                                                    }
+                                                    renderInput={(params) => (
+                                                        <TextField
+                                                            required
+                                                            {...params}
+                                                            variant="standard"
+                                                            label="Skills Needed"
+                                                        />
+                                                    )}
+                                                    onChange={handleNeededChange}
+                                                />
+                                            ) : (
+                                                    <Autocomplete
+                                                        multiple
+                                                        options={skills}
+                                                        getOptionLabel={(option) => option.name}
+                                                        renderTags={(tagValue, getTagProps) =>
+                                                            tagValue.map((option, index) => (
+                                                                <Chip
+                                                                    size="small"
+                                                                    variant="outlined"
+                                                                    label={option.name}
+                                                                    style={{
+                                                                        margin: 5,
+                                                                        color: option.color,
+                                                                        borderColor: option.color
+                                                                    }}
+                                                                    {...getTagProps({ index })}
+                                                                />
+                                                            ))
+                                                        }
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                required
+                                                                {...params}
+                                                                variant="standard"
+                                                                label="Skills Needed"
+                                                                error
+                                                                helperText="Skills cannot be 0"
+                                                            />
+                                                        )}
+                                                        onChange={handleNeededChange}
+                                                    />
+                                                )}
+                                        </Grid>
+                                    </Grid>
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button autoFocus onClick={handleCloseEdit} color="primary">
-                                        Close
+                                    <Button onClick={handleSubmit} startIcon={<DeleteIcon />} variant='outline' color="red">
+                                        Delete
+                                    </Button>
+                                    <Button onClick={handleSubmit} variant='contained' color="primary">
+                                        Submit
                                     </Button>
                                 </DialogActions>
                             </Dialog>
+
+
                         </div>
                     </CardActions>
                 </Card>
