@@ -33,10 +33,8 @@ exports.create = (req, res) => {
       }
     })
     .then((user) => {
-      let projects = 0;
 
-      projects = user.data().projects_created;
-      projects++;
+      const projects = user.data().projects_created + 1;
       const batch = db.batch();
 
       const projectRef = db.collection("open").doc();

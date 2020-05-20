@@ -354,21 +354,23 @@ exports.edit = (req, res) => {
                 docClosed.ref.update({ creator: newUser.name }).then();
               });
               const batch = db.batch();
-              batch.update(userRef, {
-                name: newUser.name,
-                institution: newUser.institution,
-                bio: newUser.bio,
-                socials: newUser.socials,
-              });
-              batch.update(expRef, {
-                skills: newExperience.skills,
-                headline: newExperience.headline,
-              });
-
-              return batch.commit().then(() => {
-                return res
-                  .status(200)
-                  .json({ general: `Profile updated successfully` });
+              userRef.get().then((user) => {
+                newUser.socials.email = user.data().socials.email;
+                batch.update(userRef, {
+                  name: newUser.name,
+                  institution: newUser.institution,
+                  bio: newUser.bio,
+                  socials: newUser.socials,
+                });
+                batch.update(expRef, {
+                  skills: newExperience.skills,
+                  headline: newExperience.headline,
+                });
+                return batch.commit().then(() => {
+                  return res
+                    .status(200)
+                    .json({ general: `Profile updated successfully` });
+                });
               });
             });
         })
@@ -387,16 +389,17 @@ exports.showMultipleProfiles = (req, res) => {
     this[index] = db.doc(`/users/${this[index]}`);
   }, req.body.users);
 
-  return db.getAll(...req.body.users).then((docs) => {
-    docs.forEach((data) => {
-      users.push(data.data());
+  return db
+    .getAll(...req.body.users)
+    .then((docs) => {
+      docs.forEach((data) => {
+        users.push(data.data());
+      });
+      return res.status(200).json(users);
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ error: `Internal Server Error: ${err.code}` });
     });
-    return res.status(200).json(users);
-  })
-  .catch((err) => {
-    return res
-      .status(500)
-      .json({ error: `Internal Server Error: ${err.code}` });
-  });
 };
-
