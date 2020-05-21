@@ -28,7 +28,7 @@ exports.apply = (req, res) => {
           .json({ error: `You've already applied to this project` });
       } else {
         let interested = project.data().interested;
-        interested.push(project.data().user);
+        interested.push(req.user.docId);
 
         return projRef
           .update({ interested: interested })
