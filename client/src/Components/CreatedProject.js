@@ -132,14 +132,14 @@ const CreatedProject = (props) => {
                 setOpenEdit(false);
                 console.log(res)
                 setInitial();
-                history.push('/dashboard');
+                window.location.reload();
                 return;
             })
             .catch((err) => {
                 setOpenEdit(false);
                 console.log(err.response);
                 setInitial();
-                history.push('/dashboard');
+                window.location.reload();
                 return;
             });
     };
@@ -190,14 +190,14 @@ const CreatedProject = (props) => {
                 setOpenEdit(false);
                 console.log(res)
                 setInitial();
-                history.push('/dashboard');
+                window.location.reload();
                 return;
             })
             .catch((err) => {
                 setOpenEdit(false);
                 console.log(err.response);
                 setInitial();
-                history.push('/dashboard');
+                window.location.reload();
                 return;
             });
     };
@@ -503,8 +503,6 @@ const CreatedProject = (props) => {
                                     </Button>
                                 </DialogActions>
                             </Dialog>
-
-
                         </div>
                     </CardActions>
                 </Card>
