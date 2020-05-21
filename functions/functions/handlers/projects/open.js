@@ -111,7 +111,7 @@ exports.getOne = (req, res) => {
 exports.getSkill = (req, res) => {
   var resProjects = [];
   db.collection("open")
-    .where("needed", "array-contains", req.params.skill)
+    .where("needed", 'array-contains-any', req.body.skills)
     .get()
     .then((projects) => {
       projects.forEach((doc) => {

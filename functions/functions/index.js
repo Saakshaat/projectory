@@ -67,7 +67,7 @@ app.post("/project", authenticate, createProject);
 app.get("/projects/open", getAllOpenProjects);
 app.get("/project/open/:projectId", getOneOpenProject);
 app.get("/project/closed/:projectId", getOneClosedProject);
-app.get("/projects/open/skills/:skill", getAllWithSkill);
+app.post("/projects/open/skills", getAllWithSkill);
 app.post('/edit/:projectId', authenticate, editProject);
 app.get("/my/projects/:state/:position", authenticate, getMyProjects);
 app.get('/my/static', authenticate, getCannotApply);
