@@ -132,14 +132,14 @@ const CreatedProject = (props) => {
                 setOpenEdit(false);
                 console.log(res)
                 setInitial();
-                history.push('/');
+                history.push('/dashboard');
                 return;
             })
             .catch((err) => {
                 setOpenEdit(false);
                 console.log(err.response);
                 setInitial();
-                history.push('/');
+                history.push('/dashboard');
                 return;
             });
     };
@@ -190,14 +190,14 @@ const CreatedProject = (props) => {
                 setOpenEdit(false);
                 console.log(res)
                 setInitial();
-                history.push('/');
+                history.push('/dashboard');
                 return;
             })
             .catch((err) => {
                 setOpenEdit(false);
                 console.log(err.response);
                 setInitial();
-                history.push('/');
+                history.push('/dashboard');
                 return;
             });
     };

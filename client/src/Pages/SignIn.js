@@ -6,6 +6,9 @@ import { Link, Redirect } from "react-router-dom";
 import { Typography, CssBaseline, Paper, CardMedia, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@material-ui/core";
 import ErrorText from "../Components/ErrorText";
 import axios from "axios";
+import Dashboard from "./Dashboard";
+
+const history = require("history").createHashHistory();
 
 export default class SignIn extends Component {
   constructor() {
@@ -40,7 +43,45 @@ export default class SignIn extends Component {
         })
         .catch((error) => {
           console.log(error);
-          this.setState({ isLoggedIn: false });
+          if (error.status === 429) {
+            axios
+              .get("/aux1/valid", {
+                headers: {
+                  Authorization: localStorage.FBIdToken,
+                },
+              })
+              .then((response) => {
+                if (response.status === 200)
+                  this.setState({
+                    isLoggedIn: true,
+                  });
+              })
+              .catch((error) => {
+                console.log(error);
+                if (error.status === 429) {
+                  axios
+                    .get("/aux2/valid", {
+                      headers: {
+                        Authorization: localStorage.FBIdToken,
+                      },
+                    })
+                    .then((response) => {
+                      if (response.status === 200)
+                        this.setState({
+                          isLoggedIn: true,
+                        });
+                    })
+                    .catch((error) => {
+                      this.setState({ isLoggedIn: false });
+                      console.log(error);
+                    });
+                } else {
+                  this.setState({ isLoggedIn: false });
+                }
+              });
+          } else {
+            this.setState({ isLoggedIn: false });
+          }
         });
     } else {
       this.setState({ isLoggedIn: false });
