@@ -5,12 +5,13 @@ An open sourced project and team matching platform meant for inhouse project man
 This application is the MVP meant for beta testing the concept.
 Find the [production release here](https://projectory-5171c.web.app/)
 
-The final application is currently in development at the [UMass DSC](https://github.com/dsc-umass/project-matching).
+The final application is currently in development at the [UMass DSC](https://github.com/dsc-umass/project-matching). The final application supports the user building and hosting their own instance of the application.
 
 <div><p align="center">
 <center><h4>Projectory is supported & used by:</h4><a href="https://www.linkedin.com/company/dscntu/"><img width="270" src="/assets/dsc_ntu.png" target="_blank"></a>
 <a href="https://umassdsc.com/" target="_blank"><img width="270" src="./assets/dsc_umass.jpg"></a>
 <a href="http://www.dsc-rpi.club/" target="_blank"><img width="270" src="./assets/dsc_rpi.png"></a>
+<a href="https://umass.acm.org/" target="_blank"><img width="270" src="./assets/umassacmlogo.png"></a>
 <a href="https://jobs.rezscore.com/" target="_blank"><img width="270" src="/assets/rez_score.jpeg"></a>
 </center></p></div>
 
