@@ -121,6 +121,29 @@ const CreatedProject = (props) => {
         setOpenSnack(false);
     };
 
+    const handleDelete = () => {
+
+        axios.delete('baseapi/project' + '/open/' + props.project.id, {
+            headers: {
+                Authorization: localStorage.FBIdToken,
+            },
+        })
+            .then((res) => {
+                setOpenEdit(false);
+                console.log(res)
+                setInitial();
+                history.push('/');
+                return;
+            })
+            .catch((err) => {
+                setOpenEdit(false);
+                console.log(err.response);
+                setInitial();
+                history.push('/');
+                return;
+            });
+    };
+
     const handleSubmit = () => {
 
         setEmptyName(false);
@@ -167,14 +190,14 @@ const CreatedProject = (props) => {
                 setOpenEdit(false);
                 console.log(res)
                 setInitial();
-                history.push('/dashboard');
+                history.push('/');
                 return;
             })
             .catch((err) => {
                 setOpenEdit(false);
                 console.log(err.response);
                 setInitial();
-                history.push('/dashboard');
+                history.push('/');
                 return;
             });
     };
@@ -472,7 +495,7 @@ const CreatedProject = (props) => {
                                     </Grid>
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button onClick={handleSubmit} startIcon={<DeleteIcon />} variant='outline' color="red">
+                                    <Button onClick={handleDelete} startIcon={<DeleteIcon />} variant='outline' color="secondary">
                                         Delete
                                     </Button>
                                     <Button onClick={handleSubmit} variant='contained' color="primary">
