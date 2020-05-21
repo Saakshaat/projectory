@@ -143,7 +143,6 @@ const ProfileMain = (props) => {
   const [waiting, setWaiting] = React.useState(false);
   const history = useHistory();
 
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -152,7 +151,6 @@ const ProfileMain = (props) => {
   };
 
   const handleSubmit = () => {
-
     setEmptyName(false);
     if (name.length === 0) {
       setEmptyName(true);
@@ -230,8 +228,8 @@ const ProfileMain = (props) => {
       })
       .then((res) => {
         setOpen(false);
-        history.push('/dashboard');
-        history.push('/my/profile');
+        history.push("/dashboard");
+        history.push("/my/profile");
       })
       // TODO handle different type of errors
       .catch((err) => {
@@ -336,7 +334,9 @@ const ProfileMain = (props) => {
                     label="Edit Profile"
                     clickable
                     onClick={handleClickOpen}
-                  >Edit Profile</Button>
+                  >
+                    Edit Profile
+                  </Button>
                 </Grid>
               </Grid>
             ) : null}
@@ -370,15 +370,15 @@ const ProfileMain = (props) => {
                   defaultValue={props.profile.information.name}
                 />
               ) : (
-                  <TextField
-                    label="Name"
-                    required
-                    fullWidth
-                    onChange={handleNameChange}
-                    error
-                    helperText="Name cannot be empty."
-                  />
-                )}
+                <TextField
+                  label="Name"
+                  required
+                  fullWidth
+                  onChange={handleNameChange}
+                  error
+                  helperText="Name cannot be empty."
+                />
+              )}
             </Grid>
 
             {/* institution */}
@@ -392,15 +392,15 @@ const ProfileMain = (props) => {
                   defaultValue={props.profile.information.institution}
                 />
               ) : (
-                  <TextField
-                    label="Institution"
-                    required
-                    fullWidth
-                    onChange={handleInstitutionChange}
-                    error
-                    helperText="Instituition cannot be empty."
-                  />
-                )}
+                <TextField
+                  label="Institution"
+                  required
+                  fullWidth
+                  onChange={handleInstitutionChange}
+                  error
+                  helperText="Instituition cannot be empty."
+                />
+              )}
             </Grid>
 
             {/* headline */}
@@ -416,17 +416,17 @@ const ProfileMain = (props) => {
                   defaultValue={props.profile.experience.headline}
                 />
               ) : (
-                  <TextField
-                    label="Headline"
-                    multiline
-                    required
-                    fullWidth
-                    placeholder="Describe yourself in just a few words"
-                    onChange={handleHeadlineChange}
-                    error
-                    helperText="Headline should have between 1 and 100 characters"
-                  />
-                )}
+                <TextField
+                  label="Headline"
+                  multiline
+                  required
+                  fullWidth
+                  placeholder="Describe yourself in just a few words"
+                  onChange={handleHeadlineChange}
+                  error
+                  helperText="Headline should have between 1 and 100 characters"
+                />
+              )}
             </Grid>
 
             {/* bio */}
@@ -441,16 +441,16 @@ const ProfileMain = (props) => {
                   defaultValue={props.profile.information.bio}
                 />
               ) : (
-                  <TextField
-                    label="Bio"
-                    multiline
-                    required
-                    fullWidth
-                    onChange={handleBioChange}
-                    error
-                    helperText="Bio cannot be empty."
-                  />
-                )}
+                <TextField
+                  label="Bio"
+                  multiline
+                  required
+                  fullWidth
+                  onChange={handleBioChange}
+                  error
+                  helperText="Bio cannot be empty."
+                />
+              )}
             </Grid>
 
             {/* github */}
@@ -502,7 +502,7 @@ const ProfileMain = (props) => {
                         style={{
                           margin: 5,
                           color: option.color,
-                          borderColor: option.color
+                          borderColor: option.color,
                         }}
                         {...getTagProps({ index })}
                       />
@@ -520,39 +520,39 @@ const ProfileMain = (props) => {
                   onChange={handleTopSkillChange}
                 />
               ) : (
-                  <Autocomplete
-                    multiple
-                    options={skills}
-                    getOptionLabel={(option) => option.name}
-                    renderTags={(tagValue, getTagProps) =>
-                      tagValue.map((option, index) => (
-                        <Chip
-                          size="small"
-                          variant="outlined"
-                          label={option.name}
-                          style={{
-                            margin: 5,
-                            color: option.color,
-                            borderColor: option.color
-                          }}
-                          {...getTagProps({ index })}
-                        />
-                      ))
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        required
-                        {...params}
-                        variant="standard"
-                        label="Best Skills"
-                        placeholder="You best at"
-                        error
-                        helperText="Top Skills should have between 1 to 5 skills"
+                <Autocomplete
+                  multiple
+                  options={skills}
+                  getOptionLabel={(option) => option.name}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        label={option.name}
+                        style={{
+                          margin: 5,
+                          color: option.color,
+                          borderColor: option.color,
+                        }}
+                        {...getTagProps({ index })}
                       />
-                    )}
-                    onChange={handleTopSkillChange}
-                  />
-                )}
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      {...params}
+                      variant="standard"
+                      label="Best Skills"
+                      placeholder="You best at"
+                      error
+                      helperText="Top Skills should have between 1 to 5 skills"
+                    />
+                  )}
+                  onChange={handleTopSkillChange}
+                />
+              )}
             </Grid>
 
             {/* other skills */}
@@ -573,7 +573,7 @@ const ProfileMain = (props) => {
                       style={{
                         margin: 5,
                         color: option.color,
-                        borderColor: option.color
+                        borderColor: option.color,
                       }}
                       {...getTagProps({ index })}
                     />
@@ -659,18 +659,20 @@ const Header = (props) => {
             </Tooltip>
           </div>
         ) : (
-            <div>
-              <Avatar
-                className={classes.large}
-                src={props.profile.information.imageUrl}
-                alt="Profile Picture"
-              />
-            </div>
-          )}
+          <div>
+            <Avatar
+              className={classes.large}
+              src={props.profile.information.imageUrl}
+              alt="Profile Picture"
+            />
+          </div>
+        )}
       </Grid>
 
       <Grid item xs={12}>
-        <Typography variant="h4" style={{ marginTop: 10 }}>{props.profile.information.name}</Typography>
+        <Typography variant="h4" style={{ marginTop: 10 }}>
+          {props.profile.information.name}
+        </Typography>
         <Divider
           variant="middle"
           style={{
@@ -816,8 +818,8 @@ const Info = (props) => {
                 value={props.profile.experience.resume}
                 aria-controls="simple-menu"
                 aria-haspopup="true"
-                variant='contained'
-                color='primary'
+                variant="contained"
+                color="primary"
                 onClick={handleClick}
               >
                 View Resume
@@ -837,11 +839,14 @@ const Info = (props) => {
               </Menu>
             </div>
           ) : (
-              <Button variant='contained'
-                color='primary' onClick={handleViewButton} >
-                View Resume
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleViewButton}
+            >
+              View Resume
+            </Button>
+          )}
         </Grid>
 
         {/* <Grid item xs={1}>
@@ -867,8 +872,8 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-          <div />
-        )}
+        <div />
+      )}
 
       {!(props.profile.information.socials.linkedin.length === 0) ? (
         <Grid item>
@@ -880,8 +885,8 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-          <div />
-        )}
+        <div />
+      )}
 
       {!(props.profile.information.socials.email.length === 0) ? (
         <Grid item>
@@ -893,8 +898,8 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-          <div />
-        )}
+        <div />
+      )}
 
       {!(props.profile.information.socials.website.length === 0) ? (
         <Grid item>
@@ -906,8 +911,8 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-          <div />
-        )}
+        <div />
+      )}
     </Grid>
   );
 };
