@@ -44,9 +44,6 @@ Projectory is supposed to make team matching easier and faster for projects. It 
 
 #### Projects
 
-
-## Tech Stack
-=======
  Projects are described by
  - skills needed
  - description
