@@ -3,11 +3,14 @@ import { Typography, Toolbar, AppBar, Menu, MenuItem } from '@material-ui/core'
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Switch, Route, BrowserRouter, Link } from 'react-router-dom';
+import { Switch, Route, BrowserRouter, Link, Redirect, useHistory } from 'react-router-dom';
 import Create from '../Pages/Create';
 import Dashboard from '../Pages/Dashboard';
+import createHistory from 'history/createBrowserHistory'
+
 
 const NavBar = ({ toggleDrawer, title, className1, className2 }) => {
+    const history = useHistory();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -17,7 +20,9 @@ const NavBar = ({ toggleDrawer, title, className1, className2 }) => {
     }
 
     const handleLogout = () => {
+        localStorage.removeItem("FBIdToken");
         handleClose();
+        history.push('/')
     }
 
     return (
@@ -46,7 +51,6 @@ const NavBar = ({ toggleDrawer, title, className1, className2 }) => {
                             <AccountCircle />
                         </IconButton>
                         <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-                            <MenuItem onClick={handleClose}>Profile</MenuItem>
                             <MenuItem onClick={handleLogout}>Logout</MenuItem>
                         </Menu>
                     </span>
