@@ -44,7 +44,10 @@ export default class SignIn extends Component {
       this.setState({ isLoggedIn: false });
     }
   }
-
+  /**
+   * If user without a profile sign in,
+   * we must make sure that they finish the create profile step before store their token
+   */
   // Handlle submit button
   handleLoginButtonClick = (e) => {
     e.preventDefault();

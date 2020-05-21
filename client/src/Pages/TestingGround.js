@@ -7,6 +7,7 @@ import axios from "axios";
 import OtherProfile from "./OtherProfile";
 
 let userId = "sUYPCPcbXrajiFjYGCXYrVD0jxE3";
+let projectState = "open";
 
 export default class TestingGround extends Component {
   constructor() {
@@ -21,6 +22,9 @@ export default class TestingGround extends Component {
       <Container>
         <Link to={"/user/" + userId + "/profile"}>
           <Button>Profile</Button>
+        </Link>
+        <Link to={"/my/team/"}>
+          <Button>Team</Button>
         </Link>
       </Container>
     );

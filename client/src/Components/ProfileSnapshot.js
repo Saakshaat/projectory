@@ -56,7 +56,6 @@ export default class ProfileSnapot extends Component {
         this.setState({
           hadData: true,
         });
-        console.log(res.data);
       })
       .catch((err) => {
         console.log(err.response);
@@ -66,7 +65,7 @@ export default class ProfileSnapot extends Component {
   render() {
     if (!this.state.hadData)
       return (
-        <Card style={{ maxWidth: "10%" }} aligncontent="center">
+        <Card style={{ maxWidth: "275px" }} aligncontent="center">
           <Grid
             container
             spacing={3}
@@ -82,12 +81,20 @@ export default class ProfileSnapot extends Component {
       );
     else
       return (
-        <Card style={{ maxWidth: "20%" }}>
+        <Card
+          elevation={8}
+          style={{
+            display: "flex",
+            borderRadius: 10,
+            width: "270px",
+            height: "350px",
+            paddingTop: "10px",
+          }}
+        >
           <Grid
             container
             direction="column"
             alignItems="center"
-            justify="center"
           >
             <Grid item>
               <Avatar
@@ -101,6 +108,7 @@ export default class ProfileSnapot extends Component {
               <hr style={{ visibility: "hidden" }} />
             </Grid>
             <Grid item>
+              {/* TODO add link to profile page */}
               <Typography style={style.name}>
                 {this.state.profile.information.name}
               </Typography>
@@ -123,7 +131,7 @@ export default class ProfileSnapot extends Component {
                 <hr style={{ visibility: "hidden" }} />
               </Grid>
 
-              <Grid item>
+              <Grid item justify="flex-end">
                 <Contact profile={this.state.profile} />
               </Grid>
             </Grid>
@@ -151,7 +159,6 @@ const Skill = (props) => {
 };
 
 const Contact = (props) => {
-  console.log(props);
   return (
     <Grid container alignItems="center" justify="center">
       {!(props.profile.information.socials.github.length === 0) ? (
