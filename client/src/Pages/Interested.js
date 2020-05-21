@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 import ProfileMain from "../Components/ProfileMain";
 import ProjectTeamCard from "../Components/ProjectTeamCard";
-import { Card, Grid, Divider, Container, Avatar } from "@material-ui/core";
+import { Card, Grid, Divider, Container, Avatar, CircularProgress } from "@material-ui/core";
 
 let projectId = "Skxq8GI9DFwq9bmv3z2B";
 
@@ -53,7 +53,7 @@ export default class Interested extends Component {
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else {
-      if (!this.state.hadData) return <Typography>Loading...</Typography>;
+      if (!this.state.hadData) return (<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress size={50} /></div>);
       else
         return (
           <Container>

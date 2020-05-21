@@ -15,12 +15,15 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import GroupWorkIcon from '@material-ui/icons/GroupWork';
 
 import SignUp from "../Pages/SignUp";
 import User from "../Pages/User";
 import Create from "../Pages/Create";
 import Dashboard from '../Pages/Dashboard';
 import Profile from "../Pages/Profile";
+import TeamPage from '../Pages/TeamPage'
+import Interested from '../Pages/Interested'
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -458,11 +461,17 @@ function NavDrawer() {
                             </ListItemIcon>
                             <ListItemText>Profile</ListItemText>
                         </ListItem>
-                        <ListItem button component={NavLink} to='/create' onClick={onItemClick('Teams')}>
+                        <ListItem button component={NavLink} to='/my/teams' onClick={onItemClick('Teams')}>
+                            <ListItemIcon>
+                                <GroupWorkIcon />
+                            </ListItemIcon>
+                            <ListItemText>Teams</ListItemText>
+                        </ListItem>
+                        <ListItem button component={NavLink} to='/interested' onClick={onItemClick('Interested Applicants')}>
                             <ListItemIcon>
                                 <GroupIcon />
                             </ListItemIcon>
-                            <ListItemText>Teams</ListItemText>
+                            <ListItemText>Applicants</ListItemText>
                         </ListItem>
                         <ListItem button component={NavLink} to='/my/projects' onClick={onItemClick('Projects')}>
                             <ListItemIcon>
@@ -483,6 +492,8 @@ function NavDrawer() {
                         <Route exact path="/my/profile/" component={Profile} />
                         <Route path="/user/:userId/profile" component={OtherProfile} />
                         <Route exact path="/signin" component={SignIn} />
+                        <Route exact path="/my/teams" component={TeamPage} />
+                        <Route exact path="/interested" component={Interested} />
                         <Route exact path="/create" component={Create} />
                         <Route exact path="/my/applications" component={MyApplications} />
                         <Route exact path="/my/projects" component={MyProjects} />

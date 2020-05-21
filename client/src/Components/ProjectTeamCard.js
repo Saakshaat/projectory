@@ -22,12 +22,13 @@ import ProfileSnapshot from "../Components/ProfileSnapshot";
 import axios from "axios";
 
 export default class ProjectTeamCard extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       projectState: this.props.state,
       projectId: this.props.projectId,
-      data: null,
+      data: [],
       hadData: false,
     };
   }
@@ -45,7 +46,8 @@ export default class ProjectTeamCard extends Component {
         },
       })
       .then((res) => {
-        // TODO handle different type of request
+        console.log(res.data)
+        // TODO handle different type of request        
         this.setState({
           data: res.data.users,
         });
@@ -65,9 +67,9 @@ export default class ProjectTeamCard extends Component {
     axios
       .get(
         "/baseapi/my/team/" +
-          this.state.projectState +
-          "/" +
-          this.state.projectId,
+        this.state.projectState +
+        "/" +
+        this.state.projectId,
         {
           headers: {
             Authorization: localStorage.FBIdToken,
@@ -75,13 +77,23 @@ export default class ProjectTeamCard extends Component {
         }
       )
       .then((res) => {
+        console.log(res.data)
         // TODO handle different type of request
-        this.setState({
-          data: res.data.users,
-        });
-        this.setState({
-          hadData: true,
-        });
+        if (res.data.users.length === 0) {
+          this.setState({
+            data: [],
+          });
+          this.setState({
+            hadData: false,
+          });
+        } else {
+          this.setState({
+            data: res.data.users,
+          });
+          this.setState({
+            hadData: true,
+          });
+        }
       })
       .catch((err) => {
         this.setState({
@@ -140,14 +152,14 @@ export default class ProjectTeamCard extends Component {
                   ))}
                 </Grid>
               ) : (
-                <Grid container>
-                  {this.state.data.map((user) => (
-                    <Grid item style={{ margin: 15 }}>
-                      <ProfileSnapshot userId={user.id} />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
+                  <Grid container>
+                    {this.state.data.map((user) => (
+                      <Grid item style={{ margin: 15 }}>
+                        <ProfileSnapshot userId={user.id} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
             </CardContent>
           </Card>
         </Container>

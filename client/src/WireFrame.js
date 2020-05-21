@@ -12,6 +12,7 @@ import Interested from "./Pages/Interested"
 import MyProjects from './Pages/MyProjects';
 import Profile from './Pages/Profile';
 import Dashboard from './Pages/Dashboard';
+import TeamPage from './Pages/TeamPage';
 
 const history = require("history").createHashHistory();
 export default function WireFrame() {
@@ -24,6 +25,7 @@ export default function WireFrame() {
           <Route exact path="/my/team/" component={MyTeam} />
           <Route exact path="/testing" component={TestingGround} />
           <Route exact path="/signin" component={SignIn} />
+          <Route exact path="/my/teams" component={TeamPage} />
           <Route exact path="/signup" component={SignUp} />
           <Route path path="/my/profile" component={Profile} />
           <Route exact path="/my/projects" component={MyProjects} />
