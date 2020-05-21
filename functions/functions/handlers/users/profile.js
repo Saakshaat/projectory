@@ -13,9 +13,6 @@ const fs = require("fs");
  * This route distributes the request object across different collections for sharding.
  */
 exports.createProfile = (req, res) => {
-  /**TODO: Validate request fields for if the data exists.
-   *  Iterate through each field in the JSON obejct and pass to validateExists
-   */
 
   //creating objects for distributing across collections
   const avatarList = [
@@ -95,7 +92,7 @@ exports.createProfile = (req, res) => {
         return batch
           .commit()
           .then(() => {
-            return res.status(200).json({ user, experience, credentials });
+            return res.status(201).json({ user, experience, credentials });
           })
           .catch((err) => {
             res
@@ -108,6 +105,14 @@ exports.createProfile = (req, res) => {
       return res.status(500).json({ error: `Error: ${err}. Contact support.` });
     });
 };
+
+exports.checkExists = (uid) => {
+  db.collection(`users`).where('uid', '==', uid).get().then(users => {
+    if(users.size > 0)
+      return true;
+    else return false;
+  })
+}
 
 exports.showProfile = (req, res) => {
   let profile = {};
