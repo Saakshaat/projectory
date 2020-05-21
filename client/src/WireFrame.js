@@ -13,8 +13,11 @@ import MyProjects from './Pages/MyProjects';
 import Profile from './Pages/Profile';
 import Dashboard from './Pages/Dashboard';
 import TeamPage from './Pages/TeamPage';
+import Axios from 'axios'
 
 const history = require("history").createHashHistory();
+Axios.defaults.baseURL = "https://us-central1-projectory-5171c.cloudfunctions.net"
+
 export default function WireFrame() {
   return (
     <HashRouter>

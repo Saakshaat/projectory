@@ -129,7 +129,7 @@ const Project = (props) => {
                             {props.project.name}
                         </Typography>
                         <Typography noWrap textSize={14} color='textSecondary' variant='caption' display="block" gutterBottom>
-                            <Link href='#' variant='body2' >by {props.project.creator}</Link>
+                            <Link href={"/user/" + props.project.user + "/profile"} variant='body2' >by {props.project.creator}</Link>
                         </Typography>
                         <Typography style={{ marginTop: 15 }} component='p' variant='body2' color='textSecondary'>
                             {props.project.description}

@@ -231,7 +231,7 @@ export default class Create extends Component {
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     if (this.state.created && this.state.resumeUpLoaded) {
-      return <Redirect to="/user" />;
+      return <Redirect to="/dashboard" />;
     } else {
       return (
         <div>
