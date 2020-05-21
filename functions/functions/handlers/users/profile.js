@@ -13,7 +13,6 @@ const fs = require("fs");
  * This route distributes the request object across different collections for sharding.
  */
 exports.createProfile = (req, res) => {
-
   //creating objects for distributing across collections
   const avatarList = [
     "panda",
@@ -105,14 +104,6 @@ exports.createProfile = (req, res) => {
       return res.status(500).json({ error: `Error: ${err}. Contact support.` });
     });
 };
-
-exports.checkExists = (uid) => {
-  db.collection(`users`).where('uid', '==', uid).get().then(users => {
-    if(users.size > 0)
-      return true;
-    else return false;
-  })
-}
 
 exports.showProfile = (req, res) => {
   let profile = {};
@@ -398,9 +389,21 @@ exports.showMultipleProfiles = (req, res) => {
     .getAll(...req.body.users)
     .then((docs) => {
       docs.forEach((data) => {
-        users.push(data.data());
+        const id = data.id;
+        users.push({
+          id,
+          name: data.data().name,
+          institution: data.data().institution,
+          socials: data.data().socials,
+          bio: data.data().bio,
+          imageUrl: data.data().imageUrl,
+        });
       });
-      return res.status(200).json(users);
+      const response = {
+        project: req.body.project,
+        users,
+      };
+      return res.status(200).json(response);
     })
     .catch((err) => {
       return res

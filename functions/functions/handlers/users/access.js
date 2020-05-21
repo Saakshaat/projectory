@@ -12,7 +12,7 @@ const {
   validateLogin,
   validateExists,
 } = require("../../util/validators");
-const { checkExists } = require("./profile");
+
 
 //Email Login
 exports.emailLogin = (req, res) => {
@@ -40,10 +40,21 @@ exports.emailLogin = (req, res) => {
       return data.user
         .getIdToken()
         .then((token) => {
-          if (!checkExists(uid)) {
-            response.token = token;
-            return res.status(406).json(response);
-          } else return res.json({ token });
+          response.token = token;
+          return db
+          .collection(`users`)
+          .where("uid", "==", uid)
+          .limit(1)
+          .get().then(users => {
+            if(users.docs[0] !== undefined) {
+              return res.status(200).json({ token });
+            } else {
+              return res.status(406).json(response);
+            }
+          })
+          .catch(err => {
+            return res.status(500).json({ error: `Internal Server Error` });
+          })
         })
         .catch((err) => {
           return res

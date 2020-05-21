@@ -67,6 +67,7 @@ exports.showInterested = (req, res) => {
           .json({ general: `No one has applied yet. Hold tight!` });
       } else {
         req.body.users = project.data().interested;
+        req.body.project = project.data().name;
         return showMultipleProfiles(req, res);
       }
     })
@@ -170,6 +171,7 @@ exports.showProjectTeam = (req, res) => {
           .status(200)
           .json({ general: `You're the only one here. Yet!` });
       } else {
+        req.body.project = project.data().name;
         req.body.users = project.data().team;
         req.body.users.push(project.data().user);
         return showMultipleProfiles(req, res);
