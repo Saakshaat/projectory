@@ -23,7 +23,7 @@ exports.getOneC = (req, res) => {
 exports.getMyClosed = (req, res) => {
   let response = [];
 
-  if (req.params.position === "created") {
+  if (req.params.position == "created") {
     return db
       .collection("closed")
       .where("user", "==", req.user.docId)
@@ -49,7 +49,7 @@ exports.getMyClosed = (req, res) => {
 
         return res.status(200).json(response);
       });
-  } else if (req.params.position === "selected") {
+  } else if (req.params.position == "selected") {
     return db
       .collection("closed")
       .where("team", "array-contains", req.user.docId)
