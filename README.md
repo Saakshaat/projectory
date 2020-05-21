@@ -12,15 +12,17 @@ The final application is currently in development at the [UMass DSC](https://git
 <a href="https://umassdsc.com/" target="_blank"><img width="270" src="./assets/dsc_umass.jpg"></a>
 <a href="http://www.dsc-rpi.club/" target="_blank"><img width="270" src="./assets/dsc_rpi.png"></a>
 <a href="https://umass.acm.org/" target="_blank"><img width="270" src="./assets/umassacmlogo.png"></a>
-<a href="https://jobs.rezscore.com/" target="_blank"><img width="270" src="/assets/rez_score.jpeg"></a>
+<a href="https://jobs.rezscore.com/" target="_blank"><img width="190" src="/assets/rez_score.jpeg"></a>
 </center></p></div>
-
 
 ## Table of Contents
   - [Concept](#concept)
       - [Users](#users)
       - [Projects](#projects)
   - [Tech Stack](#tech-stack)
+    - [Backend APIs](#backend-api)
+    - [Client App](#client-app)
+    - [Maintenance](#maintenance)
 
 ##  Concept
 
@@ -42,7 +44,7 @@ Projectory is supposed to make team matching easier and faster for projects. It 
 
 #### Projects
 
-<<<<<<< 907bb76fd2b67f8ca8ddc7ae395fea29b5a7c4f3
+
 ## Tech Stack
 =======
  Projects are described by
@@ -74,4 +76,3 @@ Due to the nature of our data storage needs, a SQL database is more desirable. F
 In order to address these issues, we're currently migrating the entire codebase to [Ruby on Rails](https://rubyonrails.org/) and [PostgreSQL](https://www.postgresql.org/). 
 
 We'll preserve the client application in React.js and integrate that within the Rails Views.
->>>>>>> Updating README.md
