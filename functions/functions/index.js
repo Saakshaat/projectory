@@ -87,6 +87,8 @@ app.get('/finalize/:projectId', authenticate, finalizeTeam)
 
 exports.baseapi = functions.https.onRequest(app);
 exports.applications = functions.https.onRequest(app);
+exports.aux1 = functions.https.onRequest(app);
+exports.aux2 = functions.https.onRequest(app);
 
 //TODO: Also do delete the user's doc reference from the `interested` and `team` field in a project
 exports.deleteUser = functions.firestore

@@ -124,7 +124,6 @@ exports.getMyClosed = (req, res) => {
             user: data.user,
           });
         });
-
         return res.status(200).json(response);
       });
   } else {
