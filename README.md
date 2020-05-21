@@ -1,28 +1,36 @@
-# Projectory Frontend Branch
+# projectory
 
-## May 16, 2020
-1. Add new field to `create` and `profile`
-2. Fix `login`, `signup`, and `create` form for better UX.
+An open sourced project and team matching platform meant for inhouse project management and hiring for clubs.
 
-## May 15, 2020
-1. Design Profile Snapshot Card
-3. Add new `headline`, `top skill`, and `profile picture` properties
+This application is the MVP meant for beta testing the concept.
 
-## May 14, 2020
-1. Redesign Profile Page with cleaner UI.
+The final application is currently in development at the [UMass DSC](https://github.com/dsc-umass/project-matching).
 
-## May 12, 2020
-1. Update `Create` credentails props
-2. Check for empty fields in `Create`
+<div><p align="center">
+<center><h4>project-matching is supported & used by:</h4><a href="https://www.linkedin.com/company/dscntu/"><img width="270" src="/assets/dsc_ntu.png" target="_blank"></a>
+<a href="https://umassdsc.com/" target="_blank"><img width="270" src="./assets/dsc_umass.jpg"></a>
+<a href="http://www.dsc-rpi.club/" target="_blank"><img width="270" src="./assets/dsc_rpi.png"></a>
+</center></p></div>
 
-## May 11, 2020
-1. Added color to each skill.
-2. Pass props without saving them to local storage
 
-## May 10, 2029
-1. Implemented create page
+## Table of Contents
+- [projectory](#projectory)
+  - [Table of Contents](#table-of-contents)
+  - [Concept](#concept)
+      - [Users](#users)
+      - [Projects](#projects)
+  - [Tech Stack](#tech-stack)
 
-## May 9, 2020
-1. Initial commit.
-2. Implemented simple login page
-3. Implemented simple signin page
+##  Concept
+
+Projectory is supposed to make team matching easier and faster for projects. It is based on 2 main elements:
+
+#### Users
+ The user object is composed of the user's profile which entails their 
+ - contact information
+ - work experience
+ - resume
+ When a user applies to be a part of a project's team, they are 
+#### Projects
+
+## Tech Stack
