@@ -164,7 +164,7 @@ exports.showProjectTeam = (req, res) => {
           return res.status(403).json({ error: `You're not in this team` });
       } else if (
         project.data().team == undefined ||
-        project.data().team.length <= 1
+        project.data().team.length === 0
       ) {
         return res
           .status(200)
