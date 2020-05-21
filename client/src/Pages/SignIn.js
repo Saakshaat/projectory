@@ -3,7 +3,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { Link, Redirect } from "react-router-dom";
-import { Typography, CssBaseline, Paper, CardMedia } from "@material-ui/core";
+import { Typography, CssBaseline, Paper, CardMedia, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@material-ui/core";
 import ErrorText from "../Components/ErrorText";
 import axios from "axios";
 
@@ -11,6 +11,8 @@ export default class SignIn extends Component {
   constructor() {
     super();
     this.state = {
+      open: false,
+      resetEmail: '',
       email: "",
       password: "",
       hasEmptyEmail: false,
@@ -119,6 +121,35 @@ export default class SignIn extends Component {
     this.setState({ password: e.target.value });
   };
 
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  };
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
+  handleResetEmail = (e) => {
+    this.setState({ resetEmail: e.target.value });
+  }
+
+  handlePasswordReset = () => {
+    const request = {
+      email: this.state.resetEmail,
+    }
+    axios
+      .post("/baseapi/password_reset", request, {})
+      .then((res) => {
+        console.log(res);
+        this.handleClose();
+        // TODO handle multiple request                
+      })
+      .catch((err) => {
+        this.handleClose();
+        console.log(err.response);
+      });
+
+  };
+
   //TODO add "Remember Me" option
   render() {
     if (!this.state.hasProflie) return <Redirect to="/create" />;
@@ -211,19 +242,19 @@ export default class SignIn extends Component {
                         helperText="Email must not be empty"
                       />
                     ) : (
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        onChange={this.handleTextEmailChange}
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                      />
-                    )}
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          onChange={this.handleTextEmailChange}
+                          required
+                          fullWidth
+                          id="email"
+                          label="Email Address"
+                          name="email"
+                          autoComplete="email"
+                          autoFocus
+                        />
+                      )}
                   </div>
 
                   {/* Password */}
@@ -244,19 +275,19 @@ export default class SignIn extends Component {
                         helperText="Password must not be empty"
                       />
                     ) : (
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        onChange={this.handleTextPasswordChange}
-                      />
-                    )}
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="password"
+                          label="Password"
+                          type="password"
+                          id="password"
+                          autoComplete="current-password"
+                          onChange={this.handleTextPasswordChange}
+                        />
+                      )}
                   </div>
 
                   {this.state.hasError ? (
@@ -264,8 +295,8 @@ export default class SignIn extends Component {
                       <ErrorText text={this.state.errorText} />
                     </Grid>
                   ) : (
-                    <div />
-                  )}
+                      <div />
+                    )}
 
                   {/* Submit*/}
                   <Button
@@ -301,13 +332,39 @@ export default class SignIn extends Component {
                   >
                     <Grid item xs={6}>
                       <Link
+                        onClick={this.handleClickOpen}
                         style={{ color: "black", textDecoration: "none" }}
-                        href="#"
                       >
                         <Typography variant="caption" gutterBottom>
                           Forgot password?
                         </Typography>
                       </Link>
+                      <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+                        <DialogTitle id="form-dialog-title">Password Reset</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            A password reset email will be sent to the your email.
+                          </DialogContentText>
+                          <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Email Address"
+                            type="email"
+                            fullWidth
+                            placeholder='Email cannot be empty'
+                            onChange={this.handleResetEmail}
+                          />
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={this.handleClose} color="primary">
+                            Cancel
+                          </Button>
+                          <Button onClick={this.handlePasswordReset} color="primary" disabled={this.state.resetEmail.length === 0}>
+                            Confirm
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                     </Grid>
 
                     <Grid>

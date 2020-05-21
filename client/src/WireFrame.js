@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, BrowserRouter } from "react-router-dom";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import Create from "./Pages/Create";
@@ -9,10 +9,11 @@ import NavDrawer from "./Components/NavDrawer";
 import MyTeam from "./Pages/TeamPage"
 import ProjectTeamCard from "./Components/ProjectTeamCard"
 import Interested from "./Pages/Interested"
+import MyProjects from './Pages/MyProjects';
 
 export default function WireFrame() {
   return (
-    <Router>
+    <BrowserRouter>
       <div>
         <Switch>
           <Route exact path="/create" component={Create} />
@@ -26,7 +27,7 @@ export default function WireFrame() {
           <Route exact path="/" component={SignIn} />
         </Switch>
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 

@@ -235,6 +235,8 @@ const ProfileMain = (props) => {
       .catch((err) => {
         console.log("Create Profile Error");
         console.log(err.response);
+        history.push('/dashboard');
+        history.push('/my/profile');
       });
   };
 
