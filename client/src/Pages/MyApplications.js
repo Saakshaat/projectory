@@ -12,7 +12,7 @@ export default class MyApplications extends Component {
         this.state = {
         };
     }
-
+    //This exists
     render() {
         const { isLoggedIn } = this.state
         return (
