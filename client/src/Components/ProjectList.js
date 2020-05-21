@@ -5,12 +5,17 @@ import axios from 'axios'
 import Project from './Project'
 import NavDrawer from './NavDrawer';
 import CreatedProject from './CreatedProject';
+import { CssBaseline, FormControlLabel, Switch, FormGroup, Typography, FormLabel, FormControl, RadioGroup, Radio } from "@material-ui/core";
 
 class ProjectList extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            value: 'open',
+            createdProjects: false,
+            selectedProjects: false,
+            myProjectEndpoint: '',
             created: [],
             static: [],
             isLoading: false,
@@ -126,6 +131,42 @@ class ProjectList extends Component {
         }
     }
 
+    handleChangeSwitch = (event) => {
+        this.setState({
+            [event.target.name]: event.target.checked,
+        });
+        this.handleEndpoint();
+    };
+
+    handleChangeRadio = (event) => {
+
+        this.setState({
+            value: event.target.value,
+        });
+        console.log(this.state.value)
+        this.handleEndpoint();
+
+    };
+
+    handleEndpoint = () => {
+
+        var niche = 'all';
+        if (this.state.createdProjects && this.state.selectedProjects) {
+            niche = 'all'
+        } else if (this.state.createdProjects) {
+            niche = 'created'
+        } else if (this.state.selectedProjects) {
+            niche = 'selected'
+        }
+
+        this.setState({
+            endpoint: '/baseapi/my/projects/' + this.state.value + '/' + niche,
+        });
+
+        this.getProjects();
+        console.log(this.state.endpoint)
+    }
+
     render() {
         const { isLoading, projects, created } = this.state
 
@@ -138,7 +179,7 @@ class ProjectList extends Component {
                         <Grid alignItems='stretch' container spacing={5} style={{ alignItems: 'stretch', padding: 10, margin: 0, width: '100%' }}>
                             {this.state.projects.map(currentProject => (
                                 // style={{}} xs={10} sm={6} lg={4} xl={3} 
-                                <Grid item key={currentProject.name} lg={4}>
+                                <Grid item key={currentProject.name} xs={12} sm={6} lg={4} xl={3}>
                                     {this.state.created.includes(currentProject.id) ?
                                         <CreatedProject project={currentProject} applicable={this.props.applicable} /> :
                                         ((this.state.static.includes(currentProject.id) ?

@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import clsx from 'clsx';
-import { Router, Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Link, BrowserRouter, Switch, Redirect, NavLink, useHistory } from "react-router-dom";
 import { createBrowserHistory } from "history";
 
 import { withStyles } from '@material-ui/core/styles';
@@ -39,7 +39,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const drawerWidth = 250;
 const skills = require("../Utils/Skill");
-const history = createBrowserHistory();
+const history = require("history").createBrowserHistory();
 
 const styles = makeStyles({
     root: {
@@ -77,6 +77,31 @@ function NavDrawer() {
     const [links, setLinks] = React.useState('');
     const [emptyLink, setEmptyLinks] = React.useState(false);
 
+    const history = useHistory();
+
+    const handleValidate = () => {
+        if (localStorage.FBIdToken) {
+            axios
+                .get("/baseapi/valid", {
+                    headers: {
+                        Authorization: localStorage.FBIdToken,
+                    },
+                })
+                .then((response) => {
+                    console.log(response)
+                    if (response.status === 200) { } else {
+                        history.push('/');
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    history.push('/');
+                });
+        } else {
+            history.push('/');
+        }
+    }
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -89,12 +114,13 @@ function NavDrawer() {
     }
 
     const onItemClick = title => () => {
+        handleValidate();
         setTitle(title);
         setDrawer(!drawer);
     }
 
     const handleSubmit = () => {
-
+        handleValidate();
         setEmptyName(false);
         if (name.length === 0) {
             setEmptyName(true);
@@ -138,18 +164,18 @@ function NavDrawer() {
             .then((res) => {
                 setOpen(false);
                 console.log(res)
-                setInitial();
+                setInitial(history);
                 return;
             })
             .catch((err) => {
                 setOpen(false);
                 console.log(err.response);
-                setInitial();
+                setInitial(history);
                 return;
             });
     };
 
-    const setInitial = () => {
+    const setInitial = (history) => {
         setName('');
         setEmptyName(false);
         setDescription('');
@@ -160,6 +186,7 @@ function NavDrawer() {
         setEmptyLinks(false);
         setNeeded([]);
         setEmptyNeeded(false);
+        history.push('/');
     }
 
     const handleNameChange = (e) => {
@@ -192,6 +219,9 @@ function NavDrawer() {
     // if (!isLoggedIn) {
     //     return <Redirect to='/signin' />;
     // } else
+
+    handleValidate();
+
     return (
         <div>
             <CssBaseline />
@@ -382,31 +412,31 @@ function NavDrawer() {
                                 Projectory
                             </Typography>
                         </ListItem>
-                        <ListItem button component={Link} to='/dashboard' onClick={onItemClick('Dashboard')}>
+                        <ListItem button component={NavLink} to='/dashboard' onClick={onItemClick('Dashboard')}>
                             <ListItemIcon>
                                 <DashboardIcon />
                             </ListItemIcon>
                             <ListItemText>Dashboard</ListItemText>
                         </ListItem>
-                        <ListItem button component={Link} to='/my/profile/' onClick={onItemClick('Profile')}>
+                        <ListItem button component={NavLink} to='/my/profile/' onClick={onItemClick('Profile')}>
                             <ListItemIcon>
                                 <AccountBoxIcon />
                             </ListItemIcon>
                             <ListItemText>Profile</ListItemText>
                         </ListItem>
-                        <ListItem button component={Link} to='/create' onClick={onItemClick('Teams')}>
+                        <ListItem button component={NavLink} to='/create' onClick={onItemClick('Teams')}>
                             <ListItemIcon>
                                 <GroupIcon />
                             </ListItemIcon>
                             <ListItemText>Teams</ListItemText>
                         </ListItem>
-                        <ListItem button component={Link} to='/my/projects/' onClick={onItemClick('Projects')}>
+                        <ListItem button component={NavLink} to='/my/projects/' onClick={onItemClick('Projects')}>
                             <ListItemIcon>
                                 <AccountTreeIcon />
                             </ListItemIcon>
                             <ListItemText>Your Projects</ListItemText>
                         </ListItem>
-                        <ListItem button component={Link} to='/my/applications/' onClick={onItemClick('Applications')}>
+                        <ListItem button component={NavLink} to='/my/applications/' onClick={onItemClick('Applications')}>
                             <ListItemIcon>
                                 <DescriptionIcon />
                             </ListItemIcon>
