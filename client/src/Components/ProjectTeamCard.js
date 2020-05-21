@@ -12,6 +12,11 @@ import {
   IconButton,
   Tooltip,
   Button,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  DialogTitle,
+  DialogContentText,
 } from "@material-ui/core";
 import ProfileSnapshot from "../Components/ProfileSnapshot";
 import axios from "axios";
@@ -28,7 +33,6 @@ export default class ProjectTeamCard extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props.interested);
     if (this.props.interested) this.getInterested();
     else this.getAllProject();
   }
@@ -42,7 +46,6 @@ export default class ProjectTeamCard extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
-        console.log(res.data);
         this.setState({
           data: res.data.users,
         });
@@ -96,7 +99,7 @@ export default class ProjectTeamCard extends Component {
         <Container style={{ padding: "-100px" }} disableGutters={true}>
           <Card
             style={{
-              backgroundColor: "#e0f7fa",
+              backgroundColor: "white",
               borderRadius: 10,
               height: "100%",
               maxWidth: "1500",
@@ -129,18 +132,11 @@ export default class ProjectTeamCard extends Component {
               {this.props.interested ? (
                 <Grid container>
                   {this.state.data.map((user) => (
-                    <Tooltip title="Click to select">
-                      <Button
-                      disableRipple={true}
-                        style={{
-                          margin: 7  ,
-                        }}
-                      >
-                        <Grid item >
-                          <ProfileSnapshot userId={user.id} />
-                        </Grid>
-                      </Button>
-                    </Tooltip>
+                    <SubmitCard
+                      id={user.id}
+                      name={user.name}
+                      project={this.state.projectId}
+                    />
                   ))}
                 </Grid>
               ) : (
@@ -158,3 +154,75 @@ export default class ProjectTeamCard extends Component {
       );
   }
 }
+
+const SubmitCard = (props) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleSelect = () => {
+    axios
+      .get("/baseapi/select/" + props.project + "/" + props.id, {
+        headers: {
+          Authorization: localStorage.FBIdToken,
+        },
+      })
+      .then((res) => {
+        setOpen(false);
+        window.location.reload(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <Tooltip title="Click to select">
+        <Button
+          disableRipple={true}
+          style={{
+            margin: 7,
+          }}
+          onClick={handleClickOpen}
+        >
+          <Grid item>
+            <ProfileSnapshot userId={props.id} />
+          </Grid>
+        </Button>
+      </Tooltip>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Are you sure you want to select {props.name}?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Selected members can be removed later but they receive emails for
+            getting selected and removed.
+            <br />
+            <br />
+            Please don't lead yourself into embarrassment.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="gray">
+            Cancel
+          </Button>
+          <Button onClick={handleSelect} color="primary" autoFocus>
+            Select
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};

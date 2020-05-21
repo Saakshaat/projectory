@@ -17,7 +17,6 @@ export default function WireFrame() {
         <Switch>
           <Route exact path="/create" component={Create} />
           <Route path="/user/:userId/profile" component={OtherProfile} />
-          <Route path="/my/team/:state/:projectId" component={ProjectTeamCard} />
           <Route exact path="/my/team/" component={MyTeam} />
           <Route exact path="/testing" component={TestingGround} />
           <Route exact path="/signin" component={SignIn} />

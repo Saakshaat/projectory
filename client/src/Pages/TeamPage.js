@@ -32,7 +32,6 @@ export default class TeamPage extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
-        console.log(res.data);
         this.setState({
           open: res.data,
         });
