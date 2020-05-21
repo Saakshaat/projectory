@@ -14,16 +14,18 @@ export default class TeamPage extends Component {
     this.state = {
       isLoggedIn: false,
       open: false,
+      closed: false,
       hadData: false,
     };
     if (localStorage.FBIdToken) this.state.isLoggedIn = true;
   }
 
   componentDidMount() {
-    this.getProfilePage();
+    this.getOpen();
+    this.getClosed();
   }
 
-  getProfilePage() {
+  getOpen() {
     axios
       .get("/baseapi/my/projects/open/all/", {
         headers: {
@@ -32,8 +34,31 @@ export default class TeamPage extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
+        console.log(res);
         this.setState({
           open: res.data,
+        });
+      })
+      .catch((err) => {
+        this.setState({
+          hadData: true,
+        });
+        console.log(err.response);
+      });
+  }
+
+  getClosed() {
+    axios
+      .get("/baseapi/my/projects/closed/all/", {
+        headers: {
+          Authorization: localStorage.FBIdToken,
+        },
+      })
+      .then((res) => {
+        // TODO handle different type of request
+        console.log(res);
+        this.setState({
+          closed: res.data,
         });
         this.setState({
           hadData: true,
@@ -46,7 +71,6 @@ export default class TeamPage extends Component {
         console.log(err.response);
       });
   }
-
   //TODO Add closed projects
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
@@ -55,6 +79,7 @@ export default class TeamPage extends Component {
       else
         return (
           <Container>
+            <Typography variant="h3">Open</Typography>
             <Grid container spacing={3}>
               {this.state.open.map((project) => (
                 <Grid item xs={12}>
@@ -62,6 +87,22 @@ export default class TeamPage extends Component {
                     interested={false}
                     projectId={project.id}
                     state="open"
+                    creator={project.creator}
+                    project={project.name}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+
+            <Typography variant="h3">Closed</Typography>
+
+            <Grid container spacing={3}>
+              {this.state.closed.map((project) => (
+                <Grid item xs={12}>
+                  <ProjectTeamCard
+                    interested={false}
+                    projectId={project.id}
+                    state="closed"
                     creator={project.creator}
                     project={project.name}
                   />
