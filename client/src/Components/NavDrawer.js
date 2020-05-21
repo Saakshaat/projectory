@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import clsx from 'clsx';
-import { Router, Route, Link, BrowserRouter, Switch, Redirect, NavLink, useHistory } from "react-router-dom";
+import { Router, Route, Link, BrowserRouter, Switch, Redirect, NavLink, useHistory, HashRouter } from "react-router-dom";
 import { createBrowserHistory } from "history";
 
 import { withStyles } from '@material-ui/core/styles';
@@ -39,7 +39,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const drawerWidth = 250;
 const skills = require("../Utils/Skill");
-const history = require("history").createBrowserHistory();
+const history = require("history").createHashHistory();
 
 const styles = makeStyles({
     root: {
@@ -95,7 +95,41 @@ function NavDrawer() {
                 })
                 .catch((error) => {
                     console.log(error);
-                    history.push('/');
+                    if (error.status === 429) {
+                        axios
+                            .get("/aux1/valid", {
+                                headers: {
+                                    Authorization: localStorage.FBIdToken,
+                                },
+                            })
+                            .then((response) => {
+                                console.log(response)
+                                if (response.status === 200) { } else {
+                                    history.push('/');
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                if (error.status === 429) {
+                                    axios
+                                        .get("/aux2/valid", {
+                                            headers: {
+                                                Authorization: localStorage.FBIdToken,
+                                            },
+                                        })
+                                        .then((response) => {
+                                            console.log(response)
+                                            if (response.status === 200) { } else {
+                                                history.push('/');
+                                            }
+                                        })
+                                        .catch((error) => {
+                                            console.log(error);
+                                        });
+
+                                } else { history.push('/'); }
+                            });
+                    } else { history.push('/'); }
                 });
         } else {
             history.push('/');
@@ -164,13 +198,13 @@ function NavDrawer() {
             .then((res) => {
                 setOpen(false);
                 console.log(res)
-                setInitial(history);
+                setInitial();
                 return;
             })
             .catch((err) => {
                 setOpen(false);
                 console.log(err.response);
-                setInitial(history);
+                setInitial();
                 return;
             });
     };
@@ -186,7 +220,7 @@ function NavDrawer() {
         setEmptyLinks(false);
         setNeeded([]);
         setEmptyNeeded(false);
-        history.push('/');
+        window.location.reload();
     }
 
     const handleNameChange = (e) => {
@@ -220,13 +254,13 @@ function NavDrawer() {
     //     return <Redirect to='/signin' />;
     // } else
 
-    handleValidate();
+    // handleValidate();
 
     return (
         <div>
             <CssBaseline />
             <NavBar toggleDrawer={toggleDrawer} title={title} />
-            <BrowserRouter history={history}>
+            <BrowserRouter>
                 <Fab color="primary" aria-label="add" size='medium' onClick={handleClickOpen} centerRipple style={{
                     margin: 0,
                     top: 'auto',
@@ -405,7 +439,7 @@ function NavDrawer() {
                     </DialogActions>
                 </Dialog>
 
-                <Drawer variant='temporary' open={drawer} onClose={toggleDrawer} classes={{ paper: classes.drawerPaper }}>
+                <Drawer variant='temporary' defaultValue='/dashboard' open={drawer} onClose={toggleDrawer} classes={{ paper: classes.drawerPaper }}>
                     <List>
                         <ListItem color='primary' component={Typography}>
                             <Typography gutterBottom variant='h5' component='h2'>
@@ -430,13 +464,13 @@ function NavDrawer() {
                             </ListItemIcon>
                             <ListItemText>Teams</ListItemText>
                         </ListItem>
-                        <ListItem button component={NavLink} to='/my/projects/' onClick={onItemClick('Projects')}>
+                        <ListItem button component={NavLink} to='/my/projects' onClick={onItemClick('Projects')}>
                             <ListItemIcon>
                                 <AccountTreeIcon />
                             </ListItemIcon>
                             <ListItemText>Your Projects</ListItemText>
                         </ListItem>
-                        <ListItem button component={NavLink} to='/my/applications/' onClick={onItemClick('Applications')}>
+                        <ListItem button component={NavLink} to='/my/applications' onClick={onItemClick('Applications')}>
                             <ListItemIcon>
                                 <DescriptionIcon />
                             </ListItemIcon>
@@ -450,11 +484,10 @@ function NavDrawer() {
                         <Route path="/user/:userId/profile" component={OtherProfile} />
                         <Route exact path="/signin" component={SignIn} />
                         <Route exact path="/create" component={Create} />
-                        <Route exact path="/my/applications/" component={MyApplications} />
-                        <Route exact path="/my/projects/" component={MyProjects} />
-                        <Route exact path="/dashboard" component={Dashboard} />
+                        <Route exact path="/my/applications" component={MyApplications} />
+                        <Route exact path="/my/projects" component={MyProjects} />
                         <Route path="/user/:userId/profile" component={OtherProfile} />
-
+                        <Route exact path="/dashboard" component={Dashboard} />
                         <Route exact path="/" component={Dashboard} />
                     </Switch>
                 </main>

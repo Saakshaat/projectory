@@ -3,9 +3,7 @@ import { Redirect } from "react-router-dom";
 import NavBar from '../Components/NavBar'
 import ProjectList from "../Components/ProjectList";
 import NavDrawer from '../Components/NavDrawer'
-import { useHistory } from "react-router-dom";
 import { CssBaseline, Card, FormControlLabel, Switch, FormGroup, Grid, Typography, FormLabel, FormControl, RadioGroup, Radio } from "@material-ui/core";
-
 
 export default class MyProjects extends Component {
 

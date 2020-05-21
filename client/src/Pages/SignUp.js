@@ -224,19 +224,19 @@ export default class SignUp extends Component {
                         autoFocus
                       />
                     ) : (
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        onChange={this.handleTextEmailChange}
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                      />
-                    )}
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          onChange={this.handleTextEmailChange}
+                          required
+                          fullWidth
+                          id="email"
+                          label="Email Address"
+                          name="email"
+                          autoComplete="email"
+                          autoFocus
+                        />
+                      )}
                   </div>
 
                   {/* Password */}
@@ -257,19 +257,19 @@ export default class SignUp extends Component {
                         onChange={this.handleTextPasswordChange}
                       />
                     ) : (
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        onChange={this.handleTextPasswordChange}
-                      />
-                    )}
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="password"
+                          label="Password"
+                          type="password"
+                          id="password"
+                          autoComplete="current-password"
+                          onChange={this.handleTextPasswordChange}
+                        />
+                      )}
                   </div>
 
                   {/* Confirm Password */}
@@ -285,43 +285,43 @@ export default class SignUp extends Component {
                         name="confirm-password"
                         label="Confirm Password"
                         type="password"
-                        id="password"
+                        id="confirme-password"
                         autoComplete="current-password"
                         onChange={this.handleTextConfirmPasswordChange}
                       />
                     ) : (
-                      <div>
-                        {this.state.hasEmptyComfirmPassword ? (
-                          <TextField
-                            error
-                            helperText="Confirm password must not be empty"
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="confirm-password"
-                            label="Confirm Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={this.handleTextConfirmPasswordChange}
-                          />
-                        ) : (
-                          <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="confirm-password"
-                            label="Confirm Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={this.handleTextConfirmPasswordChange}
-                          />
-                        )}
-                      </div>
-                    )}
+                        <div>
+                          {this.state.hasEmptyComfirmPassword ? (
+                            <TextField
+                              error
+                              helperText="Confirm password must not be empty"
+                              variant="outlined"
+                              margin="normal"
+                              required
+                              fullWidth
+                              name="confirm-password"
+                              label="Confirm Password"
+                              type="password"
+                              id="confirm-password"
+                              autoComplete="current-password"
+                              onChange={this.handleTextConfirmPasswordChange}
+                            />
+                          ) : (
+                              <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="confirm-password"
+                                label="Confirm Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={this.handleTextConfirmPasswordChange}
+                              />
+                            )}
+                        </div>
+                      )}
                   </div>
 
                   {this.state.hasError ? (
@@ -329,8 +329,8 @@ export default class SignUp extends Component {
                       <ErrorText text={this.state.errorText} />
                     </Grid>
                   ) : (
-                    <div />
-                  )}
+                      <div />
+                    )}
 
                   <Button
                     type="submit"
