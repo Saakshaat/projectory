@@ -343,7 +343,7 @@ export default class SignUp extends Component {
                     Sign Up
                   </Button>
 
-                  <Button
+                  {/* <Button
                     fullWidth
                     type="submit"
                     variant="outlined"
@@ -352,7 +352,7 @@ export default class SignUp extends Component {
                     onClick={this.handleGoogleSignInClick}
                   >
                     Sign In With Google
-                  </Button>
+                  </Button> */}
 
                   <Grid
                     container

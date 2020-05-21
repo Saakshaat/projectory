@@ -351,7 +351,7 @@ export default class SignIn extends Component {
                     Sign In
                   </Button>
 
-                  {/* Google Sign In */}
+                  {/* Google Sign In
                   <Button
                     fullWidth
                     type="submit"
@@ -361,7 +361,7 @@ export default class SignIn extends Component {
                     onClick={this.handleGoogleSignInClick}
                   >
                     Sign In With Google
-                  </Button>
+                  </Button> */}
 
                   <Grid
                     container

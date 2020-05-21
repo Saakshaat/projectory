@@ -47,13 +47,23 @@ export default class ProjectTeamCard extends Component {
       })
       .then((res) => {
         console.log(res.data)
-        // TODO handle different type of request        
-        this.setState({
-          data: res.data.users,
-        });
-        this.setState({
-          hadData: true,
-        });
+        // TODO handle different type of request    
+        if (res.data.users.length === 0) {
+          this.setState({
+            data: [],
+          });
+          this.setState({
+            hadData: false,
+          });
+        } else {
+          this.setState({
+            data: res.data.users,
+          });
+          this.setState({
+            hadData: true,
+          });
+        }
+
       })
       .catch((err) => {
         this.setState({
