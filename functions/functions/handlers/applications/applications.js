@@ -28,7 +28,7 @@ exports.apply = (req, res) => {
           .json({ error: `You've already applied to this project` });
       } else {
         let interested = project.data().interested;
-        interested.push(req.user.docId);
+        interested.push(project.data().user);
 
         return projRef
           .update({ interested: interested })
@@ -160,19 +160,18 @@ exports.showProjectTeam = (req, res) => {
     .then((project) => {
       if (!project.exists) {
         return res.status(404).json({ error: `Project not found` });
-      } else if (!project.data().team.includes(req.user.docId)) {
-        return res.status(403).json({ error: `You're not in this team` });
+      } else if (!project.data().team.includes(req.user.docId) && project.data().user !== req.user.docId) {
+          return res.status(403).json({ error: `You're not in this team` });
       } else if (
         project.data().team == undefined ||
-        project.data().team.length === 1
+        project.data().team.length <= 1
       ) {
         return res
           .status(200)
           .json({ general: `You're the only one here. Yet!` });
       } else {
-        console.log(project.data().team);
         req.body.users = project.data().team;
-        req.body.users.push(req.user.docId);
+        req.body.users.push(project.data().user);
         return showMultipleProfiles(req, res);
       }
     })
