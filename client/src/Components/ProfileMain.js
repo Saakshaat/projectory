@@ -221,7 +221,7 @@ const ProfileMain = (props) => {
 
     console.log("Editing Profile ...");
     axios
-      .post("/baseapi/edit/profile", request, {
+      .post("/aux4/edit/profile", request, {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
@@ -618,7 +618,7 @@ const Header = (props) => {
     const data = new FormData();
     data.append("picture", e.target.files[0], e.target.files[0].name);
     axios
-      .post("/baseapi/my/profile/image", data, {
+      .post("/aux4/my/profile/image", data, {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
@@ -762,7 +762,7 @@ const Info = (props) => {
     const data = new FormData();
     data.append("resume", e.target.files[0], e.target.files[0].name);
     axios
-      .post("/baseapi/my/profile/resume", data, {
+      .post("/aux4/my/profile/resume", data, {
         headers: {
           Authorization: localStorage.FBIdToken,
         },

@@ -54,7 +54,7 @@ export default class SignUp extends Component {
     console.log("Signing up...");
 
     axios
-      .post("/baseapi/signup", {
+      .post("/aux5/signup", {
         email: this.state.email,
         password: this.state.password,
         confirmPassword: this.state.confirmPassword,
@@ -102,7 +102,7 @@ export default class SignUp extends Component {
     e.preventDefault();
     console.log("Signing in with Google...");
     axios
-      .post("/baseapi/google/signin")
+      .post("/aux5/google/signin")
       .then((res) => {
         localStorage.setItem("FBIdToken", res.data.token);
         this.setState({ isLoggedIn: true });

@@ -47,7 +47,7 @@ export default class ProfileSnapot extends Component {
 
   getProfilePage() {
     axios
-      .get("/baseapi/user/" + this.state.userId + "/profile")
+      .get("/aux4/user/" + this.state.userId + "/profile")
       .then((res) => {
         // TODO handle different type of request
         this.setState({
@@ -131,7 +131,7 @@ export default class ProfileSnapot extends Component {
                 <hr style={{ visibility: "hidden" }} />
               </Grid>
 
-              <Grid item justify="flex-end">
+              <Grid item>
                 <Contact profile={this.state.profile} />
               </Grid>
             </Grid>
@@ -161,7 +161,7 @@ const Skill = (props) => {
 const Contact = (props) => {
   return (
     <Grid container alignItems="center" justify="center">
-      {!(props.profile.information.socials.github) ? (
+      {(props.profile.information.socials.github) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -174,7 +174,7 @@ const Contact = (props) => {
           <div />
         )}
 
-      {!(props.profile.information.socials.linkedin) ? (
+      {(props.profile.information.socials.linkedin) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -187,7 +187,7 @@ const Contact = (props) => {
           <div />
         )}
 
-      {!(props.profile.information.socials.email) ? (
+      {(props.profile.information.socials.email) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -200,7 +200,7 @@ const Contact = (props) => {
           <div />
         )}
 
-      {!(props.profile.information.socials.website) ? (
+      {(props.profile.information.socials.website) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}

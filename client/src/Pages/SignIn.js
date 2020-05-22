@@ -3,7 +3,17 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { Link, Redirect } from "react-router-dom";
-import { Typography, CssBaseline, Paper, CardMedia, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@material-ui/core";
+import {
+  Typography,
+  CssBaseline,
+  Paper,
+  CardMedia,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@material-ui/core";
 import ErrorText from "../Components/ErrorText";
 import axios from "axios";
 import Dashboard from "./Dashboard";
@@ -15,7 +25,7 @@ export default class SignIn extends Component {
     super();
     this.state = {
       open: false,
-      resetEmail: '',
+      resetEmail: "",
       email: "",
       password: "",
       hasEmptyEmail: false,
@@ -30,7 +40,7 @@ export default class SignIn extends Component {
   componentDidMount() {
     if (localStorage.FBIdToken) {
       axios
-        .get("/baseapi/valid", {
+        .get("/aux4/valid", {
           headers: {
             Authorization: localStorage.FBIdToken,
           },
@@ -109,7 +119,7 @@ export default class SignIn extends Component {
 
     console.log("Signing in...");
     axios
-      .post("/baseapi/login", {
+      .post("/aux4/login", {
         email: this.state.email,
         password: this.state.password,
       })
@@ -120,22 +130,61 @@ export default class SignIn extends Component {
         this.setState({ isLoggedIn: true });
       })
       .catch((err) => {
-        console.log(err.response);
+        axios
+          .post("/aux1/login", {
+            email: this.state.email,
+            password: this.state.password,
+          })
+          .then((res) => {
+            console.log(res);
+            // TODO handle multiple request
+            localStorage.setItem("FBIdToken", res.data.token);
+            this.setState({ isLoggedIn: true });
+          })
+          .catch((err) => {
+            axios
+              .post("/aux2/login", {
+                email: this.state.email,
+                password: this.state.password,
+              })
+              .then((res) => {
+                console.log(res);
+                // TODO handle multiple request
+                localStorage.setItem("FBIdToken", res.data.token);
+                this.setState({ isLoggedIn: true });
+              })
+              .catch((err) => {
+                axios
+                  .post("/aux4/login", {
+                    email: this.state.email,
+                    password: this.state.password,
+                  })
+                  .then((res) => {
+                    console.log(res);
+                    // TODO handle multiple request
+                    localStorage.setItem("FBIdToken", res.data.token);
+                    this.setState({ isLoggedIn: true });
+                  })
+                  .catch((err) => {
+                    console.log(err.response);
 
-        if (err.response.status === 404) {
-          this.setState({ hasProflie: false });
-          return;
-        }
+                    if (err.response.status === 404) {
+                      this.setState({ hasProflie: false });
+                      return;
+                    }
 
-        if (err.response.status === 400) {
-          if (err.response.data.email === "Must be valid")
-            this.setState({ errorText: "Invalid Email" });
-        }
-        if (err.response.status === 403) {
-          this.setState({ errorText: err.response.data.general });
-        }
+                    if (err.response.status === 400) {
+                      if (err.response.data.email === "Must be valid")
+                        this.setState({ errorText: "Invalid Email" });
+                    }
+                    if (err.response.status === 403) {
+                      this.setState({ errorText: err.response.data.general });
+                    }
 
-        this.setState({ hasError: true });
+                    this.setState({ hasError: true });
+                  });
+              });
+          });
       });
   };
 
@@ -145,7 +194,7 @@ export default class SignIn extends Component {
     console.log("Signing in with Google...");
     axios
       .post(
-        "https://us-central1-projectory-5171c.cloudfunctions.net/baseapi/google/signin"
+        "https://us-central1-projectory-5171c.cloudfunctions.net/aux4/google/signin"
       )
       .then((res) => {
         localStorage.setItem("FBIdToken", res.data.token);
@@ -171,24 +220,23 @@ export default class SignIn extends Component {
 
   handleResetEmail = (e) => {
     this.setState({ resetEmail: e.target.value });
-  }
+  };
 
   handlePasswordReset = () => {
     const request = {
       email: this.state.resetEmail,
-    }
+    };
     axios
-      .post("/baseapi/password_reset", request, {})
+      .post("/aux4/password_reset", request, {})
       .then((res) => {
         console.log(res);
         this.handleClose();
-        // TODO handle multiple request                
+        // TODO handle multiple request
       })
       .catch((err) => {
         this.handleClose();
         console.log(err.response);
       });
-
   };
 
   //TODO add "Remember Me" option
@@ -283,19 +331,19 @@ export default class SignIn extends Component {
                         helperText="Email must not be empty"
                       />
                     ) : (
-                        <TextField
-                          variant="outlined"
-                          margin="normal"
-                          onChange={this.handleTextEmailChange}
-                          required
-                          fullWidth
-                          id="email"
-                          label="Email Address"
-                          name="email"
-                          autoComplete="email"
-                          autoFocus
-                        />
-                      )}
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        onChange={this.handleTextEmailChange}
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        autoFocus
+                      />
+                    )}
                   </div>
 
                   {/* Password */}
@@ -316,19 +364,19 @@ export default class SignIn extends Component {
                         helperText="Password must not be empty"
                       />
                     ) : (
-                        <TextField
-                          variant="outlined"
-                          margin="normal"
-                          required
-                          fullWidth
-                          name="password"
-                          label="Password"
-                          type="password"
-                          id="password"
-                          autoComplete="current-password"
-                          onChange={this.handleTextPasswordChange}
-                        />
-                      )}
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                        onChange={this.handleTextPasswordChange}
+                      />
+                    )}
                   </div>
 
                   {this.state.hasError ? (
@@ -336,8 +384,8 @@ export default class SignIn extends Component {
                       <ErrorText text={this.state.errorText} />
                     </Grid>
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
 
                   {/* Submit*/}
                   <Button
@@ -380,11 +428,18 @@ export default class SignIn extends Component {
                           Forgot password?
                         </Typography>
                       </Link>
-                      <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
-                        <DialogTitle id="form-dialog-title">Password Reset</DialogTitle>
+                      <Dialog
+                        open={this.state.open}
+                        onClose={this.handleClose}
+                        aria-labelledby="form-dialog-title"
+                      >
+                        <DialogTitle id="form-dialog-title">
+                          Password Reset
+                        </DialogTitle>
                         <DialogContent>
                           <DialogContentText>
-                            A password reset email will be sent to the your email.
+                            A password reset email will be sent to the your
+                            email.
                           </DialogContentText>
                           <TextField
                             autoFocus
@@ -393,7 +448,7 @@ export default class SignIn extends Component {
                             label="Email Address"
                             type="email"
                             fullWidth
-                            placeholder='Email cannot be empty'
+                            placeholder="Email cannot be empty"
                             onChange={this.handleResetEmail}
                           />
                         </DialogContent>
@@ -401,7 +456,11 @@ export default class SignIn extends Component {
                           <Button onClick={this.handleClose} color="primary">
                             Cancel
                           </Button>
-                          <Button onClick={this.handlePasswordReset} color="primary" disabled={this.state.resetEmail.length === 0}>
+                          <Button
+                            onClick={this.handlePasswordReset}
+                            color="primary"
+                            disabled={this.state.resetEmail.length === 0}
+                          >
                             Confirm
                           </Button>
                         </DialogActions>

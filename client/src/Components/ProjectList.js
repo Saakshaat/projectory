@@ -72,7 +72,7 @@ class ProjectList extends Component {
                     })
                     console.log(response);
                     console.log(response.status);
-                    axios.get('/baseapi/my/projects/open/all', {
+                    axios.get('/aux2/my/projects/open/all', {
                         headers: {
                             Authorization: this.props.header,
                         },
@@ -88,7 +88,7 @@ class ProjectList extends Component {
                             console.log(response);
                             console.log(response.status);
 
-                            axios.get('/baseapi/my/static', {
+                            axios.get('/aux2/my/static', {
                                 headers: {
                                     Authorization: this.props.header,
                                 },
@@ -160,7 +160,7 @@ class ProjectList extends Component {
         }
 
         this.setState({
-            endpoint: '/baseapi/my/projects/' + this.state.value + '/' + niche,
+            endpoint: '/aux2/my/projects/' + this.state.value + '/' + niche,
         });
 
         this.getProjects();

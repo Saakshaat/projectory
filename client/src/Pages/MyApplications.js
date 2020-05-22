@@ -17,7 +17,7 @@ export default class MyApplications extends Component {
         const { isLoggedIn } = this.state
         return (
             <div>
-                <ProjectList endpoint='/baseapi/my/applications' header={localStorage.FBIdToken} applicable={false} />
+                <ProjectList endpoint='/aux5/my/applications' header={localStorage.FBIdToken} applicable={false} />
             </div>
         );
     }

@@ -123,7 +123,7 @@ const CreatedProject = (props) => {
 
     const handleDelete = () => {
 
-        axios.delete('baseapi/project' + '/open/' + props.project.id, {
+        axios.delete('aux4/project' + '/open/' + props.project.id, {
             headers: {
                 Authorization: localStorage.FBIdToken,
             },
@@ -181,7 +181,7 @@ const CreatedProject = (props) => {
         console.log("Editing Project ...");
 
         axios
-            .post("/baseapi/edit/" + props.project.id + "/", request, {
+            .post("/aux4/edit/" + props.project.id + "/", request, {
                 headers: {
                     Authorization: localStorage.FBIdToken,
                 },

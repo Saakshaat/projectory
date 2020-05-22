@@ -21,7 +21,7 @@ export default class Profile extends Component {
 
   getProfilePage() {
     axios
-      .get("/baseapi/my/profile", {
+      .get("/aux5/my/profile", {
         headers: {
           Authorization: localStorage.FBIdToken,
         },

@@ -18,11 +18,10 @@ import {
   DialogTitle,
   DialogContentText,
 } from "@material-ui/core";
-import ProfileSnapshot from "../Components/ProfileSnapshot";
+import ProfileSnapshotLight from "../Components/ProfileSnapshotLight";
 import axios from "axios";
 
 export default class ProjectTeamCard extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -40,14 +39,13 @@ export default class ProjectTeamCard extends Component {
 
   getInterested() {
     axios
-      .get("/baseapi/interested/" + this.state.projectId, {
+      .get("/applications/interested/" + this.state.projectId, {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
       })
       .then((res) => {
-        console.log(res.data)
-        // TODO handle different type of request    
+        // TODO handle different type of request
         if (res.data.users.length === 0) {
           this.setState({
             data: [],
@@ -63,7 +61,6 @@ export default class ProjectTeamCard extends Component {
             hadData: true,
           });
         }
-
       })
       .catch((err) => {
         this.setState({
@@ -76,10 +73,10 @@ export default class ProjectTeamCard extends Component {
   getAllProject() {
     axios
       .get(
-        "/baseapi/my/team/" +
-        this.state.projectState +
-        "/" +
-        this.state.projectId,
+        "/applications/my/team/" +
+          this.state.projectState +
+          "/" +
+          this.state.projectId,
         {
           headers: {
             Authorization: localStorage.FBIdToken,
@@ -87,7 +84,6 @@ export default class ProjectTeamCard extends Component {
         }
       )
       .then((res) => {
-        console.log(res.data)
         // TODO handle different type of request
         if (res.data.users.length === 0) {
           this.setState({
@@ -158,18 +154,19 @@ export default class ProjectTeamCard extends Component {
                       id={user.id}
                       name={user.name}
                       project={this.state.projectId}
+                      profile={user}
                     />
                   ))}
                 </Grid>
               ) : (
-                  <Grid container>
-                    {this.state.data.map((user) => (
-                      <Grid item style={{ margin: 15 }}>
-                        <ProfileSnapshot userId={user.id} />
-                      </Grid>
-                    ))}
-                  </Grid>
-                )}
+                <Grid container>
+                  {this.state.data.map((user) => (
+                    <Grid item style={{ margin: 15 }}>
+                      <ProfileSnapshotLight profile={user} />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
             </CardContent>
           </Card>
         </Container>
@@ -186,7 +183,7 @@ const SubmitCard = (props) => {
 
   const handleSelect = () => {
     axios
-      .get("/baseapi/select/" + props.project + "/" + props.id, {
+      .get("/applications/select/" + props.project + "/" + props.id, {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
@@ -213,7 +210,7 @@ const SubmitCard = (props) => {
           onClick={handleClickOpen}
         >
           <Grid item>
-            <ProfileSnapshot userId={props.id} />
+            <ProfileSnapshotLight profile={props.user} />
           </Grid>
         </Button>
       </Tooltip>

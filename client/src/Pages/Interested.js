@@ -2,9 +2,15 @@ import React, { Component } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
-import ProfileMain from "../Components/ProfileMain";
 import ProjectTeamCard from "../Components/ProjectTeamCard";
-import { Card, Grid, Divider, Container, Avatar, CircularProgress } from "@material-ui/core";
+import {
+  Card,
+  Grid,
+  Divider,
+  Container,
+  Avatar,
+  CircularProgress,
+} from "@material-ui/core";
 
 let projectId = "Skxq8GI9DFwq9bmv3z2B";
 
@@ -21,18 +27,18 @@ export default class Interested extends Component {
 
   componentDidMount() {
     this.getCreatedProject();
+    console.log(this.state.data);
   }
 
   getCreatedProject() {
     axios
-      .get("/baseapi/my/projects/open/created/", {
+      .get("/aux3/my/projects/open/created/", {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
       })
       .then((res) => {
         // TODO handle different type of request
-        console.log(res.data);
         this.setState({
           data: res.data,
         });
@@ -41,11 +47,78 @@ export default class Interested extends Component {
         });
       })
       .catch((err) => {
-        if (err.response.status === 403) this.setState({ isLoggedIn: false });
-        this.setState({
-          hadData: true,
-        });
-        console.log(err.response);
+        axios
+          .get("/aux1/my/projects/open/created/", {
+            headers: {
+              Authorization: localStorage.FBIdToken,
+            },
+          })
+          .then((res) => {
+            // TODO handle different type of request
+            this.setState({
+              data: res.data,
+            });
+            this.setState({
+              hadData: true,
+            });
+          })
+          .catch((err) => {
+            axios
+              .get("/aux2/my/projects/open/created/", {
+                headers: {
+                  Authorization: localStorage.FBIdToken,
+                },
+              })
+              .then((res) => {
+                // TODO handle different type of request
+                this.setState({
+                  data: res.data,
+                });
+                this.setState({
+                  hadData: true,
+                });
+              })
+              .catch((err) => {
+                axios
+                  .get("/aux3/my/projects/open/created/", {
+                    headers: {
+                      Authorization: localStorage.FBIdToken,
+                    },
+                  })
+                  .then((res) => {
+                    // TODO handle different type of request
+                    this.setState({
+                      data: res.data,
+                    });
+                    this.setState({
+                      hadData: true,
+                    });
+                  })
+                  .catch((err) => {
+                    axios
+                      .get("/aux4/my/projects/open/created/", {
+                        headers: {
+                          Authorization: localStorage.FBIdToken,
+                        },
+                      })
+                      .then((res) => {
+                        // TODO handle different type of request
+                        this.setState({
+                          data: res.data,
+                        });
+                        this.setState({
+                          hadData: true,
+                        });
+                      })
+                      .catch((err) => {
+                        this.setState({
+                          hadData: true,
+                        });
+                        console.log(err);
+                      });
+                  });
+              });
+          });
       });
   }
 
@@ -53,7 +126,19 @@ export default class Interested extends Component {
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else {
-      if (!this.state.hadData) return (<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress size={50} /></div>);
+      if (!this.state.hadData)
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <CircularProgress size={50} />
+          </div>
+        );
       else
         return (
           <Container>

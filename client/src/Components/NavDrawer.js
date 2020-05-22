@@ -85,7 +85,7 @@ function NavDrawer() {
     const handleValidate = () => {
         if (localStorage.FBIdToken) {
             axios
-                .get("/baseapi/valid", {
+                .get("/aux4/valid", {
                     headers: {
                         Authorization: localStorage.FBIdToken,
                     },
@@ -193,7 +193,7 @@ function NavDrawer() {
         console.log("Creating Project ...");
 
         axios
-            .post("/baseapi/project", request, {
+            .post("/aux5/project", request, {
                 headers: {
                     Authorization: localStorage.FBIdToken,
                 },

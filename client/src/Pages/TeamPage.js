@@ -27,7 +27,7 @@ export default class TeamPage extends Component {
 
   getOpen() {
     axios
-      .get("/baseapi/my/projects/open/all/", {
+      .get("/aux2/my/projects/open/all/", {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
@@ -50,7 +50,7 @@ export default class TeamPage extends Component {
 
   getClosed() {
     axios
-      .get("/baseapi/my/projects/closed/all/", {
+      .get("/aux2/my/projects/closed/all/", {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
@@ -71,7 +71,7 @@ export default class TeamPage extends Component {
         });
         console.log(err.response);
       });
-  }
+  } 
   //TODO Add closed projects
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;

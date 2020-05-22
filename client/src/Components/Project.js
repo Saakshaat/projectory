@@ -97,7 +97,7 @@ const Project = (props) => {
     }
 
     const handleApply = () => {
-        axios.get('/applications/apply/' + props.project.id, {
+        axios.get('/aux5/apply/' + props.project.id, {
             headers: {
                 Authorization: localStorage.FBIdToken,
             },

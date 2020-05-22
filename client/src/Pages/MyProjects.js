@@ -14,7 +14,7 @@ export default class MyProjects extends Component {
             value: '',
             created: false,
             selected: false,
-            endpoint: '/baseapi/my/projects/open/all',
+            endpoint: '/aux5/my/projects/open/all',
         };
     }
 
@@ -47,7 +47,7 @@ export default class MyProjects extends Component {
     //     }
 
     //     this.setState({
-    //         endpoint: '/baseapi/my/projects/' + this.state.value + '/' + niche,
+    //         endpoint: '/aux5/my/projects/' + this.state.value + '/' + niche,
     //     });
     //     console.log(this.state.endpoint)
     // }
@@ -91,7 +91,7 @@ export default class MyProjects extends Component {
     render() {
         return (
             <div>
-                <ProjectList caller='MyProjects' endpoint='/baseapi/my/projects/open/all' header={localStorage.FBIdToken} applicable={false} />
+                <ProjectList caller='MyProjects' endpoint='/aux5/my/projects/open/all' header={localStorage.FBIdToken} applicable={false} />
             </div>
         );
     }

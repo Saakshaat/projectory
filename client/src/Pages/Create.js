@@ -140,7 +140,7 @@ export default class Create extends Component {
     };
 
     axios
-      .post("/baseapi/create", request)
+      .post("/aux4/create", request)
       .then((res) => {
         // TODO handle different type of request
         this.setState({ created: true });
@@ -214,7 +214,7 @@ export default class Create extends Component {
     const data = new FormData();
     data.append("resume", this.state.resume, this.state.resume.name);
     axios
-      .post("/baseapi/my/profile/resume", data, {
+      .post("/aux4/my/profile/resume", data, {
         headers: {
           Authorization: localStorage.FBIdToken,
         },

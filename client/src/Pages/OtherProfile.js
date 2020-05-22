@@ -22,7 +22,7 @@ export default class OtherProfile extends Component {
 
   getProfilePage() {
     axios
-      .get("/baseapi/user/" + this.state.userId + "/profile")
+      .get("/aux5/user/" + this.state.userId + "/profile")
       .then((res) => {
         // TODO handle different type of request
         this.setState({
