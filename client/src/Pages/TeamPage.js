@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 import ProfileMain from "../Components/ProfileMain";
 import ProjectTeamCard from "../Components/ProjectTeamCard";
-import { Card, Grid, Divider, Container, Avatar } from "@material-ui/core";
+import { Card, Grid, Divider, Container, Avatar, CircularProgress } from "@material-ui/core";
 
 let projectId = "Skxq8GI9DFwq9bmv3z2B";
 
@@ -13,8 +13,8 @@ export default class TeamPage extends Component {
     super(props);
     this.state = {
       isLoggedIn: false,
-      open: false,
-      closed: false,
+      open: [],
+      closed: [],
       hadData: false,
     };
     if (localStorage.FBIdToken) this.state.isLoggedIn = true;
@@ -34,6 +34,7 @@ export default class TeamPage extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
+        console.log('hereerere')
         console.log(res);
         this.setState({
           open: res.data,
@@ -75,11 +76,11 @@ export default class TeamPage extends Component {
   render() {
     if (!this.state.isLoggedIn) return <Redirect to="/" />;
     else {
-      if (!this.state.hadData) return <Typography>Loading...</Typography>;
+      if (!this.state.hadData) return (<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress size={50} /></div>);
       else
         return (
           <Container>
-            <Typography variant="h3">Open</Typography>
+            <Typography variant="h5" style={{ marginTop: 20 }}>Open Projects: </Typography>
             <Grid container spacing={3}>
               {this.state.open.map((project) => (
                 <Grid item xs={12}>
@@ -94,7 +95,7 @@ export default class TeamPage extends Component {
               ))}
             </Grid>
 
-            <Typography variant="h3">Closed</Typography>
+            <Typography variant="h5" style={{ marginTop: 20 }}>Closed Projects: </Typography>
 
             <Grid container spacing={3}>
               {this.state.closed.map((project) => (

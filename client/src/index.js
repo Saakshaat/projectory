@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import WireFrame from "./WireFrame";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 
 const App = () => {
   return (
@@ -10,10 +10,10 @@ const App = () => {
 };
 
 ReactDOM.render(
-  <BrowserRouter>
-    <React.StrictMode>
+  <React.StrictMode>
+    <HashRouter>
       <App />
-    </React.StrictMode>
-  </BrowserRouter>,
+    </HashRouter>
+  </React.StrictMode>,
   document.getElementById("root")
 );

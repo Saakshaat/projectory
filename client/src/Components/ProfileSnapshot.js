@@ -161,7 +161,7 @@ const Skill = (props) => {
 const Contact = (props) => {
   return (
     <Grid container alignItems="center" justify="center">
-      {!(props.profile.information.socials.github.length === 0) ? (
+      {!(props.profile.information.socials.github) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -171,10 +171,10 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-        <div />
-      )}
+          <div />
+        )}
 
-      {!(props.profile.information.socials.linkedin.length === 0) ? (
+      {!(props.profile.information.socials.linkedin) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -184,10 +184,10 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-        <div />
-      )}
+          <div />
+        )}
 
-      {!(props.profile.information.socials.email.length === 0) ? (
+      {!(props.profile.information.socials.email) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -197,10 +197,10 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-        <div />
-      )}
+          <div />
+        )}
 
-      {!(props.profile.information.socials.website.length === 0) ? (
+      {!(props.profile.information.socials.website) ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
@@ -210,8 +210,8 @@ const Contact = (props) => {
           </a>
         </Grid>
       ) : (
-        <div />
-      )}
+          <div />
+        )}
     </Grid>
   );
 };
