@@ -136,7 +136,6 @@ export default class SignIn extends Component {
             password: this.state.password,
           })
           .then((res) => {
-            console.log(res);
             // TODO handle multiple request
             localStorage.setItem("FBIdToken", res.data.token);
             this.setState({ isLoggedIn: true });
@@ -148,7 +147,6 @@ export default class SignIn extends Component {
                 password: this.state.password,
               })
               .then((res) => {
-                console.log(res);
                 // TODO handle multiple request
                 localStorage.setItem("FBIdToken", res.data.token);
                 this.setState({ isLoggedIn: true });
@@ -160,7 +158,6 @@ export default class SignIn extends Component {
                     password: this.state.password,
                   })
                   .then((res) => {
-                    console.log(res);
                     // TODO handle multiple request
                     localStorage.setItem("FBIdToken", res.data.token);
                     this.setState({ isLoggedIn: true });
@@ -229,7 +226,6 @@ export default class SignIn extends Component {
     axios
       .post("/aux4/password_reset", request, {})
       .then((res) => {
-        console.log(res);
         this.handleClose();
         // TODO handle multiple request
       })

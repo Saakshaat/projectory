@@ -10,6 +10,7 @@ import {
   Container,
   Avatar,
   CircularProgress,
+  CardContent,
 } from "@material-ui/core";
 
 let projectId = "Skxq8GI9DFwq9bmv3z2B";
@@ -19,7 +20,7 @@ export default class Interested extends Component {
     super(props);
     this.state = {
       isLoggedIn: false,
-      data: false,
+      data: [],
       hadData: false,
     };
     if (localStorage.FBIdToken) this.state.isLoggedIn = true;
@@ -27,18 +28,19 @@ export default class Interested extends Component {
 
   componentDidMount() {
     this.getCreatedProject();
-    console.log(this.state.data);
   }
 
   getCreatedProject() {
     axios
-      .get("/aux3/my/projects/open/created/", {
+      .get("/baseapi/my/projects/open/created/", {
         headers: {
           Authorization: localStorage.FBIdToken,
         },
       })
       .then((res) => {
         // TODO handle different type of request
+        console.log(res.data);
+
         this.setState({
           data: res.data,
         });
@@ -142,19 +144,28 @@ export default class Interested extends Component {
       else
         return (
           <Container>
-            <Grid container spacing={3}>
-              {this.state.data.map((project) => (
-                <Grid item xs={12}>
-                  <ProjectTeamCard
-                    interested={true}
-                    project={project.name}
-                    projectId={project.id}
-                    creator={project.creator}
-                    state="open"
-                  />
-                </Grid>
-              ))}
-            </Grid>
+            <CardContent>
+              <Typography variant="h3">Project</Typography>
+              <Grid container spacing={3}>
+                {this.state.data.map((project) => (
+                  <div>
+                    {project.interested.length === 0 ? (
+                      <div />
+                    ) : (
+                      <Grid item xs={12}>
+                        <ProjectTeamCard
+                          interested={true}
+                          project={project.name}
+                          projectId={project.id}
+                          creator={project.creator}
+                          state="open"
+                        />
+                      </Grid>
+                    )}
+                  </div>
+                ))}
+              </Grid>
+            </CardContent>
           </Container>
         );
     }

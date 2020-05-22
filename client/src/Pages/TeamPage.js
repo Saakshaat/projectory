@@ -34,8 +34,6 @@ export default class TeamPage extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
-        console.log('hereerere')
-        console.log(res);
         this.setState({
           open: res.data,
         });
@@ -57,7 +55,6 @@ export default class TeamPage extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
-        console.log(res);
         this.setState({
           closed: res.data,
         });

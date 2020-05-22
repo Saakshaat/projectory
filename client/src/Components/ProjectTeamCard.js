@@ -46,27 +46,52 @@ export default class ProjectTeamCard extends Component {
       })
       .then((res) => {
         // TODO handle different type of request
-        if (res.data.users.length === 0) {
-          this.setState({
-            data: [],
-          });
-          this.setState({
-            hadData: false,
-          });
-        } else {
-          this.setState({
-            data: res.data.users,
-          });
-          this.setState({
-            hadData: true,
-          });
-        }
-      })
-      .catch((err) => {
+        this.setState({
+          data: res.data.users,
+        });
         this.setState({
           hadData: true,
         });
-        console.log(err);
+      })
+      .catch((err) => {
+        axios
+          .get("/baseapi/interested/" + this.state.projectId, {
+            headers: {
+              Authorization: localStorage.FBIdToken,
+            },
+          })
+          .then((res) => {
+            // TODO handle different type of request
+            this.setState({
+              data: res.data.users,
+            });
+            this.setState({
+              hadData: true,
+            });
+          })
+          .catch((err) => {
+            axios
+              .get("/aux1/interested/" + this.state.projectId, {
+                headers: {
+                  Authorization: localStorage.FBIdToken,
+                },
+              })
+              .then((res) => {
+                // TODO handle different type of request
+                this.setState({
+                  data: res.data.users,
+                });
+                this.setState({
+                  hadData: true,
+                });
+              })
+              .catch((err) => {
+                this.setState({
+                  hadData: true,
+                });
+                console.log(err);
+              });
+          });
       });
   }
 
@@ -114,13 +139,12 @@ export default class ProjectTeamCard extends Component {
     if (!this.state.hadData) return <Typography>Loading...</Typography>;
     else
       return (
-        <Container style={{ padding: "-100px" }} disableGutters={true}>
+        <Container>
           <Card
             style={{
               backgroundColor: "white",
               borderRadius: 10,
               height: "100%",
-              maxWidth: "1500",
               marginTop: "20px",
             }}
           >
@@ -161,7 +185,7 @@ export default class ProjectTeamCard extends Component {
               ) : (
                 <Grid container>
                   {this.state.data.map((user) => (
-                    <Grid item style={{ margin: 15 }}>
+                    <Grid item style={{ margin: 13 }}>
                       <ProfileSnapshotLight profile={user} />
                     </Grid>
                   ))}
@@ -201,20 +225,21 @@ const SubmitCard = (props) => {
 
   return (
     <div>
-      <Tooltip title="Click to select">
-        <Button
-          disableRipple={true}
-          style={{
-            margin: 7,
-          }}
-          onClick={handleClickOpen}
-        >
-          <Grid item>
-            <ProfileSnapshotLight profile={props.user} />
-          </Grid>
-        </Button>
-      </Tooltip>
-
+      <Grid container spacing={1} direction="column" alignItems="center">
+        <Grid item>
+          <ProfileSnapshotLight profile={props.profile} />
+        </Grid>
+        <Grid item>
+          <Button
+            color="primary"
+            disableRipple={true}
+            onClick={handleClickOpen}
+            variant="contained"
+          >
+            Select
+          </Button>
+        </Grid>
+      </Grid>
       <Dialog
         open={open}
         onClose={handleClose}

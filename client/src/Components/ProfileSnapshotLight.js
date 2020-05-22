@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
-import { Card, Grid, Divider, Container, Avatar } from "@material-ui/core";
+import {
+  Card,
+  Grid,
+  Divider,
+  Container,
+  Avatar,
+  Link,
+} from "@material-ui/core";
 import SkillChip from "../Components/SkillChip";
 import EmailIcon from "@material-ui/icons/Email";
 import GitHubIcon from "@material-ui/icons/GitHub";
@@ -15,6 +22,7 @@ const style = {
     fontWeight: "normal",
     fontSize: "26px",
     lineHeight: "28px",
+    underline: "none",
   },
   headline: {
     fontFamily: "Roboto",
@@ -45,8 +53,8 @@ export default class ProfileSnapshotLight extends Component {
         style={{
           display: "flex",
           borderRadius: 10,
-          width: "270px",
-          height: "350px",
+          width: "260px",
+          height: "200px",
           paddingTop: "10px",
         }}
       >
@@ -63,10 +71,14 @@ export default class ProfileSnapshotLight extends Component {
             <hr style={{ visibility: "hidden" }} />
           </Grid>
           <Grid item>
-            {/* TODO add link to profile page */}
-            <Typography style={style.name}>
-              {this.state.profile.name}
-            </Typography>
+            <Link
+              style={{ textDecoration: "none", color: "black" }}
+              href={"/user/" + this.state.profile.id + "/profile"}
+            >
+              <Typography color="inherit" style={style.name}>
+                {this.state.profile.name}
+              </Typography>
+            </Link>
           </Grid>
           <Grid item>
             <Divider
@@ -90,12 +102,9 @@ export default class ProfileSnapshotLight extends Component {
 const Contact = (props) => {
   return (
     <Grid container alignItems="center" justify="center">
-      {props.profile.information.socials.github ? (
+      {props.profile.socials.github ? (
         <Grid item>
-          <a
-            style={{ margin: 5 }}
-            href={props.profile.information.socials.github}
-          >
+          <a style={{ margin: 5 }} href={props.profile.socials.github}>
             <GitHubIcon style={{ color: "black" }} />
           </a>
         </Grid>
@@ -103,12 +112,9 @@ const Contact = (props) => {
         <div />
       )}
 
-      {props.profile.information.socials.linkedin ? (
+      {props.profile.socials.linkedin ? (
         <Grid item>
-          <a
-            style={{ margin: 5 }}
-            href={props.profile.information.socials.linkedin}
-          >
+          <a style={{ margin: 5 }} href={props.profile.socials.linkedin}>
             <LinkedInIcon color="primary" />
           </a>
         </Grid>
@@ -116,11 +122,11 @@ const Contact = (props) => {
         <div />
       )}
 
-      {props.profile.information.socials.email ? (
+      {props.profile.socials.email ? (
         <Grid item>
           <a
             style={{ margin: 5 }}
-            href={"mailto:" + props.profile.information.socials.email}
+            href={"mailto:" + props.profile.socials.email}
           >
             <EmailIcon color="primary" style={{ color: "red" }} />
           </a>
@@ -129,12 +135,9 @@ const Contact = (props) => {
         <div />
       )}
 
-      {props.profile.information.socials.website ? (
+      {props.profile.socials.website ? (
         <Grid item>
-          <a
-            style={{ margin: 5 }}
-            href={props.profile.information.socials.website}
-          >
+          <a style={{ margin: 5 }} href={props.profile.socials.website}>
             <LanguageIcon color="primary" style={{ color: "green" }} />
           </a>
         </Grid>
